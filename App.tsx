@@ -1,20 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useEffect} from 'react';
+import {useFonts} from 'expo-font';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import * as SplashScreen from 'expo-splash-screen';
+import {ThemeProvider} from '@/hooks/useTheme';
+import NavigationStack from '@/navigation/NavigationStack';
+import Toast from 'react-native-toast-message';
+import {toastConfig} from '@/helper/toastConfig';
 
 export default function App() {
+  const [loaded, error] = useFonts({
+    Outfit: require('./assets/fonts/Outfit-Regular.ttf'),
+    OutfitMedium: require('./assets/fonts/Outfit-Medium.ttf'),
+    OutfitSemiBold: require('./assets/fonts/Outfit-SemiBold.ttf'),
+    OutfitBold: require('./assets/fonts/Outfit-Bold.ttf'),
+    ...FontAwesome.font,
+  });
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ThemeProvider>
+      <NavigationStack />
+      <Toast config={toastConfig} />
+    </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
