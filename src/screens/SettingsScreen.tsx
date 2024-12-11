@@ -1,11 +1,11 @@
 import {Text, CustomView, Button} from '@/components';
 import {useTheme} from '@/hooks/useTheme';
-import {RootStackParamList} from '@/navigation/Navigation';
+import {AuthStackParamList} from '@/navigation/navigationType';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {Switch, StyleSheet, View} from 'react-native';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const SettingsPage = ({navigation}: Props) => {
   const {mode, toggleTheme} = useTheme(); // Get the theme colors

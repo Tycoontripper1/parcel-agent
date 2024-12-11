@@ -19,27 +19,8 @@ import BackImageScreen from '@/screens/auths/BackImageScreen';
 import FrontImageScreen from '@/screens/auths/FrontImageSCreen';
 import FacialVerification from '@/screens/auths/FacialVerification';
 import CongratulationScreen from '@/screens/auths/CongratulationScreen';
-
-export type RootStackParamList = {
-  Login: undefined;
-  Settings: undefined;
-  Onboarding: undefined;
-  ResetMethod: undefined;
-  ResetPasswordWithEmail: undefined;
-  ResetPasswordWithPhone: undefined;
-  ResetPasswordWithEmailConfirm: undefined;
-  ResetPasswordWithPhoneConfirm: {phone: string};
-  ResetPasswordComplete: {otp: string};
-  CreateAccountScreen: undefined;
-  OTPVerificationScreen: undefined;
-  BusinessInfoScreen: undefined;
-  IdentityVerificationScreen: undefined;
-  FrontImageScreen: undefined;
-  BackImageScreen: undefined;
-  PreviewScreen: undefined;
-  FacialVerification: undefined;
-  CongratulationScreen: undefined;
-};
+import {RootStackParamList} from './navigationType';
+import AuthStack from './AuthStack';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -64,59 +45,11 @@ const Navigation = () => {
       {!hasSeenOnboarding ? (
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name='Onboarding' component={OnboardingScreen} />
+          <Stack.Screen name='AuthStacks' component={AuthStack} />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name='Login' component={LoginScreen} />
-          <Stack.Screen
-            name='CreateAccountScreen'
-            component={CreateAccountScreen}
-          />
-          <Stack.Screen
-            name='OTPVerificationScreen'
-            component={OTPVerificationScreen}
-          />
-          <Stack.Screen
-            name='BusinessInfoScreen'
-            component={BusinessInfoScreen}
-          />
-          <Stack.Screen
-            name='IdentityVerificationScreen'
-            component={IdentityVerificationScreen}
-          />
-          <Stack.Screen name='FrontImageScreen' component={FrontImageScreen} />
-          <Stack.Screen name='BackImageScreen' component={BackImageScreen} />
-          <Stack.Screen name='PreviewScreen' component={PreviewScreen} />
-          <Stack.Screen
-            name='FacialVerification'
-            component={FacialVerification}
-          />
-          <Stack.Screen
-            name='CongratulationScreen'
-            component={CongratulationScreen}
-          />
-          <Stack.Screen name='ResetMethod' component={ResetPasswordMethod} />
-          <Stack.Screen
-            name='ResetPasswordWithEmail'
-            component={ResetPasswordWithEmail}
-          />
-          <Stack.Screen
-            name='ResetPasswordWithPhone'
-            component={ResetPasswordWithPhone}
-          />
-          <Stack.Screen
-            name='ResetPasswordWithEmailConfirm'
-            component={ResetPasswordWithEmailConfirm}
-          />
-          <Stack.Screen
-            name='ResetPasswordWithPhoneConfirm'
-            component={ResetPasswordWithPhoneConfirm}
-          />
-          <Stack.Screen
-            name='ResetPasswordComplete'
-            component={ResetPasswordComplete}
-          />
-          <Stack.Screen name='Settings' component={SettingsPage} />
+          <Stack.Screen name='AuthStacks' component={AuthStack} />
         </Stack.Navigator>
       )}
     </>

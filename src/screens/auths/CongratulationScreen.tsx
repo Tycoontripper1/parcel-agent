@@ -5,7 +5,6 @@ import {Button, CustomView, Spinner, Text} from '@/components';
 import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@/navigation/Navigation';
 import {color} from '@/constants/Colors';
 import {Helper} from '@/helper/helper';
 import Success from '@/components/svg/Success';
@@ -13,8 +12,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '@/redux/store';
 import Animated, {FadeInUp} from 'react-native-reanimated';
 import {resetForm} from '@/redux/slices/formSlice';
+import {AuthStackParamList} from '@/navigation/navigationType';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const CongratulationScreen = ({navigation}: Props) => {
   const [loading, setLoading] = useState(false);

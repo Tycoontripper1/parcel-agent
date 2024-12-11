@@ -4,8 +4,6 @@ import OTPInput from '@/components/OTPInput';
 import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {color} from '@/constants/Colors';
-import {Helper} from '@/helper/helper';
-import {RootStackParamList} from '@/navigation/Navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {View, ViewStyle} from 'react-native';
@@ -15,8 +13,9 @@ import ResendOTP from './ResendOTP';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '@/redux/store';
 import {updateField} from '@/redux/slices/formSlice';
+import {AuthStackParamList} from '@/navigation/navigationType';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const OTPVerificationScreen = ({navigation}: Props) => {
   const otp = useSelector((state: RootState) => state.form.otp);

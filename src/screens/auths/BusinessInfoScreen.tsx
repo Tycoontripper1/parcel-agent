@@ -1,11 +1,8 @@
 import {Button, CustomView, Input, Spinner, Text} from '@/components';
-import KeyBoardView from '@/components/KeyBoardView';
 import SelectInput from '@/components/SelectInput';
 import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
-import {color} from '@/constants/Colors';
-import {Helper} from '@/helper/helper';
-import {RootStackParamList} from '@/navigation/Navigation';
+import {AuthStackParamList} from '@/navigation/navigationType';
 import {updateField} from '@/redux/slices/formSlice';
 import {RootState} from '@/redux/store';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -21,7 +18,7 @@ import {
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useDispatch, useSelector} from 'react-redux';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const BusinessInfoScreen = ({navigation}: Props) => {
   const formData = useSelector((state: RootState) => state.form);

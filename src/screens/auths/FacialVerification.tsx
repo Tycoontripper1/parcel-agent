@@ -3,7 +3,7 @@ import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {color} from '@/constants/Colors';
 import {Helper} from '@/helper/helper';
-import {RootStackParamList} from '@/navigation/Navigation';
+import {AuthStackParamList} from '@/navigation/navigationType';
 import {updateField} from '@/redux/slices/formSlice';
 import {RootState} from '@/redux/store';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -24,7 +24,7 @@ import {useDispatch} from 'react-redux';
 
 const {width, height} = Dimensions.get('window');
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const FacialVerification = ({navigation}: Props) => {
   const [loading, setLoading] = useState(false);

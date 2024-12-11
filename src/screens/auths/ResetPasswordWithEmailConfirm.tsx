@@ -8,11 +8,11 @@ import {Button, Input, Spinner, Text} from '@/components';
 import {color} from '@/constants/Colors';
 import {MaterialIcons} from '@expo/vector-icons';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@/navigation/Navigation';
 import Toast from 'react-native-toast-message';
 import {Helper} from '@/helper/helper';
+import {AuthStackParamList} from '@/navigation/navigationType';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const ResetPasswordWithEmailConfirm = ({navigation}: Props) => {
   const [loading, setLoading] = useState(false);

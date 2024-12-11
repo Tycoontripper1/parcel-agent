@@ -2,7 +2,7 @@ import {Button, CustomView, Spinner, Text} from '@/components';
 import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {Helper} from '@/helper/helper';
-import {RootStackParamList} from '@/navigation/Navigation';
+import {AuthStackParamList} from '@/navigation/navigationType';
 import {RootState} from '@/redux/store';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
@@ -11,7 +11,7 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
 import {useSelector} from 'react-redux';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 const PreviewScreen = ({navigation}: Props) => {
   const {idFrontImage, idBackImage} = useSelector(
     (state: RootState) => state.form

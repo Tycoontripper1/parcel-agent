@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@/navigation/Navigation';
 import {Onboarding} from '../../assets/images';
 import {Button, CustomView, Text} from '@/components';
 import {color} from '@/constants/Colors';
+import {RootStackParamList} from '@/navigation/navigationType';
 
 const {width} = Dimensions.get('window');
 
@@ -61,12 +61,12 @@ const OnboardingScreen = ({navigation}: Props) => {
   const handleFinish = async () => {
     // Save onboarding completion to AsyncStorage
     await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-    navigation.replace('Login');
+    navigation.navigate('AuthStacks', {screen: 'Login'});
   };
   const handleGotoLogin = async () => {
     // Save onboarding completion to AsyncStorage
     await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-    navigation.replace('Login');
+    navigation.navigate('AuthStacks', {screen: 'Login'});
   };
 
   return (

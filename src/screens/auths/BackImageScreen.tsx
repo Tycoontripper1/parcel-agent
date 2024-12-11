@@ -5,12 +5,12 @@ import {updateField} from '@/redux/slices/formSlice';
 import {Button, CustomView} from '@/components';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@/navigation/Navigation';
 import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {openImagePicker} from '@/utils/openImagePicker';
+import {AuthStackParamList} from '@/navigation/navigationType';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const BackImageScreen = ({navigation}: Props) => {
   const [backImage, setBackImage] = useState<string | null>(null);

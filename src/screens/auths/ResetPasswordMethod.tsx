@@ -8,9 +8,9 @@ import {Text} from '@/components';
 import {color} from '@/constants/Colors';
 import {Ionicons} from '@expo/vector-icons';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@/navigation/Navigation';
+import {AuthStackParamList} from '@/navigation/navigationType';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const ResetPasswordMethod = ({navigation}: Props) => {
   const {theme} = useTheme();

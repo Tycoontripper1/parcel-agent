@@ -4,13 +4,13 @@ import {useDispatch} from 'react-redux';
 import {updateField} from '@/redux/slices/formSlice';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {Button, CustomView} from '@/components';
-import {RootStackParamList} from '@/navigation/Navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {openImagePicker} from '@/utils/openImagePicker';
+import {AuthStackParamList} from '@/navigation/navigationType';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 const FrontImageScreen = ({navigation}: Props) => {
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const dispatch = useDispatch();

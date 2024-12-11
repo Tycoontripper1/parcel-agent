@@ -3,9 +3,7 @@ import KeyBoardView from '@/components/KeyBoardView';
 import OTPInput from '@/components/OTPInput';
 import Header from '@/components/share/Header';
 import {color} from '@/constants/Colors';
-import {Helper} from '@/helper/helper';
 import {useTheme} from '@/hooks/useTheme';
-import {RootStackParamList} from '@/navigation/Navigation';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {View, Alert, ViewStyle} from 'react-native';
@@ -13,10 +11,11 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
 import ResendOTP from './ResendOTP';
 import {RouteProp} from '@react-navigation/native';
+import {AuthStackParamList} from '@/navigation/navigationType';
 
 interface Props {
-  navigation: NativeStackNavigationProp<RootStackParamList>;
-  route: RouteProp<RootStackParamList, 'ResetPasswordWithPhoneConfirm'>;
+  navigation: NativeStackNavigationProp<AuthStackParamList>;
+  route: RouteProp<AuthStackParamList, 'ResetPasswordWithPhoneConfirm'>;
 }
 
 const ResetPasswordWithPhoneConfirm = ({navigation, route}: Props) => {

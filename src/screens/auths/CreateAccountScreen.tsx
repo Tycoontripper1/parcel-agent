@@ -1,29 +1,43 @@
 import {Button, CustomView, Input, Spinner, Text} from '@/components';
 import KeyBoardView from '@/components/KeyBoardView';
+import PhoneNumberInput from '@/components/PhoneNumberInput';
 import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {color} from '@/constants/Colors';
 import {Helper} from '@/helper/helper';
-import {RootStackParamList} from '@/navigation/Navigation';
+import {useTheme} from '@/hooks/useTheme';
+import {AuthStackParamList} from '@/navigation/navigationType';
 import {updateField} from '@/redux/slices/formSlice';
 import {RootState} from '@/redux/store';
 import {Feather, MaterialIcons, SimpleLineIcons} from '@expo/vector-icons';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
-import {View, ViewStyle} from 'react-native';
+import {
+  StyleSheet,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
 import {useDispatch, useSelector} from 'react-redux';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const CreateAccountScreen = ({navigation}: Props) => {
   const formData = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch();
+  const {theme} = useTheme();
   const [passwordError, setPasswordError] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [fullNameError, setFullNameError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handlePhoneNumberChange = (newNumber: string) => {
+    const updatedNumber = newNumber;
+    dispatch(updateField({key: 'phoneNumber', value: updatedNumber}));
+  };
 
   const handleValidation = () => {
     let isValid = true;
@@ -89,12 +103,17 @@ const CreateAccountScreen = ({navigation}: Props) => {
   const $buttonsContainer: ViewStyle = {
     paddingVertical: RFValue(16),
   };
+  const $signUpText: TextStyle = {
+    fontSize: 16,
+    marginLeft: 5,
+    color: theme.secondary,
+  };
 
   return (
     <CustomView style={{paddingVertical: RFValue(10)}}>
       {loading && <Spinner />}
 
-      <BackButton onClick={() => navigation.goBack()} />
+      {/* <BackButton onClick={() => navigation.goBack()} /> */}
       <StepProgress step={1} totalSteps={5} />
       {/* Body */}
       <KeyBoardView>
@@ -130,6 +149,19 @@ const CreateAccountScreen = ({navigation}: Props) => {
             errorMessage={phoneError}
             keyboardType='number-pad'
           />
+          {/* <Text
+            style={{
+              fontSize: RFValue(14),
+              marginBottom: 5,
+              color: '#7B8794',
+            }}>
+            Phone Number
+          </Text>
+
+          <PhoneNumberInput
+            value={formData.phoneNumber}
+            onChange={handlePhoneNumberChange}
+          /> */}
 
           <Input
             label='Email Address (Optional)'
@@ -167,6 +199,13 @@ const CreateAccountScreen = ({navigation}: Props) => {
               style={{height: 55}}
             />
           </View>
+          {/* Sign Up */}
+          <View style={styles.signUpContainer}>
+            <Text style={styles.subText}>Already have an account?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={$signUpText}>Sign in</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyBoardView>
     </CustomView>
@@ -174,3 +213,16 @@ const CreateAccountScreen = ({navigation}: Props) => {
 };
 
 export default CreateAccountScreen;
+
+const styles = StyleSheet.create({
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  subText: {
+    fontSize: 16,
+    color: color.textGray,
+    marginBottom: 30,
+  },
+});

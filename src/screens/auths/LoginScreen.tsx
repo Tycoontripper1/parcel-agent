@@ -11,14 +11,14 @@ import KeyBoardView from '@/components/KeyBoardView';
 import GoogleIcon from '@/components/svg/GoogleIcon';
 import {MaterialIcons} from '@expo/vector-icons';
 import {useTheme} from '@/hooks/useTheme';
-import {RootStackParamList} from '@/navigation/Navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {color} from '@/constants/Colors';
 import Header from '@/components/share/Header';
 import {Helper} from '@/helper/helper';
 import Toast from 'react-native-toast-message';
+import {AuthStackParamList} from '@/navigation/navigationType';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const LoginScreen = ({navigation}: Props) => {
   const [loading, setLoading] = useState(false);
