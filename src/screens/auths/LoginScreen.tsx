@@ -16,9 +16,12 @@ import {color} from '@/constants/Colors';
 import Header from '@/components/share/Header';
 import {Helper} from '@/helper/helper';
 import Toast from 'react-native-toast-message';
-import {AuthStackParamList} from '@/navigation/navigationType';
+import {
+  AuthStackParamList,
+  RootStackParamList,
+} from '@/navigation/navigationType';
 
-type Props = NativeStackScreenProps<AuthStackParamList>;
+type Props = NativeStackScreenProps<RootStackParamList>;
 
 const LoginScreen = ({navigation}: Props) => {
   const [loading, setLoading] = useState(false);
@@ -70,7 +73,7 @@ const LoginScreen = ({navigation}: Props) => {
         text1: 'Success',
         text2: 'Login Successfully',
       });
-      navigation.navigate('Settings');
+      navigation.replace('RootTabStack');
     }, 2000);
   };
 
@@ -145,7 +148,9 @@ const LoginScreen = ({navigation}: Props) => {
 
           {/* Forgot Password */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('ResetMethod')}
+            onPress={() =>
+              navigation.navigate('AuthStacks', {screen: 'ResetMethod'})
+            }
             style={$forgotPassword}>
             <Text style={$linkText}>Forgot Password?</Text>
           </TouchableOpacity>
@@ -171,7 +176,11 @@ const LoginScreen = ({navigation}: Props) => {
           <View style={styles.signUpContainer}>
             <Text style={styles.subText}>Don’t have an account?</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('CreateAccountScreen')}>
+              onPress={() =>
+                navigation.navigate('AuthStacks', {
+                  screen: 'CreateAccountScreen',
+                })
+              }>
               <Text style={$signUpText}>Sign Up</Text>
             </TouchableOpacity>
           </View>

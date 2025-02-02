@@ -61,7 +61,7 @@ const OnboardingScreen = ({navigation}: Props) => {
   const handleFinish = async () => {
     // Save onboarding completion to AsyncStorage
     await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-    navigation.navigate('AuthStacks', {screen: 'Login'});
+    navigation.navigate('AuthStacks', {screen: 'CreateAccountScreen'});
   };
   const handleGotoLogin = async () => {
     // Save onboarding completion to AsyncStorage

@@ -9,10 +9,10 @@ import {toastConfig} from '@/helper/toastConfig';
 
 export default function App() {
   const [loaded, error] = useFonts({
-    Outfit: require('./assets/fonts/Outfit-Regular.ttf'),
-    OutfitMedium: require('./assets/fonts/Outfit-Medium.ttf'),
-    OutfitSemiBold: require('./assets/fonts/Outfit-SemiBold.ttf'),
-    OutfitBold: require('./assets/fonts/Outfit-Bold.ttf'),
+    Outfit: require('./assets/fonts/PublicSans-Regular.ttf'),
+    OutfitMedium: require('./assets/fonts/PublicSans-Medium.ttf'),
+    OutfitSemiBold: require('./assets/fonts/PublicSans-SemiBold.ttf'),
+    OutfitBold: require('./assets/fonts/PublicSans-Bold.ttf'),
     ...FontAwesome.font,
   });
 

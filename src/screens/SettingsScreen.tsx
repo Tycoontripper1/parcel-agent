@@ -1,11 +1,11 @@
 import {Text, CustomView, Button} from '@/components';
 import {useTheme} from '@/hooks/useTheme';
-import {AuthStackParamList} from '@/navigation/navigationType';
+import {RootStackParamList} from '@/navigation/navigationType';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {Switch, StyleSheet, View} from 'react-native';
 
-type Props = NativeStackScreenProps<AuthStackParamList>;
+type Props = NativeStackScreenProps<RootStackParamList>;
 
 const SettingsPage = ({navigation}: Props) => {
   const {mode, toggleTheme} = useTheme(); // Get the theme colors
@@ -17,7 +17,10 @@ const SettingsPage = ({navigation}: Props) => {
         <Text style={styles.label}>Dark Mode</Text>
         <Switch value={mode === 'dark'} onValueChange={toggleTheme} />
       </View>
-      <Button onPress={() => navigation.replace('Login')} title='Logout' />
+      <Button
+        onPress={() => navigation.replace('AuthStacks', {screen: 'Login'})}
+        title='Logout'
+      />
     </CustomView>
   );
 };

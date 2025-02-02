@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   padded: {
-    padding: RFValue(10),
+    padding: RFValue(16),
   },
 });
 

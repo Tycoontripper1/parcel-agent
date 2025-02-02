@@ -132,7 +132,7 @@ const FacialVerification = ({navigation}: Props) => {
               />
             </View>
           ) : (
-            <>
+            <View>
               <View style={styles.cameraContainer}>
                 <CameraView
                   ref={cameraRef}
@@ -150,7 +150,7 @@ const FacialVerification = ({navigation}: Props) => {
               <TouchableOpacity
                 style={styles.shootButton}
                 onPress={capturePhoto}></TouchableOpacity>
-            </>
+            </View>
           )}
         </View>
       </ScrollView>
