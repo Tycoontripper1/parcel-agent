@@ -4,7 +4,7 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import {Button, CustomView, Spinner, Text} from '@/components';
 import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {color} from '@/constants/Colors';
 import {Helper} from '@/helper/helper';
 import Success from '@/components/svg/Success';
@@ -12,18 +12,23 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '@/redux/store';
 import Animated, {FadeInUp} from 'react-native-reanimated';
 import {resetForm} from '@/redux/slices/formSlice';
-import {RootStackParamList} from '@/navigation/navigationType';
+import {HomeStackList, RootStackParamList} from '@/navigation/navigationType';
+import {RouteProp} from '@react-navigation/native';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+interface Props {
+  navigation: NativeStackNavigationProp<RootStackParamList>;
+  route: RouteProp<HomeStackList, 'ParcelCongratulation'>;
+}
 
-const CongratulationScreen = ({navigation}: Props) => {
+const ParcelCongratulation = ({navigation, route}: Props) => {
   const [loading, setLoading] = useState(false);
-  const formData = useSelector((state: RootState) => state.form);
+  const formData = useSelector((state: RootState) => state.parcel);
   const dispatch = useDispatch();
+  const {message} = route.params;
 
   // Styles
   const $bodyHeader: ViewStyle = {
-    paddingVertical: RFValue(20),
+    paddingVertical: RFValue(30),
     flexDirection: 'column',
     alignItems: 'center',
     gap: 20,
@@ -45,7 +50,6 @@ const CongratulationScreen = ({navigation}: Props) => {
       {loading && <Spinner />}
 
       <BackButton onClick={() => navigation.goBack()} />
-      <StepProgress step={5} totalSteps={5} />
 
       <ScrollView
         showsHorizontalScrollIndicator={false}
@@ -64,14 +68,7 @@ const CongratulationScreen = ({navigation}: Props) => {
 
           <View style={$bodyHeader}>
             <Text font='SemiBold' size={18}>
-              Profile Set up completed
-            </Text>
-            <Text
-              size={14}
-              color={color.textGray}
-              style={{textAlign: 'center'}}>
-              You're all set! Your profile is ready to go—let's make the most of
-              it.
+              {message}
             </Text>
           </View>
           <Button
@@ -85,7 +82,7 @@ const CongratulationScreen = ({navigation}: Props) => {
   );
 };
 
-export default CongratulationScreen;
+export default ParcelCongratulation;
 
 const styles = StyleSheet.create({
   container: {

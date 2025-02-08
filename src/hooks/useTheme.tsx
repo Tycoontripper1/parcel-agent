@@ -12,6 +12,7 @@ export type Theme = {
   border: string;
   rowBackground: string;
   alternateRowBackground: string;
+  inputText: string;
 };
 
 type ThemeContextType = {

@@ -8,6 +8,7 @@ export type Theme = {
   border: string;
   rowBackground: string;
   alternateRowBackground: string;
+  inputText: string;
 };
 
 export const lightTheme: Theme = {
@@ -20,6 +21,7 @@ export const lightTheme: Theme = {
   headerBackground: '#007bff',
   rowBackground: '#fff',
   alternateRowBackground: '#f9f9f9',
+  inputText: '#7B8794',
 };
 
 export const darkTheme: Theme = {
@@ -32,4 +34,5 @@ export const darkTheme: Theme = {
   headerBackground: '#1e1e1e',
   rowBackground: '#2c2c2c',
   alternateRowBackground: '#3a3a3a',
+  inputText: '#7B8794',
 };

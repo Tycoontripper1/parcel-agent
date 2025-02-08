@@ -233,6 +233,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     marginTop: 40,
+    alignSelf: 'center',
   },
   shootButtonText: {
     color: '#fff',

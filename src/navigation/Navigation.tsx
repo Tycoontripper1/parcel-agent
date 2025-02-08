@@ -36,7 +36,7 @@ const Navigation = () => {
   useEffect(() => {
     const checkOnboarding = async () => {
       const value = await AsyncStorage.getItem('hasSeenOnboarding');
-      setHasSeenOnboarding(value === 'false');
+      setHasSeenOnboarding(value === 'true');
       setIsLoading(false);
     };
 

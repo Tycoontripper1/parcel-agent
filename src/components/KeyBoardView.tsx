@@ -18,10 +18,10 @@ interface ViewProps {
   backgroundColor?: string;
 }
 
-const KeyBoardView = ({children}: ViewProps) => {
+const KeyBoardView = ({children, padded = true}: ViewProps) => {
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, padded && styles.padded]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView
         showsHorizontalScrollIndicator={false}
@@ -39,6 +39,8 @@ export default KeyBoardView;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  padded: {
     padding: RFValue(16),
   },
 });

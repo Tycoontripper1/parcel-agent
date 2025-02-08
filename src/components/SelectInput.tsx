@@ -62,7 +62,7 @@ const SelectInput = ({
   };
   const $placeholder: TextStyle = {
     fontSize: RFValue(14),
-    color: theme.text,
+    color: theme.inputText,
   };
   const $searchContainer: ViewStyle = {
     flexDirection: 'row',
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     marginVertical: RFValue(10),
   },
   label: {
-    fontSize: RFValue(12),
+    fontSize: RFValue(14),
     color: '#7B8794',
     marginBottom: RFValue(5),
   },

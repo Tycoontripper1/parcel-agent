@@ -2,6 +2,7 @@ import React from 'react';
 import {View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Text from './Text';
+import {useNavigation} from '@react-navigation/native';
 
 const {width} = Dimensions.get('window');
 
@@ -9,6 +10,7 @@ export interface IParcelButton {
   label: string;
   type: string;
   icon?: React.ReactNode;
+  url?: string;
 }
 
 interface ParcelButtonsProps {
@@ -18,10 +20,16 @@ interface ParcelButtonsProps {
 const buttonColors = ['#F7F9FC', '#F7FFF4', '#F4F3FF', '#FFF6ED']; // Example colors
 
 const ParcelButton = ({buttons}: ParcelButtonsProps) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.parcelButtonsContainer}>
       {buttons.map((button, index) => (
         <TouchableOpacity
+          onPress={() => {
+            if (button.url) {
+              navigation.navigate('HomeStack', {screen: button.url as never}); // Ensure correct typing
+            }
+          }}
           key={index}
           style={[
             styles.parcelButton,

@@ -16,7 +16,7 @@ export type RootStackParamList = {
   Settings: undefined;
   Onboarding: undefined;
   AuthStacks: NavigatorScreenParams<AuthStackParamList>;
-  HomeStacks: NavigatorScreenParams<HomeStackList>;
+  HomeStack: NavigatorScreenParams<HomeStackList>;
   WalletStack: NavigatorScreenParams<WalletStackList>;
   AccountStack: NavigatorScreenParams<AccountStackList>;
   DriverStack: NavigatorScreenParams<DriverStackList>;
@@ -50,6 +50,20 @@ export type HomeStackList = {
   Shipments: undefined;
   NotificationScreen: undefined;
   NotificationDetails: {id: any};
+  ScreenOneParcelInSender: undefined;
+  ScreenOneParcelInSenderTwo: undefined;
+  ScreenOneParcelInSenderPreview: undefined;
+  ScreenOneParcelInSenderThree: undefined;
+  ScreenOneParcelInDriver: undefined;
+  ScreenOneParcelInDriverSearchParcel: undefined;
+  ScreenOneParcelInDriverPreview: undefined;
+  ParcelInDriverUnRegistered: undefined;
+  ParcelInDriverUnRegisteredPreview: undefined;
+  ScreenOneParcelOutReceiver: undefined;
+  ScreenOneParcelOutDriver: undefined;
+  SearchParcelOutDriverId: undefined;
+  ParcelDriverOutPreviewScreen: undefined;
+  ParcelCongratulation: {message: string};
 };
 export type WalletStackList = {
   Wallet: undefined;

@@ -90,10 +90,30 @@ const DashboardScreen = ({navigation}: Props) => {
   ];
 
   const parcelButtonData: IParcelButton[] = [
-    {label: 'Driver', type: 'In', icon: <DownloadIcon color='#E8ECF7' />},
-    {label: 'Receiver', type: 'In', icon: <DownloadIconUp color='#E6FFDB' />},
-    {label: 'Sender', type: 'Out', icon: <DownloadIconSender />},
-    {label: 'Driver', type: 'Out', icon: <DownloadIconRed color='#FFEAD5' />},
+    {
+      label: 'Driver',
+      type: 'In',
+      icon: <DownloadIcon color='#E8ECF7' />,
+      url: 'ScreenOneParcelInDriver',
+    },
+    {
+      label: 'Receiver',
+      type: 'Out',
+      icon: <DownloadIconUp color='#E6FFDB' />,
+      url: 'ScreenOneParcelOutReceiver',
+    },
+    {
+      label: 'Sender',
+      type: 'In',
+      icon: <DownloadIconSender />,
+      url: 'ScreenOneParcelInSender',
+    },
+    {
+      label: 'Driver',
+      type: 'Out',
+      icon: <DownloadIconRed color='#FFEAD5' />,
+      url: 'ScreenOneParcelOutDriver',
+    },
   ];
 
   const WalletData: Wallet[] = [

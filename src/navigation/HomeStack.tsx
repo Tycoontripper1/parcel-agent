@@ -9,6 +9,18 @@ import {useTheme} from '@/hooks/useTheme';
 import ShipmentHistory from '@/screens/home/ShipmentHistory';
 import NotificationsScreen from '@/screens/home/NotificationScreen';
 import NotificationDetails from '@/screens/home/NotificationDetails';
+import ScreenOne from '@/screens/home/parcel/parcel-in-sender/ScreenOne';
+import ScreenTwo from '@/screens/home/parcel/parcel-in-sender/ScreenTwo';
+import ParcelPreviewScreen from '@/screens/home/parcel/parcel-in-sender/ParcelPreviewScreen';
+import ParcelType from '@/screens/home/parcel/parcel-in-driver/ParcelType';
+import SearchParcel from '@/screens/home/parcel/parcel-in-driver/SearchParcel';
+import ParcelDriverPreviewScreen from '@/screens/home/parcel/parcel-in-driver/ParcelDriverPreview';
+import ParcelCongratulation from '@/screens/home/parcel/ParcelCongratulation';
+import ParcelInDriverUnRegistered from '@/screens/home/parcel/parcel-in-driver/parcel-in-driver-un-registered/ParcelInDriverUnRegistered';
+import ParcelInDriverUnRegisteredPreviewScreen from '@/screens/home/parcel/parcel-in-driver/parcel-in-driver-un-registered/ParcelInDriverUnRegisteredPreviewScreen';
+import ParcelDriverOutPreviewScreen from '@/screens/home/parcel/parcel-out-driver/ParcelDriverOutPreviewScreen';
+import SearchParcelOut from '@/screens/home/parcel/parcel-out-driver/SearchParcelOut';
+import SearchParcelOutDriverId from '@/screens/home/parcel/parcel-out-driver/SearchParcelOutDriverId';
 
 const Home = createStackNavigator<HomeStackList>();
 
@@ -66,6 +78,66 @@ const HomeStack = ({navigation}: Props) => {
       <Home.Screen
         name='NotificationDetails'
         component={NotificationDetails}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ScreenOneParcelInSender'
+        component={ScreenOne}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ScreenOneParcelInSenderTwo'
+        component={ScreenTwo}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ScreenOneParcelInSenderPreview'
+        component={ParcelPreviewScreen}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ScreenOneParcelInDriver'
+        component={ParcelType}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ScreenOneParcelInDriverSearchParcel'
+        component={SearchParcel}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ScreenOneParcelInDriverPreview'
+        component={ParcelDriverPreviewScreen}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ParcelInDriverUnRegistered'
+        component={ParcelInDriverUnRegistered}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ParcelInDriverUnRegisteredPreview'
+        component={ParcelInDriverUnRegisteredPreviewScreen}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ScreenOneParcelOutDriver'
+        component={SearchParcelOut}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='SearchParcelOutDriverId'
+        component={SearchParcelOutDriverId}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ParcelDriverOutPreviewScreen'
+        component={ParcelDriverOutPreviewScreen}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ParcelCongratulation'
+        component={ParcelCongratulation}
         options={{headerShown: false}}
       />
     </Home.Navigator>

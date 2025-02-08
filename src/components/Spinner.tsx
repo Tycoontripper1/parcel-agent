@@ -12,9 +12,17 @@ interface SpinnerProps {
 
   /** Optional message to display alongside the spinner */
   message?: string;
+  width?: any;
+  height?: any;
 }
 
-const Spinner = ({size = 'large', color, message}: SpinnerProps) => {
+const Spinner = ({
+  size = 'large',
+  color,
+  message,
+  width,
+  height,
+}: SpinnerProps) => {
   const {theme} = useTheme(); // Access the theme context
 
   // If a custom color is provided, use it. Otherwise, use the color from the theme.
@@ -22,7 +30,11 @@ const Spinner = ({size = 'large', color, message}: SpinnerProps) => {
 
   return (
     <View style={styles.overlay}>
-      <View style={styles.card}>
+      <View
+        style={[
+          styles.card,
+          {width: width ? width : 100, height: height ? height : 'auto'},
+        ]}>
         <ActivityIndicator size={size} color={spinnerColor} />
         {message && <Text style={styles.message}>{message}</Text>}
       </View>
@@ -46,7 +58,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: RFValue(22),
     borderRadius: 10,
-    width: 100,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 10, // For Android shadow
@@ -57,7 +68,7 @@ const styles = StyleSheet.create({
   },
   message: {
     marginTop: 10,
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     color: '#333',
     textAlign: 'center',
   },
