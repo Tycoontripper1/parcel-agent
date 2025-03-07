@@ -20,6 +20,7 @@ interface FormState {
   parcelImages: string[];
   driverNumber: string;
   departureState: string;
+  frequency:string
 }
 
 const initialState: FormState = {
@@ -42,6 +43,7 @@ const initialState: FormState = {
   parcelImages: [''],
   driverNumber: '',
   departureState: '',
+  frequency:''
 };
 
 const parcelSlice = createSlice({
@@ -74,6 +76,7 @@ const parcelSlice = createSlice({
       state.sendingFrom = '';
       state.departureState = '';
       state.driverNumber = '';
+      state.frequency = ''
     },
   },
 });

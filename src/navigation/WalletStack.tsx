@@ -6,6 +6,9 @@ import {createStackNavigator} from '@react-navigation/stack';
 import ComingSoon from '@/screens/ComingSoon';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useTheme} from '@/hooks/useTheme';
+import WalletScreen from '@/screens/Wallet';
+import TransactionHistory from '@/components/TransactionHistory';
+import WalletEarnings from '@/screens/wallets/Earnings';
 
 const Wallet = createStackNavigator<WalletStackList>();
 
@@ -39,7 +42,7 @@ const WalletStack = ({navigation}: Props) => {
   }, [state, navigation]);
   return (
     <Wallet.Navigator
-      initialRouteName='ComingSoon'
+      initialRouteName='WalletScreen'
       screenOptions={{
         headerMode: 'float',
         headerShown: false,
@@ -47,8 +50,18 @@ const WalletStack = ({navigation}: Props) => {
         gestureEnabled: true,
       }}>
       <Wallet.Screen
-        name='ComingSoon'
-        component={ComingSoon}
+        name='WalletScreen'
+        component={WalletScreen}
+        options={{headerShown: false}}
+      />
+      <Wallet.Screen
+        name='TransactionHistory'
+        component={TransactionHistory}
+        options={{headerShown: false}}
+      />
+      <Wallet.Screen
+        name='WalletEarnings'
+        component={WalletEarnings}
         options={{headerShown: false}}
       />
     </Wallet.Navigator>

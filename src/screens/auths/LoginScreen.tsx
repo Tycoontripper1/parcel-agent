@@ -16,10 +16,7 @@ import {color} from '@/constants/Colors';
 import Header from '@/components/share/Header';
 import {Helper} from '@/helper/helper';
 import Toast from 'react-native-toast-message';
-import {
-  AuthStackParamList,
-  RootStackParamList,
-} from '@/navigation/navigationType';
+import {RootStackParamList} from '@/navigation/navigationType';
 
 type Props = NativeStackScreenProps<RootStackParamList>;
 

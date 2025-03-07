@@ -19,4 +19,5 @@ const DownloadIcon = ({color}: IDownloadIcon) => {
   );
 };
 
+
 export default DownloadIcon;

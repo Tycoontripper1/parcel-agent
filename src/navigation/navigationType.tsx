@@ -63,15 +63,31 @@ export type HomeStackList = {
   ScreenOneParcelOutDriver: undefined;
   SearchParcelOutDriverId: undefined;
   ParcelDriverOutPreviewScreen: undefined;
+  SearchParcelOutReceiver: undefined;
+  ReceiverType: undefined;
+  ParcelReceiverOutPreviewScreen: undefined;
+  ParcelOutReceiver: undefined;
+  ParcelOtpVerificationReceiver: undefined;
   ParcelCongratulation: {message: string};
 };
 export type WalletStackList = {
   Wallet: undefined;
+  WalletScreen: undefined;
+  TransactionHistory: undefined;
+  WalletEarnings: undefined;
+  
   ComingSoon: undefined;
 };
 export type AccountStackList = {
   Account: undefined;
   ComingSoon: undefined;
+  NotificationsScreen: undefined;
+  AccountInformation: undefined;
+  AccountEditProfile: undefined;
+  AccountChangePassword: undefined;
+  HomeAndSupport: undefined;
+  OverdueParcel: undefined;
+  ParcelUpdates: undefined;
   Settings: undefined;
 };
 export type ReportStackList = {
@@ -81,6 +97,10 @@ export type ReportStackList = {
 export type DriverStackList = {
   Drivers: undefined;
   ComingSoon: undefined;
+  DriversHistory: undefined;
+  DriversScreen: undefined;
+  NotificationsScreen: undefined;
+  DriversDetails: {id: any};
 };
 
 export type RootTabParamList = {

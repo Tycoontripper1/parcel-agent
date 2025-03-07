@@ -100,7 +100,7 @@ const DashboardScreen = ({navigation}: Props) => {
       label: 'Receiver',
       type: 'Out',
       icon: <DownloadIconUp color='#E6FFDB' />,
-      url: 'ScreenOneParcelOutReceiver',
+      url: 'SearchParcelOutReceiver',
     },
     {
       label: 'Sender',
@@ -140,7 +140,7 @@ const DashboardScreen = ({navigation}: Props) => {
         OnNotificationClick={() => navigation.navigate('NotificationScreen')}>
         <View style={{flexDirection: 'column', gap: 2}}>
           <Text size={18} font='Medium'>
-            Hello, Matthias
+            Hello, Bombay
           </Text>
           <Text size={14} font='Medium' color='#717680'>
             Agent ID: PP64763

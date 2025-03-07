@@ -81,7 +81,9 @@ const SelectInput = ({
     padding: RFValue(16),
     maxHeight: '60%',
     marginBottom: 30,
+    overflow: 'hidden', // Ensures the rounded corners are visible
   };
+  
   const $searchInput: TextStyle = {
     marginLeft: RFValue(5),
     fontSize: RFValue(14),

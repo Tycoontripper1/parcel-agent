@@ -1,4 +1,4 @@
-import {errorColor, primaryColor} from '@/constants/Colors';
+import {color} from '@/constants/Colors';
 import {BaseToast, ErrorToast} from 'react-native-toast-message';
 export const toastConfig = {
   /*
@@ -8,7 +8,7 @@ export const toastConfig = {
   success: (props: any) => (
     <BaseToast
       {...props}
-      style={{borderLeftColor: primaryColor}}
+      style={{borderLeftColor: color.primaryColor}}
       contentContainerStyle={{paddingHorizontal: 15}}
       text1Style={{
         fontSize: 15,
@@ -23,7 +23,7 @@ export const toastConfig = {
   error: (props: any) => (
     <ErrorToast
       {...props}
-      style={{borderLeftColor: errorColor}}
+      style={{borderLeftColor: color.errorColor}}
       contentContainerStyle={{paddingHorizontal: 15}}
       text1Style={{
         fontSize: 15,

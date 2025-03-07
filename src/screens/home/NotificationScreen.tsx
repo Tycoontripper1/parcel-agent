@@ -88,6 +88,7 @@ const NotificationsScreen = ({navigation}: Props) => {
       setRefreshing(false); // End the refreshing state
     }, 1500);
   }, []);
+  
   const renderNotification = ({item}: {item: NotificationItem}) => (
     <View style={styles.notificationCard}>
       <View>

@@ -21,6 +21,12 @@ import ParcelInDriverUnRegisteredPreviewScreen from '@/screens/home/parcel/parce
 import ParcelDriverOutPreviewScreen from '@/screens/home/parcel/parcel-out-driver/ParcelDriverOutPreviewScreen';
 import SearchParcelOut from '@/screens/home/parcel/parcel-out-driver/SearchParcelOut';
 import SearchParcelOutDriverId from '@/screens/home/parcel/parcel-out-driver/SearchParcelOutDriverId';
+import SearchParcelOutReceiver from '@/screens/home/parcel/parcel-out-receiver/SearchParcelOutReceiver';
+import ReceiverType from '@/screens/home/parcel/parcel-out-receiver/ReceiverType';
+import ParcelReceiverOutPreviewScreen from '@/screens/home/parcel/parcel-out-receiver/ParcelReceiverOutPreviewScreen';
+import ParcelOtpVerificationReceiver from '@/screens/home/parcel/parcel-out-receiver/receiver/ParcelOtpVerificationReceiver';
+import ParcerOutReceiver from '@/screens/home/parcel/parcel-out-receiver/receiver/ParcelOutReceiver';
+import ParcelOutReceiver from '@/screens/home/parcel/parcel-out-receiver/receiver/ParcelOutReceiver';
 
 const Home = createStackNavigator<HomeStackList>();
 
@@ -136,6 +142,31 @@ const HomeStack = ({navigation}: Props) => {
         options={{headerShown: false}}
       />
       <Home.Screen
+        name='ParcelOtpVerificationReceiver'
+        component={ParcelOtpVerificationReceiver}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='SearchParcelOutReceiver'
+        component={SearchParcelOutReceiver}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ReceiverType'
+        component={ReceiverType}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ParcelReceiverOutPreviewScreen'
+        component={ParcelReceiverOutPreviewScreen}
+        options={{headerShown: false}}
+      />
+      <Home.Screen
+        name='ParcelOutReceiver'
+        component={ParcelOutReceiver}
+        options={{headerShown: false}}
+      />
+       <Home.Screen
         name='ParcelCongratulation'
         component={ParcelCongratulation}
         options={{headerShown: false}}
