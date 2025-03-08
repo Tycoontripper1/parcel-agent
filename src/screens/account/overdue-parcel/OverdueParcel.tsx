@@ -12,7 +12,6 @@ import { RFValue } from "react-native-responsive-fontsize";
 import BackButton from "@/components/share/BackButton";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import KeyBoardView from "@/components/KeyBoardView";
-import { Image } from "react-native";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";

@@ -9,6 +9,7 @@ import {useTheme} from '@/hooks/useTheme';
 import WalletScreen from '@/screens/Wallet';
 import TransactionHistory from '@/components/TransactionHistory';
 import WalletEarnings from '@/screens/wallets/Earnings';
+import NotificationsScreen from '@/screens/home/NotificationScreen';
 
 const Wallet = createStackNavigator<WalletStackList>();
 
@@ -21,7 +22,7 @@ const WalletStack = ({navigation}: Props) => {
   const state = useNavigationState((s) => s);
 
   useEffect(() => {
-    if (state?.routes[0].state?.index && state.routes[0].state.index > 0) {
+    if (state?.routes[1].state?.index && state.routes[1].state.index > 0) {
       navigation?.setOptions({
         tabBarStyle: {
           display: 'none',
@@ -62,6 +63,11 @@ const WalletStack = ({navigation}: Props) => {
       <Wallet.Screen
         name='WalletEarnings'
         component={WalletEarnings}
+        options={{headerShown: false}}
+      />
+      <Wallet.Screen
+        name='NotificationsScreen'
+        component={NotificationsScreen}
         options={{headerShown: false}}
       />
     </Wallet.Navigator>

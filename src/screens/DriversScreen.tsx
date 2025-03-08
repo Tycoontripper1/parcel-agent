@@ -137,7 +137,7 @@ const DriversScreen = ({ navigation }: Props) => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.downloadButton} onPress={() => ""}>
+        <TouchableOpacity style={styles.downloadButton} onPress={() => navigation.navigate('ScreenOne')}>
           <Text style={styles.downloadText}>
             Register Driver 
           </Text>

@@ -74,6 +74,7 @@ export type WalletStackList = {
   Wallet: undefined;
   WalletScreen: undefined;
   TransactionHistory: undefined;
+  NotificationsScreen: undefined;
   WalletEarnings: undefined;
   
   ComingSoon: undefined;
@@ -100,6 +101,11 @@ export type DriverStackList = {
   DriversHistory: undefined;
   DriversScreen: undefined;
   NotificationsScreen: undefined;
+  ScreenOne: undefined;
+  FacialVerification: undefined;
+  FrontImageScreenDriver: undefined;
+  BackImageScreenDriver: undefined;
+  PreviewScreenDriver: undefined;
   DriversDetails: {id: any};
 };
 
