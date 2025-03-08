@@ -24,6 +24,7 @@ import { Helper } from "@/helper/helper";
 import { color } from "@/constants/Colors";
 import { updateField } from "@/redux/slices/formSlice";
 import HomeHeader from "@/components/share/HomeHeader";
+import EditIcon from "@/components/svg/EditIcon";
 
 type Props = NativeStackScreenProps<AccountStackList>;
 const AccountInformation = ({ navigation }: Props) => {
@@ -134,7 +135,9 @@ const AccountInformation = ({ navigation }: Props) => {
   };
   return (
     <CustomView style={{ paddingVertical: RFValue(10) }}>
+       <View style={{paddingHorizontal:RFValue(12)}}>
        <HomeHeader type='Stack' title='Account Information' />
+       </View>
 
       <KeyBoardView padded={false}>
         <View
@@ -156,10 +159,11 @@ const AccountInformation = ({ navigation }: Props) => {
             }}
             resizeMode="cover"
           />
-          <TouchableOpacity onPress={handleImagePick}>
+          <TouchableOpacity style={styles.edit} onPress={handleImagePick}>
             <Text font="Regular" size={14} color="#213264">
-              Change Image
+              Change Image 
             </Text>
+            <EditIcon />
           </TouchableOpacity>
           <View style={$bodyHeader}>
             <Text font="SemiBold" size={16}>
@@ -192,10 +196,11 @@ const AccountInformation = ({ navigation }: Props) => {
             Personal Information{" "}
           </Text>
           {!editInfo && (
-            <TouchableOpacity onPress={handleEditProfile}>
+            <TouchableOpacity style={styles.edit} onPress={handleEditProfile}>
               <Text font="Regular" size={14} color="#213264">
                 Edit Profile
               </Text>
+              <EditIcon />
             </TouchableOpacity>
           )}
         </View>
@@ -246,7 +251,7 @@ const AccountInformation = ({ navigation }: Props) => {
             <Button
               onPress={() => ""}
               title="Save Changes"
-              loading={editInfo}
+             disabled={true}
               style={{ height: 55 }}
             />
           </View>
@@ -270,10 +275,11 @@ const AccountInformation = ({ navigation }: Props) => {
               Password
             </Text>
             {!editPassword && (
-              <TouchableOpacity onPress={handleChangePassword}>
+              <TouchableOpacity style={styles.edit} onPress={handleChangePassword}>
                 <Text font="Regular" size={14} color="#213264">
-                  Edit Password
+                Change Password
                 </Text>
+                <EditIcon />
               </TouchableOpacity>
             )}
           </View>
@@ -305,7 +311,9 @@ const AccountInformation = ({ navigation }: Props) => {
               <Button
                 onPress={()=> ''}
                 title="Save Changes"
-                loading={editPassword}
+                loading={false}
+                disabled={true}
+                
                 textColor='#61616B'
                 style={{ height: 55 }}
               />
@@ -319,4 +327,10 @@ const AccountInformation = ({ navigation }: Props) => {
 
 export default AccountInformation;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  edit:{
+    flexDirection:"row",
+    gap:RFValue(6),
+    alignItems:"center"
+  }
+});

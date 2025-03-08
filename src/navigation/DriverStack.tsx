@@ -23,42 +23,47 @@ interface Props {
 const DriverStack = ({ navigation }: Props) => {
   const { theme } = useTheme();
   const state = useNavigationState((s) => s);
-
-  // useEffect(() => {
-  //   const isNestedRoute = state?.index && state.index > 0;
-
-  //   navigation?.setOptions({
-  //     tabBarStyle: isNestedRoute
-  //       ? { display: "none", backgroundColor: theme.background }
-  //       : {
-  //           height: 75,
-  //           backgroundColor: theme.background,
-  //           borderTopWidth: 1,
-  //           borderTopColor: "#e0e0e0",
-  //           paddingBottom: RFValue(10),
-  //         },
-  //   });
-  // }, [state, navigation]);
   useEffect(() => {
-    const currentRoute = state?.routes.find((r) => r.name === "DriverStack")?.state?.routes?.at(-1)?.name; 
-    console.log(currentRoute, "route"); // Now this should log the actual active screen inside DriverStack
-  
-    if (currentRoute === "DriversScreen") {
+    if (state?.routes[0].state?.index && state.routes[0].state.index > 0) {
+      navigation?.setOptions({
+        tabBarStyle: {
+          display: 'none',
+          backgroundColor: theme.background,
+        },
+      });
+    } else {
       navigation?.setOptions({
         tabBarStyle: {
           height: 75,
           backgroundColor: theme.background,
           borderTopWidth: 1,
-          borderTopColor: "#e0e0e0",
+          borderTopColor: '#e0e0e0',
           paddingBottom: RFValue(10),
         },
       });
-    } else {
-      navigation?.setOptions({
-        tabBarStyle: { display: "none" },
-      });
     }
   }, [state, navigation]);
+
+  // useEffect(() => {
+  //   const currentRoute = state?.routes.find((r) => r.name === "DriverStack")?.state?.routes?.at(-2)?.name; 
+  //   console.log(currentRoute, "route"); // Now this should log the actual active screen inside DriverStack
+  
+  //   if (currentRoute === "DriversScreen") {
+  //     navigation?.setOptions({
+  //       tabBarStyle: {
+  //         height: 75,
+  //         backgroundColor: theme.background,
+  //         borderTopWidth: 1,
+  //         borderTopColor: "#e0e0e0",
+  //         paddingBottom: RFValue(10),
+  //       },
+  //     });
+  //   } else {
+  //     navigation?.setOptions({
+  //       tabBarStyle: { display: "none" },
+  //     });
+  //   }
+  // }, [state, navigation]);
   
   
 

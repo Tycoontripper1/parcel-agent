@@ -101,7 +101,7 @@ const WalletScreen = ({ navigation }: Props) => {
     <CustomView style={styles.container}>
       <ScreenHeader
         title="Wallet"
-        OnNotificationClick={() => navigation.navigate("NotificationScreen")}
+        OnNotificationClick={() => navigation.navigate("NotificationsScreen")}
         type="Home"
       />
       {/* <KeyboardAvoidingView
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   balanceCard: {
     marginVertical: RFValue(16),
     width: "48%",
-    padding: RFValue(16),
+    padding: RFValue(8),
     backgroundColor: color.secondaryColor,
     borderRadius: RFValue(16),
   },
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   },
   balance: {
     color: "#fff",
-    fontSize: RFValue(22),
+    fontSize: RFValue(16),
     fontWeight: "bold",
     marginVertical: RFValue(8),
   },
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12),
   },
   fundButton: {
-    marginTop: RFValue(16),
+    marginTop: RFValue(8),
     backgroundColor: "#aaffaa",
     paddingVertical: RFValue(12),
     borderRadius: RFValue(16),

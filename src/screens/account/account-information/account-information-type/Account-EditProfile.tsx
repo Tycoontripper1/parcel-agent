@@ -23,6 +23,7 @@ import { Avatar } from "../../../../../assets/images";
   import { Helper } from "@/helper/helper";
   import { color } from "@/constants/Colors";
   import { updateField } from "@/redux/slices/formSlice";
+  import EditIcon from "@/components/svg/EditIcon";
   
   type Props = NativeStackScreenProps<AccountStackList>;
   const AccountEditProfile = ({ navigation }: Props) => {
@@ -152,10 +153,11 @@ import { Avatar } from "../../../../../assets/images";
               }}
               resizeMode="cover"
             />
-            <TouchableOpacity onPress={handleImagePick}>
+            <TouchableOpacity style={styles.edit} onPress={handleImagePick}>
               <Text font="Regular" size={14} color="#213264">
                 Change Image
               </Text>
+              <EditIcon />
             </TouchableOpacity>
             <View style={$bodyHeader}>
               <Text font="SemiBold" size={16}>
@@ -188,13 +190,7 @@ import { Avatar } from "../../../../../assets/images";
             <Text font="SemiBold" size={16}>
               Personal Information
             </Text>
-            {!editInfo && (
-              <TouchableOpacity onPress={() => setEditInfo(true)}>
-                <Text font="Regular" size={14} color="#213264">
-                  Edit Profile
-                </Text>
-              </TouchableOpacity>
-            )}
+       
           </View>
           {/* forms */}
           <View style={$cardHeader}>
@@ -255,5 +251,11 @@ import { Avatar } from "../../../../../assets/images";
   
   export default AccountEditProfile;
   
-  const styles = StyleSheet.create({});
+  const styles = StyleSheet.create({
+    edit:{
+      flexDirection:"row",
+      gap:RFValue(6),
+      alignItems:"center"
+    }
+  });
   

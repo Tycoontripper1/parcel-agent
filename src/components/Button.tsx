@@ -15,6 +15,9 @@ interface ButtonProps {
   /** Is the button loading? */
   loading?: boolean;
 
+  /** Is the button disabled? */
+  disabled?: boolean;
+
   /** Callback when the button is pressed */
   onPress: () => void;
 
@@ -31,6 +34,7 @@ interface ButtonProps {
 const Button = ({
   title,
   loading = false,
+  disabled = false,
   onPress,
   backgroundColor,
   textColor,
@@ -39,14 +43,18 @@ const Button = ({
   const {theme} = useTheme(); // Access the theme
 
   // Fallback to theme colors if not provided
-  const buttonBackgroundColor = backgroundColor || theme.primary;
-  const buttonTextColor = textColor || theme.text;
+  const buttonBackgroundColor = disabled ? "#F5F5F5" : backgroundColor || theme.primary;
+  const buttonTextColor = disabled ? "#717680" : textColor || theme.text;
 
   return (
     <TouchableOpacity
-      onPress={onPress}
-      style={[styles.button, {backgroundColor: buttonBackgroundColor}, style]}
-      disabled={loading}>
+      onPress={!disabled && !loading ? onPress : undefined}
+      style={[
+        styles.button,
+        {backgroundColor: buttonBackgroundColor, opacity: disabled || loading ? 0.6 : 1},
+        style,
+      ]}
+      disabled={disabled || loading}>
       {loading ? (
         <ActivityIndicator color={buttonTextColor} />
       ) : (
