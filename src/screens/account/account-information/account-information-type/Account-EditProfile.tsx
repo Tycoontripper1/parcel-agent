@@ -199,7 +199,7 @@ import { Avatar } from "../../../../../assets/images";
               placeholder="Enter full name"
               placeholderTextColor="#B8C2CC"
               value={formData.fullName}
-              onChangeText={(value) =>
+              onChangeText={(value:any) =>
                 dispatch(updateField({ key: "fullName", value }))
               }
               LeftIcon={<Feather name="user" size={18} color={color.gray} />}

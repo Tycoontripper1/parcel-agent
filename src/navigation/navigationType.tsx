@@ -94,6 +94,7 @@ export type AccountStackList = {
 export type ReportStackList = {
   Reports: undefined;
   ComingSoon: undefined;
+  Reportscreen: undefined;
 };
 export type DriverStackList = {
   Drivers: undefined;

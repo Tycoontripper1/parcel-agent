@@ -1,7 +1,8 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Navigation from './Navigation';
-import {StatusBar} from 'expo-status-bar';
+// import {StatusBar} from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 import {useTheme} from '@/hooks/useTheme';
 import {Provider} from 'react-redux';
 import {store} from '@/redux/store';
@@ -14,7 +15,7 @@ const NavigationStack = () => {
       <NavigationContainer>
         <GestureHandlerRootView style={{flex: 1}}>
           <Navigation />
-          <StatusBar style='auto' backgroundColor={theme.background} />
+          <StatusBar  barStyle="dark-content" backgroundColor={theme.background} />
         </GestureHandlerRootView>
       </NavigationContainer>
     </Provider>

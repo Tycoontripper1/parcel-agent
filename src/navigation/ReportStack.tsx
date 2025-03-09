@@ -6,6 +6,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import ComingSoon from '@/screens/ComingSoon';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useTheme} from '@/hooks/useTheme';
+import Reportscreen from '@/screens/ReportScreen';
 
 const Report = createStackNavigator<ReportStackList>();
 
@@ -39,7 +40,7 @@ const ReportStack = ({navigation}: Props) => {
   }, [state, navigation]);
   return (
     <Report.Navigator
-      initialRouteName='ComingSoon'
+      initialRouteName='Reportscreen'
       screenOptions={{
         headerMode: 'float',
         headerShown: false,
@@ -47,8 +48,8 @@ const ReportStack = ({navigation}: Props) => {
         gestureEnabled: true,
       }}>
       <Report.Screen
-        name='ComingSoon'
-        component={ComingSoon}
+        name='Reportscreen'
+        component={Reportscreen}
         options={{headerShown: false}}
       />
     </Report.Navigator>
