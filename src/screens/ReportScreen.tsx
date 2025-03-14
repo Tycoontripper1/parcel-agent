@@ -13,8 +13,6 @@ import React, {useState} from 'react';
 import {CustomView, Text} from '@/components';
 import HomeHeader from '@/components/share/HomeHeader';
 import {RFValue} from 'react-native-responsive-fontsize';
-import DownloadIcon from '@/components/svg/DownloadIcon';
-import DownloadIconUp from '@/components/svg/DownloadIconUp';
 import {
   ArrowRight2,
   EmptyWalletAdd,
@@ -26,18 +24,14 @@ import {color} from '@/constants/Colors';
 import DownloadIconRed from '@/components/svg/DownloadIconRed';
 import HomeShipmentHistory from '@/components/HomeShipementHistory';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackList} from '@/navigation/navigationType';
-import DownloadIconSender from '@/components/svg/DownloadIconSender';
-import FundWallet, {Wallet} from '@/components/FundWallet';
-import WalletIcon from '@/components/svg/WalletIcon';
-import TransferIcon from '@/components/svg/TransferIcon';
-import USSDIcon from '@/components/svg/USSDIcon';
+import {HomeStackList, ReportStackList} from '@/navigation/navigationType';
 import StoreButton, { IStoreButton } from '@/components/StoreButton';
 import FinanceButton, {IFinanceButton} from '@/components/Financebutton';
+import ScreenHeader from '@/components/share/ScreenHeader';
 
 const {width} = Dimensions.get('window');
 
-type Props = NativeStackScreenProps<HomeStackList>;
+type Props = NativeStackScreenProps<ReportStackList & HomeStackList>;
 const Reportscreen = ({navigation}: Props) => {
   const shipmentData = [
     {
@@ -94,32 +88,32 @@ const Reportscreen = ({navigation}: Props) => {
     {
       label: 'Parcel Received',
       count: 50,
-      url: 'ScreenOneParcelInDriver',
+      url: 'ReceivedParcelHistory',
     },
     {
       label: 'Unassigned Parcel',
       count: 25,
-      url: 'SearchParcelOutReceiver',
+      url: 'UnAssignParcelHistory',
     },
     {
       label: 'Assigned Parcel',
       count: 25,
-      url: 'ScreenOneParcelInSender',
+      url: 'AssignParcelHistory',
     },
     {
-      label: 'Assigned Parcel',
+      label: 'Parcels Collected',
       count: 20,
-      url: 'ScreenOneParcelOutDriver',
+      url: 'ParcelCollectedHistory',
     },
     {
       label: 'Unpaid Parcel',
       count: 20,
-      url: 'ScreenOneParcelOutDriver',
+      url: 'UnpaidParcelHistory',
     },
     {
       label: 'Overdue Parcel',
       count: 20,
-      url: 'ScreenOneParcelOutDriver',
+      url: 'OverdueParcelHistory',
     },
   ];
   const financeButtonData: IFinanceButton[] = [
@@ -148,7 +142,7 @@ const Reportscreen = ({navigation}: Props) => {
   return (
     <CustomView style={styles.container} padded>
       {/* Header */}
-      <HomeHeader type='Stack' title='Reports' />
+      <ScreenHeader title="Reports" OnNotificationClick={() => navigation.navigate("NotificationScreen")} type="Home" />
       <KeyboardAvoidingView
         style={{paddingTop: 10}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>

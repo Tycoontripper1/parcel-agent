@@ -27,6 +27,7 @@ import ParcelReceiverOutPreviewScreen from '@/screens/home/parcel/parcel-out-rec
 import ParcelOtpVerificationReceiver from '@/screens/home/parcel/parcel-out-receiver/receiver/ParcelOtpVerificationReceiver';
 import ParcerOutReceiver from '@/screens/home/parcel/parcel-out-receiver/receiver/ParcelOutReceiver';
 import ParcelOutReceiver from '@/screens/home/parcel/parcel-out-receiver/receiver/ParcelOutReceiver';
+import PrintParcel from '@/components/PrintParcel';
 
 const Home = createStackNavigator<HomeStackList>();
 
@@ -171,6 +172,11 @@ const HomeStack = ({navigation}: Props) => {
         component={ParcelCongratulation}
         options={{headerShown: false}}
       />
+            <Home.Screen
+              name='PrintParcel'
+              component={PrintParcel}
+              options={{headerShown: false}}
+            />
     </Home.Navigator>
   );
 };

@@ -27,7 +27,7 @@ const StoreButton = ({buttons}: StoreButtonsProps) => {
         <TouchableOpacity
           onPress={() => {
             if (button.url) {
-              navigation.navigate('HomeStack', {screen: button.url as never}); // Ensure correct typing
+              navigation.navigate('ReportStack', {screen: button.url as never}); // Ensure correct typing
             }
           }}
           key={index}

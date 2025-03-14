@@ -20,6 +20,7 @@ export type RootStackParamList = {
   WalletStack: NavigatorScreenParams<WalletStackList>;
   AccountStack: NavigatorScreenParams<AccountStackList>;
   DriverStack: NavigatorScreenParams<DriverStackList>;
+  ReportStack: NavigatorScreenParams<ReportStackList>;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
@@ -47,6 +48,7 @@ export type AuthStackParamList = {
 export type HomeStackList = {
   Dashboard: undefined;
   ComingSoon: undefined;
+  PrintParcel: undefined;
   Shipments: undefined;
   NotificationScreen: undefined;
   NotificationDetails: {id: any};
@@ -95,6 +97,19 @@ export type ReportStackList = {
   Reports: undefined;
   ComingSoon: undefined;
   Reportscreen: undefined;
+  Shipments: undefined;
+  AssignParcelHistory: undefined;
+  AssignParcelDetails: {id: any};
+  OverdueParcelHistory: undefined;
+  OverdueParcelDetails: {id: any};
+  ParcelcollectedDetails: {id:any};
+  ParcelCollectedHistory: undefined;
+  UnAssignParcelHistory: undefined;
+  UnAssignParcelDetails: {id: any};
+  UnpaidParcelHistory: undefined;
+  UnPaidParcelDetails: {id: any};
+  ReceivedParcelHistory: undefined;
+  PrintParcel: undefined;
 };
 export type DriverStackList = {
   Drivers: undefined;
