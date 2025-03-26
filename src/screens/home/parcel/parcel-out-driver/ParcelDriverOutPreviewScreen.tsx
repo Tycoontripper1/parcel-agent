@@ -291,7 +291,7 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
           <View style={{paddingVertical: RFValue(10), padding: RFValue(16)}}>
             <Text style={styles.counter}>
               {formData.parcelImages.filter((photo) => photo !== null).length}
-              /4 photos
+           /2 photos
             </Text>
             <View style={styles.photoGrid}>
               {formData.parcelImages.map((photo, index) => (

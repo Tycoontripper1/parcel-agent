@@ -142,7 +142,7 @@ const Reportscreen = ({navigation}: Props) => {
   return (
     <CustomView style={styles.container} padded>
       {/* Header */}
-      <ScreenHeader title="Reports" OnNotificationClick={() => navigation.navigate("NotificationScreen")} type="Home" />
+      <ScreenHeader title="Reports" onNotificationShow={false} type="Home" />
       <KeyboardAvoidingView
         style={{paddingTop: 10}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>

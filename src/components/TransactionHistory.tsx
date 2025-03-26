@@ -23,6 +23,7 @@ import BackButton from "./share/BackButton";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackList } from "@/navigation/navigationType";
 import { SearchNormal1 } from "iconsax-react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 const transactions = [
     { id: "1", type: "credit", amount: 1500, date: "2025-03-03", title: "Salary" },
     { id: "2", type: "debit", amount: 500, date: "2025-03-03", title: "Shopping" },
@@ -100,9 +101,23 @@ const TransactionHistory = ({ navigation }: Props) => {
                   <Text style={{color:"#414651", fontSize:RFValue(18), fontWeight:'500'}}>
                   Transaction History
                   </Text>
-                  <View>
-                    <Text>Filter</Text>
-                  </View>
+                  <TouchableOpacity
+              onPress={() => ''}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+                backgroundColor: '#fff',
+                borderWidth: 1,
+                borderColor: '#E9EAEB',
+                borderRadius: 8,
+                padding: 8,
+              }}>
+              <MaterialIcons name='filter-list' size={16} color='black' />
+              <Text style={{fontSize:RFValue(12)}}>
+                Filter
+              </Text>
+            </TouchableOpacity>
               </View>
       {/* Search Input */}
               <View style={styles.searchInput}>
@@ -256,8 +271,8 @@ const styles = StyleSheet.create({
 
   section: { marginBottom: RFValue(16) },
   sectionTitle: {
-    fontSize: RFValue(16),
-    fontWeight: "bold",
+    fontSize: RFValue(14),
+    fontWeight: "semibold",
     marginBottom: RFValue(8),
   },
   transactionRow: {
@@ -265,9 +280,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    padding: RFValue(12),
+    paddingVertical: RFValue(12),
     marginBottom: RFValue(6),
-    elevation: 2,
     borderBottomWidth: 1,
     borderColor: "#EFEFF0",
   },

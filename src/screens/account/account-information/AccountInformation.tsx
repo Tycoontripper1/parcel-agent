@@ -193,7 +193,7 @@ const AccountInformation = ({ navigation }: Props) => {
           }}
         >
           <Text font="SemiBold" size={16}>
-            Personal Information{" "}
+            Personal Information
           </Text>
           {!editInfo && (
             <TouchableOpacity style={styles.edit} onPress={handleEditProfile}>

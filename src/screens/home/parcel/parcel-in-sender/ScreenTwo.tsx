@@ -198,7 +198,7 @@ const ScreenTwo = ({navigation}: Props) => {
             <View style={{paddingVertical: RFValue(10)}}>
               <Text style={styles.counter}>
                 {formData.parcelImages.filter((photo) => photo !== null).length}
-                /4 photos
+                /2 photos
               </Text>
               <View style={styles.photoGrid}>
                 {formData.parcelImages.map((photo, index) => (
@@ -223,7 +223,7 @@ const ScreenTwo = ({navigation}: Props) => {
               onPress={HandleContinue}
               title='Next'
               style={{height: 55}}
-              disabled={!formData.parcelDescription}
+              disabled={!formData.parcelType}
             />
           </View>
         </View>

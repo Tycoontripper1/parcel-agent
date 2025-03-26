@@ -32,7 +32,7 @@ const CloseModal = ({ visible, onClose, message }: ModalProps) => {
 
           {/* Modal Content */}
           <View style={styles.content}>
-            <CheckIcon  />
+            <View style={{left:-8}}><CheckIcon  /></View>
             <Text style={styles.message}>{message}</Text>
           </View>
 

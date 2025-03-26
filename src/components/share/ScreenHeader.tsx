@@ -12,8 +12,9 @@ interface IHeader {
   type?: 'Stack' | 'Home';
   children?: React.ReactNode;
   OnNotificationClick?: () => void;
+  onNotificationShow?: boolean
 }
-const ScreenHeader = ({title, type, children, OnNotificationClick}: IHeader) => {
+const ScreenHeader = ({title, type, children, OnNotificationClick,onNotificationShow=true}: IHeader) => {
   const navigation = useNavigation();
   return (
     <>
@@ -52,9 +53,11 @@ const ScreenHeader = ({title, type, children, OnNotificationClick}: IHeader) => 
             alignItems: 'center',
           }}>
          <Text size={18}>{title}</Text>
-          <TouchableOpacity onPress={OnNotificationClick}>
-            <NotificationIcon />
-          </TouchableOpacity>
+         {
+          onNotificationShow &&  <TouchableOpacity onPress={OnNotificationClick}>
+          <NotificationIcon />
+        </TouchableOpacity>
+         }
         </View>
       )}
     </>

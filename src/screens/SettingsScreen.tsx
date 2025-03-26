@@ -109,10 +109,11 @@ const SettingsPage = ({ navigation }: Props) => {
             style={{
               flexDirection: "row",
               alignItems: "center",
+              justifyContent:"center",
               gap: RFValue(10),
             }}
           >
-            <LogoutIcon color="#F5F5F5" />,
+            <LogoutIcon color="#F5F5F5" />
             <Text size={14} font="Medium">
               Log Out
             </Text>

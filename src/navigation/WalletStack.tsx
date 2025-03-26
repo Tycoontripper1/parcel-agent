@@ -56,6 +56,11 @@ const WalletStack = ({navigation}: Props) => {
         options={{headerShown: false}}
       />
       <Wallet.Screen
+        name='ComingSoon'
+        component={ComingSoon}
+        options={{headerShown: false}}
+      />
+      <Wallet.Screen
         name='TransactionHistory'
         component={TransactionHistory}
         options={{headerShown: false}}

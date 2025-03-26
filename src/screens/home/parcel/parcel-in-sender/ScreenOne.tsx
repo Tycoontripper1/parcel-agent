@@ -18,8 +18,41 @@ const ScreenOne = ({navigation}: Props) => {
   // const [loading, setLoading] = useState(false);
   const formData = useSelector((state: RootState) => state.parcel);
   const dispatch = useDispatch();
+      const [driverPhoneError, setDriverPhoneError] = useState('');
+      const [receiverPhoneError, setReceiverPhoneError] = useState('');
+      const [senderPhoneError, setSenderPhoneError] = useState('');
+  
+  
+    const handleValidation = () => {
+      let isValid = true;
+  
+      if (!formData.senderPhoneNumber) {
+        setSenderPhoneError('Phone Number is required.');
+        isValid = false;
+      } else if (formData.senderPhoneNumber.length < 11 || formData.senderPhoneNumber.length > 11) {
+        setSenderPhoneError('Please enter a valid mobile number.');
+        isValid = false;
+      } else {
+        setSenderPhoneError('');
+      }
+  
+      if (!formData.receiverPhoneNumber) {
+        setReceiverPhoneError('Phone Number is required.');
+        isValid = false;
+      } else if (formData.receiverPhoneNumber.length < 11 || formData.receiverPhoneNumber.length > 11) {
+        setReceiverPhoneError('Please enter a valid mobile number.');
+        isValid = false;
+      } else {
+        setReceiverPhoneError('');
+      }
+  
+      return isValid;
+    };
 
   const handleNavigate = () => {
+    if (!handleValidation()) {
+      return;
+    }
     navigation.navigate('ScreenOneParcelInSenderTwo');
     console.log({formData});
   };
@@ -64,6 +97,7 @@ const ScreenOne = ({navigation}: Props) => {
               dispatch(updateField({key: 'senderPhoneNumber', value}))
             }
             keyboardType='number-pad'
+            errorMessage={senderPhoneError}
           />
 
           <Input
@@ -110,6 +144,7 @@ const ScreenOne = ({navigation}: Props) => {
               dispatch(updateField({key: 'receiverPhoneNumber', value}))
             }
             keyboardType='number-pad'
+            errorMessage={receiverPhoneError}
           />
 
           <Input

@@ -16,7 +16,7 @@ import { RootState } from "@/redux/store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -43,6 +43,7 @@ const FacialVerification = ({ navigation }: Props) => {
   const cameraRef = useRef<CameraView | null>(null);
   const dispatch = useDispatch();
   const [facing, setFacing] = useState<CameraType>("front");
+  
 
   if (!permission) return <View />;
 
@@ -56,6 +57,17 @@ const FacialVerification = ({ navigation }: Props) => {
       </View>
     );
   }
+  // useEffect(() => {
+  //   (async () => {
+  //     if (!permission?.granted) {
+  //       const newPermission = await requestPermission();
+  //       if (!newPermission.granted) {
+  //         alert("Camera access is required for facial verification.");
+  //       }
+  //     }
+  //   })();
+  // }, [permission, requestPermission]);
+  
 
   const capturePhoto = async () => {
     if (cameraRef.current) {

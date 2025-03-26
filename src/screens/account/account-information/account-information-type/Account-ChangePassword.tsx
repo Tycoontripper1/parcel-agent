@@ -24,6 +24,7 @@ import { Avatar } from "../../../../../assets/images";
   import { color } from "@/constants/Colors";
   import { updateField } from "@/redux/slices/formSlice";
   import CloseModal from "@/components/CloseModal";
+import HomeHeader from "@/components/share/HomeHeader";
   
   type Props = NativeStackScreenProps<AccountStackList>;
   const AccountChangePassword = ({ navigation }: Props) => {
@@ -134,18 +135,10 @@ import { Avatar } from "../../../../../assets/images";
         message="Password changed successfully"
       />
       )}
-        <View
-          style={{ flexDirection: "row", gap: RFValue(32),justifyContent:"space-between", alignItems: "center" }}
-        >
-          <BackButton onClick={() => navigation.goBack()} />
-          <Text font="SemiBold" size={18}>
-            Change Password
-          </Text>
-          <View>
-
-          </View>
-          
-        </View>
+       
+       <View style={{paddingHorizontal:RFValue(12)}}>
+       <HomeHeader type='Stack' title='Change Password' />
+       </View>
   
         <KeyBoardView padded={false}>
           <View

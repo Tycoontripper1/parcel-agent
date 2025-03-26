@@ -79,13 +79,15 @@ const PrintParcel = ({  navigation }: Props) => {
 
 
   const handlePrint = async () => {
-    if (!viewShotRef.current) {
+    const viewShot = viewShotRef.current; // Store reference
+  
+    if (!viewShot) {
       Alert.alert("Error", "ViewShot reference is not available.");
       return;
     }
   
     try {
-      const uri = await viewShotRef.current.capture();
+      const uri = await viewShot?.capture?.(); // No more possible null warning
       console.log("Captured URI:", uri);
   
       if (uri) {
@@ -105,29 +107,67 @@ const PrintParcel = ({  navigation }: Props) => {
     }
   };
   
+  
   const handleExportPDF = async () => {
     try {
+      // Ensure viewShotRef is available
+      const viewShot = viewShotRef.current;
+      if (!viewShot || !viewShot.capture) {
+        Alert.alert("Error", "ViewShot reference is not available.");
+        return;
+      }
+  
       // Capture screenshot
-      const uri = await viewShotRef.current.capture();
+      const uri = await viewShot.capture();
+      if (!uri) {
+        Alert.alert("Error", "Failed to capture the screenshot.");
+        return;
+      }
+  
       console.log("Captured URI:", uri);
-
-      // Convert to Base64
-      const response = await fetch(uri);
+  
+      // Fetch the image file
+      let response;
+      try {
+        response = await fetch(uri);
+      } catch (fetchError) {
+        console.error("Fetch Error:", fetchError);
+        Alert.alert("Error", "Failed to fetch the captured image.");
+        return;
+      }
+  
+      // Convert to Blob
       const blob = await response.blob();
+  
+      // Convert to Base64
       const reader = new FileReader();
       reader.readAsDataURL(blob);
+  
       reader.onloadend = async () => {
-        const base64data = reader.result?.split(",")[1]; // Get Base64 string
-
-        if (base64data) {
+        const result = reader.result;
+        if (!result || typeof result !== "string") {
+          Alert.alert("Error", "Failed to convert image to Base64.");
+          return;
+        }
+  
+        // Ensure the result contains "base64,"
+        const base64Index = result.indexOf("base64,");
+        if (base64Index === -1) {
+          Alert.alert("Error", "Invalid Base64 format.");
+          return;
+        }
+  
+        const base64data = result.substring(base64Index + 7); // Extract only the Base64 data
+  
+        try {
           // Generate PDF
           const { uri: pdfUri } = await Print.printToFileAsync({
             html: `<img src="data:image/png;base64,${base64data}" style="width:100%" />`,
             base64: true,
           });
-
+  
           console.log("PDF Saved at:", pdfUri);
-
+  
           // Share or Save the PDF
           const canShare = await Sharing.isAvailableAsync();
           if (canShare) {
@@ -135,8 +175,9 @@ const PrintParcel = ({  navigation }: Props) => {
           } else {
             Alert.alert("PDF saved", `Saved at: ${pdfUri}`);
           }
-        } else {
-          Alert.alert("Error", "Failed to convert image to Base64.");
+        } catch (printError) {
+          console.error("Print Error:", printError);
+          Alert.alert("Error", "Failed to generate PDF.");
         }
       };
     } catch (error) {
@@ -144,6 +185,8 @@ const PrintParcel = ({  navigation }: Props) => {
       Alert.alert("Error", "Something went wrong while exporting to PDF.");
     }
   };
+  
+  
 
 
   return (
@@ -381,10 +424,10 @@ const PrintParcel = ({  navigation }: Props) => {
 
             {/* Barcode */}
             <View style={styles.barcodeContainer}>
-            <WebView
+            {/* <WebView
         originWhitelist={["*"]}
         source={{ html: `<html><body>${barcodeSVG}</body></html>` }}
-      />
+      /> */}
             {/* <Barcode
         value={parcelId}
         format="CODE128" // Supports CODE128, EAN, UPC, etc.

@@ -26,6 +26,7 @@ import { SearchNormal1 } from "iconsax-react-native";
 import ButtonHome from "@/components/ButtonHome";
 import { color } from "@/constants/Colors";
 import HomeHeader from "@/components/share/HomeHeader";
+import { MaterialIcons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const { width } = Dimensions.get("window");
@@ -224,9 +225,23 @@ const transactions: Transaction[] = [
           {/* Section Header */}
           <View style={$bodyHeader}>
             <Text style={{ color: "#414651", fontSize: RFValue(18), fontWeight: "500" }}>Earnings History</Text>
-            <View>
-              <Text>Filter</Text>
-            </View>
+            <TouchableOpacity
+              onPress={() => ''}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+                backgroundColor: '#fff',
+                borderWidth: 1,
+                borderColor: '#E9EAEB',
+                borderRadius: 8,
+                padding: 8,
+              }}>
+              <MaterialIcons name='filter-list' size={16} color='black' />
+              <Text>
+                Filter
+              </Text>
+            </TouchableOpacity>
           </View>
       
           {/* Filter Buttons */}
@@ -353,9 +368,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         backgroundColor: "#fff",
-        padding: RFValue(12),
+        paddingVertical: RFValue(12),
         marginBottom: RFValue(6),
-        elevation: 2,
         borderBottomWidth: 1,
         borderColor: "#EFEFF0",
     },

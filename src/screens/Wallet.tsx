@@ -63,7 +63,7 @@ const transactions = [
   },
 ];
 const { width } = Dimensions.get("window");
-type Props = NativeStackScreenProps<HomeStackList & WalletStackList>;
+type Props = NativeStackScreenProps< WalletStackList>;
 
 export interface Wallet {
   title: string;
@@ -101,7 +101,7 @@ const WalletScreen = ({ navigation }: Props) => {
     <CustomView style={styles.container}>
       <ScreenHeader
         title="Wallet"
-        OnNotificationClick={() => navigation.navigate("NotificationsScreen")}
+        onNotificationShow={false}
         type="Home"
       />
       {/* <KeyboardAvoidingView
@@ -246,7 +246,7 @@ const WalletScreen = ({ navigation }: Props) => {
             )}
               
           /> */}
-<View style={styles.container}>
+<View style={''}>
   {Object.keys(groupedTransactions).length === 0 ? (
     <View style={styles.emptyContainer}>
       <EmptyWallet />
@@ -328,8 +328,8 @@ const styles = StyleSheet.create({
   activeText: { color: "#213264" },
   section: { marginBottom: RFValue(16) },
   sectionTitle: {
-    fontSize: RFValue(16),
-    fontWeight: "bold",
+    fontSize: RFValue(14),
+    fontWeight: "semibold",
     marginBottom: RFValue(8),
   },
   transactionRow: {
@@ -337,9 +337,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    padding: RFValue(12),
+    paddingVertical: RFValue(12),
     marginBottom: RFValue(6),
-    elevation: 2,
     borderBottomWidth: 1,
     borderColor: "#EFEFF0",
   },

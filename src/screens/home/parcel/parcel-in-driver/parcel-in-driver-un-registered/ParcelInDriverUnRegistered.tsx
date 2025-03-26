@@ -36,8 +36,51 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
   >(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
+    const [driverPhoneError, setDriverPhoneError] = useState('');
+    const [receiverPhoneError, setReceiverPhoneError] = useState('');
+    const [senderPhoneError, setSenderPhoneError] = useState('');
+
+
+  const handleValidation = () => {
+    let isValid = true;
+
+    if (!formData.driverNumber) {
+      setDriverPhoneError('Phone Number is required.');
+      isValid = false;
+    } else if (formData.driverNumber.length < 11 || formData.driverNumber.length > 11) {
+      setDriverPhoneError('Please enter a valid mobile number.');
+      isValid = false;
+    } else {
+      setDriverPhoneError('');
+    }
+
+    if (!formData.senderPhoneNumber) {
+      setSenderPhoneError('Phone Number is required.');
+      isValid = false;
+    } else if (formData.senderPhoneNumber.length < 11 || formData.senderPhoneNumber.length > 11) {
+      setSenderPhoneError('Please enter a valid mobile number.');
+      isValid = false;
+    } else {
+      setSenderPhoneError('');
+    }
+
+    if (!formData.receiverPhoneNumber) {
+      setReceiverPhoneError('Phone Number is required.');
+      isValid = false;
+    } else if (formData.receiverPhoneNumber.length < 11 || formData.receiverPhoneNumber.length > 11) {
+      setReceiverPhoneError('Please enter a valid mobile number.');
+      isValid = false;
+    } else {
+      setReceiverPhoneError('');
+    }
+
+    return isValid;
+  };
 
   const HandleContinue = () => {
+    if (!handleValidation()) {
+      return;
+    }
     navigation.navigate('ParcelInDriverUnRegisteredPreview');
     console.log({formData});
   };
@@ -98,6 +141,7 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
               dispatch(updateField({key: 'driverNumber', value}))
             }
             keyboardType='number-pad'
+            errorMessage={driverPhoneError}
           />
           <SelectInput
             label='Departure State?'
@@ -125,6 +169,7 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
               dispatch(updateField({key: 'senderPhoneNumber', value}))
             }
             keyboardType='number-pad'
+            errorMessage={senderPhoneError}
           />
           <Input
             label=' Receiver Phone Number'
@@ -135,6 +180,7 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
               dispatch(updateField({key: 'receiverPhoneNumber', value}))
             }
             keyboardType='number-pad'
+            errorMessage={receiverPhoneError}
           />
           <Input
             label='Delivery Motor Park'
@@ -253,7 +299,7 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             <View style={{paddingVertical: RFValue(10)}}>
               <Text style={styles.counter}>
                 {formData.parcelImages.filter((photo) => photo !== null).length}
-                /4 photos
+             /2 photos
               </Text>
               <View style={styles.photoGrid}>
                 {formData.parcelImages.map((photo, index) => (

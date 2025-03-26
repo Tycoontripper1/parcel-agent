@@ -194,7 +194,7 @@ const DriversScreen = ({ navigation }: Props) => {
             Drivers
           </Text>
         </View>
-        <View style={styles.container}>
+        <View style={''}>
           {Object.keys(groupedDrivers).length === 0 ? (
             <View style={styles.emptyContainer}>
               <EmptyWallet />
@@ -293,8 +293,8 @@ const styles = StyleSheet.create({
   activeText: { color: "#213264" },
   section: { marginBottom: RFValue(16) },
   sectionTitle: {
-    fontSize: RFValue(16),
-    fontWeight: "bold",
+    fontSize: RFValue(14),
+    fontWeight: "semibold",
     marginBottom: RFValue(8),
   },
   transactionRow: {
@@ -302,9 +302,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    padding: RFValue(12),
+    paddingVertical: RFValue(12),
     marginBottom: RFValue(6),
-    elevation: 2,
     borderBottomWidth: 1,
     borderColor: "#EFEFF0",
   },

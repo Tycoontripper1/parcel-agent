@@ -21,7 +21,9 @@
         "backgroundColor": "#213264"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "CAMERA",
+        "WRITE_EXTERNAL_STORAGE"
       ],
       "package": "com.codydematth.parcelagent"
     },
@@ -39,8 +41,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "3d3c9a70-9c66-4cf9-9752-7aedb1c9a2c9"
+        "projectId": "9775e017-8903-4c0e-906d-a198a660aa0f"
       }
-    }
+    },
+    "owner": "bombhack"
   }
 }

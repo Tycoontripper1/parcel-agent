@@ -30,6 +30,7 @@ const CreateAccountScreen = ({navigation}: Props) => {
   const dispatch = useDispatch();
   const {theme} = useTheme();
   const [passwordError, setPasswordError] = useState('');
+    const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [fullNameError, setFullNameError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -51,10 +52,24 @@ const CreateAccountScreen = ({navigation}: Props) => {
     } else {
       setFullNameError('');
     }
+
+
+// Email validation
+if (formData.email) { // Only validate if email is provided
+  if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    setEmailError('Please enter a valid email address.');
+    isValid = false;
+  } else {
+    setEmailError('');
+  }
+} else {
+  setEmailError(''); // No error if email is empty
+}
+
     if (!formData.phoneNumber) {
       setPhoneError('Phone Number is required.');
       isValid = false;
-    } else if (formData.phoneNumber.length < 11) {
+    } else if (formData.phoneNumber.length < 11 || formData.phoneNumber.length > 11) {
       setPhoneError('Please enter a valid mobile number.');
       isValid = false;
     } else {
@@ -174,7 +189,7 @@ const CreateAccountScreen = ({navigation}: Props) => {
             LeftIcon={
               <MaterialIcons name='mail-outline' size={18} color={color.gray} />
             }
-            errorMessage={passwordError}
+            errorMessage={emailError}
             keyboardType='email-address'
           />
           <Input

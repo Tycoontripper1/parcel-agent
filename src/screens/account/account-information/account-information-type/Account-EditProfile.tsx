@@ -24,6 +24,7 @@ import { Avatar } from "../../../../../assets/images";
   import { color } from "@/constants/Colors";
   import { updateField } from "@/redux/slices/formSlice";
   import EditIcon from "@/components/svg/EditIcon";
+import HomeHeader from "@/components/share/HomeHeader";
   
   type Props = NativeStackScreenProps<AccountStackList>;
   const AccountEditProfile = ({ navigation }: Props) => {
@@ -124,14 +125,9 @@ import { Avatar } from "../../../../../assets/images";
     };
     return (
       <CustomView style={{ paddingVertical: RFValue(10) }}>
-        <View
-          style={{ flexDirection: "row", gap: RFValue(48), alignItems: "center" }}
-        >
-          <BackButton onClick={() => navigation.goBack()} />
-          <Text font="SemiBold" size={18}>
-          Edit Profile
-          </Text>
-        </View>
+       <View style={{paddingHorizontal:RFValue(12)}}>
+       <HomeHeader type='Stack' title='Edit Profile' />
+       </View>
   
         <KeyBoardView padded={false}>
           <View

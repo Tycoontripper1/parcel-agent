@@ -14,6 +14,7 @@ import SelectInput from '@/components/SelectInput';
 type Props = NativeStackScreenProps<DriverStackList>;
 
 const ScreenOne = ({ navigation }: Props) => {
+  const [phoneError, setPhoneError] = useState('');
   const [formData, setFormData] = useState({
     senderFullName: '',
     senderEmail: '',
@@ -34,7 +35,29 @@ const ScreenOne = ({ navigation }: Props) => {
     }));
   };
 
+  
+    const handleValidation = () => {
+      let isValid = true;
+  
+      if (!formData.senderPhoneNumber) {
+        setPhoneError('Phone Number is required.');
+        isValid = false;
+      } else if (formData.senderPhoneNumber.length < 11 || formData.senderPhoneNumber.length > 11) {
+        setPhoneError('Please enter a valid mobile number.');
+        isValid = false;
+      } else {
+        setPhoneError('');
+      }
+  
+
+      return isValid;
+    };
+  
+
   const handleNavigate = () => {
+    if (!handleValidation()) {
+      return;
+    }
     navigation.navigate('FacialVerification');
     console.log({ formData });
   };
@@ -87,6 +110,7 @@ const ScreenOne = ({ navigation }: Props) => {
             value={formData.senderPhoneNumber}
             onChangeText={(value) => handleChange('senderPhoneNumber', value)}
             keyboardType='number-pad'
+            errorMessage={phoneError}
           />
           <Input
             label='Home Address'
