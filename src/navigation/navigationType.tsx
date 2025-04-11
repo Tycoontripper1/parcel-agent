@@ -36,7 +36,7 @@ export type AuthStackParamList = {
   ResetPasswordWithPhoneConfirm: {phone: string};
   ResetPasswordComplete: {otp: string};
   CreateAccountScreen: undefined;
-  OTPVerificationScreen: undefined;
+  OTPVerificationScreen: {phone: string};
   BusinessInfoScreen: undefined;
   IdentityVerificationScreen: undefined;
   FrontImageScreen: undefined;

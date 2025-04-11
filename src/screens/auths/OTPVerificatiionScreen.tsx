@@ -14,10 +14,22 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '@/redux/store';
 import {updateField} from '@/redux/slices/formSlice';
 import {AuthStackParamList} from '@/navigation/navigationType';
+import { resendOtp, verifyOtpAccount } from '../../../services/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RouteProp,useRoute } from '@react-navigation/native';
 
 type Props = NativeStackScreenProps<AuthStackParamList>;
+type RootStackParamList = {
+  OTPVerificationScreen: {
+    phone: string;
+  };
+};
+
+type OTPRouteProp = RouteProp<RootStackParamList, 'OTPVerificationScreen'>;
 
 const OTPVerificationScreen = ({navigation}: Props) => {
+  const route = useRoute<OTPRouteProp>();
+  const { phone } = route.params;
   const otp = useSelector((state: RootState) => state.form.otp);
   const dispatch = useDispatch();
 
@@ -27,25 +39,85 @@ const OTPVerificationScreen = ({navigation}: Props) => {
   };
   const [loading, setLoading] = useState(false);
 
-  const handleCreateAccount = () => {
+
+
+  const handleTokenVerification = async () => {
+    if (!otp || otp.length < 4) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid OTP',
+        text2: 'Please enter a valid 4-digit code.',
+      });
+      return;
+    }
+  
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+  
+    try {
+      const payload = {
+        otp,
+        email: 'oayodeji27@gmail.com', // replace with dynamic email if needed
+      };
+  
+      const result = await verifyOtpAccount(payload);
+      console.log('OTP verification result:', result);
+  
+      // Extract and store token and user details
+      const token = result?.data?.token;
+  
+      if (token) {
+        await AsyncStorage.setItem('token', token);
+      }
+  
+      Toast.show({
+        type: 'success',
+        text1: 'Verified',
+        text2: result?.data?.message || 'OTP verified successfully',
+      });
+  
       navigation.navigate('BusinessInfoScreen');
-    }, 2000);
-    console.log(otp);
-  };
-  const handleSentOTP = () => {
-    setLoading(true);
-    setTimeout(() => {
+    } catch (error: any) {
+      console.error('OTP verify error:', error);
+  
+      Toast.show({
+        type: 'error',
+        text1: 'Verification Failed',
+        text2: error.message || 'Invalid or expired OTP',
+      });
+    } finally {
       setLoading(false);
+    }
+  };
+  
+  const handleSentOTP = async () => {
+    setLoading(true);
+  
+    try {
+      const payload = {
+        email: 'oayodeji27@gmail.com', // Ideally, replace this with dynamic email if possible
+      };
+  
+      const result = await resendOtp(payload);
+      console.log('OTP sent result:', result);
+  
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: 'OTP sent successfully',
+        text2: result?.message || 'OTP sent successfully',
       });
-    }, 2000);
+    } catch (error: any) {
+      console.error('Error sending OTP:', error);
+  
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to Send OTP',
+        text2: error.message || 'Something went wrong while sending OTP',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -74,7 +146,7 @@ const OTPVerificationScreen = ({navigation}: Props) => {
           </Text>
           <Text size={14} color={color.textGray}>
             Enter the 4-digit code we sent to chimarcus03@gmail.com and
-            09011122234
+            {phone}
           </Text>
         </View>
         <View style={$cardHeader}>
@@ -93,7 +165,7 @@ const OTPVerificationScreen = ({navigation}: Props) => {
         </View>
         <View style={$buttonsContainer}>
           <Button
-            onPress={handleCreateAccount}
+            onPress={handleTokenVerification}
             title='Confirm'
             style={{height: 55}}
           />

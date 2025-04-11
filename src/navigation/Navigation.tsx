@@ -168,7 +168,7 @@ const RootTabStack = () => {
         name='AccountStack'
         component={AccountStack}
         options={{
-          tabBarLabel: 'Account',
+          tabBarLabel: 'More',
         }}
       />
     </BottomTab.Navigator>

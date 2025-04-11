@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(10),
   },
   parcelLabel: {
-    fontSize: RFValue(18),
+    fontSize: RFValue(12),
     color:"#252B37"
   },
 });

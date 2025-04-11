@@ -16,9 +16,11 @@ import {color} from '@/constants/Colors';
 import Header from '@/components/share/Header';
 import {Helper} from '@/helper/helper';
 import Toast from 'react-native-toast-message';
-import {RootStackParamList} from '@/navigation/navigationType';
+import {RootStackParamList, AuthStackParamList} from '@/navigation/navigationType';
+import {loginUser} from '../../../services/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type Props = NativeStackScreenProps<RootStackParamList>;
+type Props = NativeStackScreenProps<RootStackParamList & AuthStackParamList>;
 
 const LoginScreen = ({navigation}: Props) => {
   const [loading, setLoading] = useState(false);
@@ -30,19 +32,19 @@ const LoginScreen = ({navigation}: Props) => {
 
   const handleValidation = () => {
     let isValid = true;
+    const emailRegex = /\S+@\S+\.\S+/;
+    const phoneRegex = /^\d{4}-\d{3}-\d{3}$/;
 
-    // Email validation
     if (!email) {
-      setEmailError('Email is required.');
+      setEmailError('Email or Phone number is required.');
       isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('Please enter a valid email address.');
+    } else if (!emailRegex.test(email) && !phoneRegex.test(email)) {
+      setEmailError('Enter a valid email or phone (e.g. 0904-856-987).');
       isValid = false;
     } else {
       setEmailError('');
     }
 
-    // Password validation
     if (!password) {
       setPasswordError('Password is required.');
       isValid = false;
@@ -56,128 +58,123 @@ const LoginScreen = ({navigation}: Props) => {
     return isValid;
   };
 
-  const handleClick = () => {
-    if (!handleValidation()) {
-      return;
-    }
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 10);
+    if (digits.length <= 4) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+    return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+  };
 
+  const handleClick = async () => {
+    if (!handleValidation()) return;
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const cleanedInput = /^\d{4}-\d{3}-\d{3}$/.test(email) ? email.replace(/-/g, '') : email;
+
+      const result = await loginUser({emailPhone: cleanedInput, password});
       setLoading(false);
-      Helper.vibrate();
+
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: 'Login Successfully',
+        text2: result?.data?.message || 'Login Successfully',
       });
-      navigation.replace('RootTabStack');
-    }, 2000);
+
+      Helper.vibrate();
+
+      const token = result?.data?.token;
+      const userDetails = result?.data?.details;
+
+      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('user', JSON.stringify(userDetails));
+
+      if (!userDetails.isEmailVerified) {
+        navigation.navigate('OTPVerificationScreen', {phone: userDetails.phone});
+      } else if (!userDetails.isKycComplete) {
+        navigation.navigate('BusinessInfoScreen');
+      } else {
+        navigation.navigate('RootTabStack');
+      }
+    } catch (error: any) {
+      setLoading(false);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.message || 'Something went wrong',
+      });
+    }
   };
 
-  // Styles
-
-  const $container: ViewStyle = {
-    flex: 1,
-    backgroundColor: theme.background,
-  };
-  const $signUpText: TextStyle = {
-    fontSize: 16,
-    marginLeft: 5,
-    color: theme.secondary,
-  };
-  const $forgotPassword: TextStyle = {
-    alignItems: 'flex-end',
-    marginBottom: 30,
-  };
-  const $linkText: TextStyle = {
-    fontSize: 16,
-    color: theme.secondary,
-  };
+  const $container: ViewStyle = {flex: 1, backgroundColor: theme.background};
+  const $signUpText: TextStyle = {fontSize: 16, marginLeft: 5, color: theme.secondary};
+  const $forgotPassword: TextStyle = {alignItems: 'flex-end', marginBottom: 30};
+  const $linkText: TextStyle = {fontSize: 16, color: theme.secondary};
 
   return (
     <View style={$container}>
       {loading && <Spinner />}
-      {/* Top Section */}
-      <Header title='Welcome Back' />
-
-      {/* Login Form */}
+      <Header title="Welcome Back" />
       <KeyBoardView>
         <View style={styles.form}>
-          <Text style={styles.loginText} bold>
-            Log in
-          </Text>
-          <Text style={styles.subText}>
-            Enter your login details to proceed
-          </Text>
+          <Text style={styles.loginText} bold>Log in</Text>
+          <Text style={styles.subText}>Enter your login details to proceed</Text>
 
-          {/* Email Input */}
           <Input
-            label='Email Address'
-            placeholder='Enter email'
-            placeholderTextColor='#B8C2CC'
+            label="Phone/Email Address"
+            placeholder="Enter email or phone (0904-856-987)"
+            placeholderTextColor="#B8C2CC"
             value={email}
             onChangeText={(text) => {
-              setEmail(text);
+              const emailRegex = /\S+@\S+\.\S+/;
+              const phoneStartRegex = /^\d/; // Check if it starts with a digit
+              if (phoneStartRegex.test(text)) {
+                setEmail(formatPhoneNumber(text));
+              } else {
+                setEmail(text);
+              }
             }}
-            LeftIcon={
-              <MaterialIcons name='mail-outline' size={18} color={color.gray} />
-            }
+            
+            LeftIcon={<MaterialIcons name="mail-outline" size={18} color={color.gray} />}
             errorMessage={emailError}
-            keyboardType='email-address'
+            keyboardType="default"
           />
 
-          {/* Password Input */}
           <Input
-            label='Password'
-            placeholder='Enter password'
-            placeholderTextColor='#B8C2CC'
+            label="Password"
+            placeholder="Enter password"
+            placeholderTextColor="#B8C2CC"
             value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-            }}
-            LeftIcon={
-              <MaterialIcons name='lock-outline' size={18} color={color.gray} />
-            }
-            type='password'
+            onChangeText={setPassword}
+            LeftIcon={<MaterialIcons name="lock-outline" size={18} color={color.gray} />}
+            type="password"
             errorMessage={passwordError}
-            keyboardType='default'
+            keyboardType="default"
           />
 
-          {/* Forgot Password */}
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('AuthStacks', {screen: 'ResetMethod'})
-            }
+            onPress={() => navigation.navigate('AuthStacks', {screen: 'ResetMethod'})}
             style={$forgotPassword}>
             <Text style={$linkText}>Forgot Password?</Text>
           </TouchableOpacity>
 
-          {/* Login Button */}
-          <Button title='Login' onPress={handleClick} style={{height: 50}} />
+          <Button title="Login" onPress={handleClick} style={{height: 50}} />
 
-          {/* OR Section */}
           <View style={styles.orContainer}>
             <View style={styles.line} />
             <Text style={styles.orText}>OR</Text>
             <View style={styles.line} />
           </View>
 
-          {/* Google Sign-In */}
-          <TouchableOpacity
-            style={[styles.googleButton, {borderColor: theme.border}]}>
+          <TouchableOpacity style={[styles.googleButton, {borderColor: theme.border}]}>
             <GoogleIcon />
             <Text style={styles.googleText}>Sign in with Google</Text>
           </TouchableOpacity>
 
-          {/* Sign Up */}
           <View style={styles.signUpContainer}>
             <Text style={styles.subText}>Don’t have an account?</Text>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('AuthStacks', {
-                  screen: 'CreateAccountScreen',
-                })
-              }>
+              onPress={() => navigation.navigate('AuthStacks', {screen: 'CreateAccountScreen'})}>
               <Text style={$signUpText}>Sign Up</Text>
             </TouchableOpacity>
           </View>

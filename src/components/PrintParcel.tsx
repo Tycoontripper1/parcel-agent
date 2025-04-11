@@ -18,6 +18,7 @@ import {
   Image,
   TouchableOpacity,
   ViewStyle,
+  Dimensions
 } from "react-native";
 
 import { HomeStackList, ReportStackList, RootStackParamList } from "@/navigation/navigationType";
@@ -28,6 +29,7 @@ import HomeHeader from "@/components/share/HomeHeader";
 import * as Sharing from 'expo-sharing';
 import { WebView } from "react-native-webview";
 import JsBarcode from "jsbarcode";
+import Barcode from '@kichiyaki/react-native-barcode-generator';
 
 
 
@@ -54,7 +56,7 @@ const PrintParcel = ({  navigation }: Props) => {
   const formData = useSelector((state: RootState) => state.parcel);
   const viewShotRef = useRef<ViewShot | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [BarValue, setBarValue] = useState('lintangwisesa');
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -424,18 +426,17 @@ const PrintParcel = ({  navigation }: Props) => {
 
             {/* Barcode */}
             <View style={styles.barcodeContainer}>
-            {/* <WebView
-        originWhitelist={["*"]}
-        source={{ html: `<html><body>${barcodeSVG}</body></html>` }}
-      /> */}
-            {/* <Barcode
-        value={parcelId}
-        format="CODE128" // Supports CODE128, EAN, UPC, etc.
-        width={2} // Width of bars
-        height={100} // Height of barcode
-        lineColor="black" // Barcode color
-        background="white" // Background color
-      /> */}
+              <Barcode
+                    format="CODE128"
+                    value={parcelId}
+                    text={BarValue ? BarValue : 'lintangwisesa'}
+                    style={{ marginBottom: 20 }}
+                    textStyle={{ color:'#000' }}
+                    maxWidth={Dimensions.get('window').width / 1.5}
+                    background="#fffff"
+                    lineColor="#000"
+                    width={2}
+                />
         </View>
 
       </ViewShot>

@@ -80,7 +80,7 @@ const IdentityVerificationScreen = ({navigation}: Props) => {
           <View style={$cardHeader}>
             <SelectInput
               label='ID type'
-              data={['NIN', 'Voters card', `Drivers's License`, 'NURTW ID']}
+              data={['NIN', 'Voters card', `drivers-license`, 'NURTW ID']}
               placeholder='Select ID type'
               onSelect={(value) =>
                 dispatch(updateField({key: 'idType', value}))

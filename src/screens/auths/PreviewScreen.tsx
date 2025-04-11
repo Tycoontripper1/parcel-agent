@@ -9,30 +9,56 @@ import React, {useState} from 'react';
 import {View, Image, StyleSheet, ScrollView} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import { uploadBulkImages } from '../../../services/upload';
+import { getUser } from '../../../services/auth';
+import { updateField } from '@/redux/slices/formSlice';
 
 type Props = NativeStackScreenProps<AuthStackParamList>;
 const PreviewScreen = ({navigation}: Props) => {
   const {idFrontImage, idBackImage} = useSelector(
     (state: RootState) => state.form
   );
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+  
+      const userDetails = await getUser();
+      const username = userDetails?.firstName;
+      
+      // Upload ID images
+      const idImageUrls = await uploadBulkImages([idFrontImage, idBackImage], username);
+  
+      if (idImageUrls?.data.urls.length === 2) {
+        // Update Redux with the URLs
+        dispatch(updateField({ key: 'idFrontImage', value: idImageUrls?.data.urls[0] }));
+        dispatch(updateField({ key: 'idBackImage', value: idImageUrls?.data.urls[1] }));
+      }
+  
       Helper.vibrate();
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: 'OTP sent Successfully',
+        text2: 'ID Images uploaded successfully',
       });
+  
+      // Navigate next
       navigation.navigate('FacialVerification');
-    }, 2000);
-    console.log('Front Image:', idFrontImage);
-    console.log('Back Image:', idBackImage);
+    } catch (error: any) {
+      console.error('Image upload failed:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Upload Failed',
+        text2: error.message || 'Something went wrong',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
     <CustomView style={{paddingVertical: RFValue(10)}}>

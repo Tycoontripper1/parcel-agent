@@ -24,6 +24,7 @@ const FrontImageScreen = ({navigation}: Props) => {
       return;
     }
     dispatch(updateField({key: 'idFrontImage', value: frontImage}));
+    console.log(frontImage)
     navigation.navigate('BackImageScreen');
   };
 

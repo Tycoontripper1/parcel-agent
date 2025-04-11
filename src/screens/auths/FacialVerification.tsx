@@ -21,6 +21,10 @@ import {
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
 import {useDispatch} from 'react-redux';
+import { useSelector } from 'react-redux';
+import { updateUserKyc } from '../../../services/auth';
+import { uploadSingleImage } from '../../../services/upload';
+import { getUser } from '../../../services/auth';
 
 const {width, height} = Dimensions.get('window');
 
@@ -32,7 +36,9 @@ const FacialVerification = ({navigation}: Props) => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null); // State for storing the captured image
   const cameraRef = useRef<CameraView | null>(null); // Reference to the camera
   const dispatch = useDispatch();
-
+  const {idFrontImage, idBackImage, businessName, address,location,state, store,idType, idNumber,facialVerificationImage} = useSelector(
+    (state: RootState) => state.form
+  );
   const [facing] = useState<CameraType>('front'); // Set to use the front camera
 
   if (!permission) {
@@ -72,19 +78,56 @@ const FacialVerification = ({navigation}: Props) => {
       }
     }
   };
-  const handleSubmit = () => {
+  console.log(facialVerificationImage, 'facialVerificationImage');
+  console.log("hello")
+
+
+  const handleSubmit = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    const userDetails =  await getUser();
+    console.log(userDetails, 'userDetails');
+    const username = userDetails?.firstName;
+  
+    try {
+      
+    const userImageUrl = await uploadSingleImage(facialVerificationImage, username);
+      console.log(userImageUrl, 'userImageUrl');
+      const payload = {
+        businessName: businessName,
+        state: state,
+        address: address,
+        location: location,
+        store: store === "Yes" ? true : false,
+        identificationType: idType,
+        identificationNumber: idNumber,
+        identificationImages: [idFrontImage, idBackImage],
+        userImage: userImageUrl?.data.url
+      };
+      console.log(payload, 'payload');
+  
+      const result = await updateUserKyc(payload);
+      console.log(result, '✅ KYC submitted');
+  
       Helper.vibrate();
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: 'OTP sent Successfully',
+        text2: result?.message || 'KYC submitted successfully',
       });
+  
       navigation.navigate('CongratulationScreen');
-    }, 2000);
+    } catch (error: any) {
+      console.log(error, '❌ KYC submission error');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.message || 'Something went wrong',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   // Styles
   const $bodyHeader: ViewStyle = {
