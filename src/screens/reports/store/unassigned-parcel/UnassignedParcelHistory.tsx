@@ -85,7 +85,7 @@ const UnAssignParcelHistory = ({
   const [isWallet, setIsWallet] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const { data }: { data: ParcelDetails[] } = route.params;
+  const { data, label }: { data: ParcelDetails[]; label: string } = route.params;
   console.log(data);
 
   type TransactionType = "Handling fee" | "Overdue fee" | "Upfront fee";
@@ -204,8 +204,8 @@ const UnAssignParcelHistory = ({
 
   return (
     <CustomView style={styles.container}>
-      <HomeHeader type="Stack" title="Unassigned Parcels" />
-
+      <HomeHeader type="Stack" title={label} />
+  
       {/* ScrollView Wrapper */}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -256,21 +256,7 @@ const UnAssignParcelHistory = ({
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Filter Buttons */}
-        {/* <View style={styles.filterContainer}>
-            {["all", "Handling fee", "Overdue fee", "Upfront fee"].map((type) => (
-              <TouchableOpacity
-                key={type}
-                style={[styles.filterButton, filter === type && styles.activeFilter]}
-                onPress={() => setFilter(type)}
-              >
-                <Text style={[styles.filterText, filter === type && styles.activeText]}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View> */}
+  
         {/* Search Input */}
         <View style={styles.searchContainer}>
           <SearchNormal1 color="#000" size={18} style={{ flexBasis: "10%" }} />
@@ -282,7 +268,7 @@ const UnAssignParcelHistory = ({
             onChangeText={setSearchQuery}
           />
         </View>
-
+  
         {/* Download Report Button */}
         <TouchableOpacity
           style={styles.downloadButton}
@@ -291,84 +277,90 @@ const UnAssignParcelHistory = ({
           <DownloadReportIcon color="" />
           <Text style={styles.downloadText}> Download Report</Text>
         </TouchableOpacity>
-
-        {/* FlatList Fix */}
-        <FlatList
-          data={Object.keys(groupedTransactions)}
-          keyExtractor={(date) => date.toString()} // Ensure unique key
-          renderItem={({ item: properDate }) => (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{properDate}</Text>
-              {groupedTransactions[properDate]?.map(
-                (item: ParcelDetails, index: number) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.shipmentRow}
-                    onPress={() =>
-                      navigation.navigate("UnAssignParcelDetails", { item: item })
-                    }
-                  >
-                    <View style={styles.transactionIconContainer}>
-                      <ParcelIcon color="#F5F5F5" />
-                    </View>
-                    <View style={styles.shipmentDetails}>
-                      <View style={{ flexDirection: "column", gap: 4 }}>
-                        <Text size={11} color="#717680">
-                          Sender
-                        </Text>
-                        <Text size={12}>{item.sender.fullName}</Text>
-                        <Text size={10}>{formatTime(item.createdAt)}</Text>
+  
+        {/* Show a message if no parcels are found */}
+        {filteredTransactions.length === 0 ? (
+          <Text style={styles.noDataText}>No parcels available</Text>
+        ) : (
+          // FlatList displaying grouped transactions
+          <FlatList
+            data={Object.keys(groupedTransactions)}
+            keyExtractor={(date) => date.toString()} // Ensure unique key
+            renderItem={({ item: properDate }) => (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>{properDate}</Text>
+                {groupedTransactions[properDate]?.map(
+                  (item: ParcelDetails, index: number) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.shipmentRow}
+                      onPress={() =>
+                        navigation.navigate("UnAssignParcelDetails", { item: item })
+                      }
+                    >
+                      <View style={styles.transactionIconContainer}>
+                        <ParcelIcon color="#F5F5F5" />
                       </View>
-                      <View style={{ flexDirection: "column", gap: 4 }}>
-                        <Text size={10} color="#717680">
-                          Receiver
-                        </Text>
-                        <Text size={12}>{item.receiver.fullName}</Text>
-                      </View>
-                      <View style={{ flexDirection: "column", gap: 4 }}>
-                        <Text size={10} color="#717680">
-                          Charges
-                        </Text>
-                        <Text size={12}>₦{item.parcel.totalFee}</Text>
-                        <View
-                          style={{
-                            backgroundColor:
-                              item.status === "Arrived"
-                                ? "#F7F9FC"
-                                : item.status === "Delivered"
-                                ? "#ECFDF3"
-                                : "#FFF6ED",
-                            justifyContent: "center",
-                            flexDirection: "row",
-                            borderRadius: 8,
-                          }}
-                        >
-                          <Text
-                            size={10}
-                            color={
-                              item.status === "Arrived"
-                                ? "#213264"
-                                : item.status === "Delivered"
-                                ? "#12B76A"
-                                : "#FB6514"
-                            }
-                          >
-                            {item.status}
+                      <View style={styles.shipmentDetails}>
+                        <View style={{ flexDirection: "column", gap: 4 }}>
+                          <Text size={11} color="#717680">
+                            Sender
                           </Text>
+                          <Text size={12}>{item.sender.fullName}</Text>
+                          <Text size={10}>{formatTime(item.createdAt)}</Text>
+                        </View>
+                        <View style={{ flexDirection: "column", gap: 4 }}>
+                          <Text size={10} color="#717680">
+                            Receiver
+                          </Text>
+                          <Text size={12}>{item.receiver.fullName}</Text>
+                        </View>
+                        <View style={{ flexDirection: "column", gap: 4 }}>
+                          <Text size={10} color="#717680">
+                            Charges
+                          </Text>
+                          <Text size={12}>₦{item.parcel.totalFee}</Text>
+                          <View
+                            style={{
+                              backgroundColor:
+                                item.status === "Arrived"
+                                  ? "#F7F9FC"
+                                  : item.status === "Delivered"
+                                  ? "#ECFDF3"
+                                  : "#FFF6ED",
+                              justifyContent: "center",
+                              flexDirection: "row",
+                              borderRadius: 8,
+                            }}
+                          >
+                            <Text
+                              size={10}
+                              color={
+                                item.status === "Arrived"
+                                  ? "#213264"
+                                  : item.status === "Delivered"
+                                  ? "#12B76A"
+                                  : "#FB6514"
+                              }
+                            >
+                              {item.status}
+                            </Text>
+                          </View>
                         </View>
                       </View>
-                    </View>
-                  </TouchableOpacity>
-                )
-              )}
-            </View>
-          )}
-          scrollEnabled={false} // Prevents conflict with ScrollView
-          nestedScrollEnabled={true} // Allows proper scrolling inside ScrollView
-        />
+                    </TouchableOpacity>
+                  )
+                )}
+              </View>
+            )}
+            scrollEnabled={false} // Prevents conflict with ScrollView
+            nestedScrollEnabled={true} // Allows proper scrolling inside ScrollView
+          />
+        )}
       </ScrollView>
     </CustomView>
   );
+  
 };
 
 const styles = StyleSheet.create({
@@ -390,6 +382,12 @@ const styles = StyleSheet.create({
     paddingVertical: RFValue(12),
   },
   transactionIconContainer: { alignItems: "center", marginRight: RFValue(10) },
+  noDataText: {
+    fontSize: RFValue(16),
+    color: "#717680",
+    textAlign: "center",
+    marginVertical: RFValue(20),
+  },
 
   filterContainer: {
     flexDirection: "row",

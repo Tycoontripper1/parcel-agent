@@ -115,7 +115,10 @@ const PrintParcel = ({  navigation }: Props) => {
 
     fetchItem();
   }, []);
-
+  const createdAt = parcelItem?.createdAt;
+  const date = createdAt ? new Date(createdAt) : new Date();
+  const formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+  const formattedTime = `${date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()} ${date.getHours() < 12 ? 'AM' : 'PM'}`;
 
 
 
@@ -309,7 +312,7 @@ const PrintParcel = ({  navigation }: Props) => {
           }}
         >
           <Text size={12}>
-            Date: <Text color="#717680">01-10-2024</Text>
+            Date: <Text color="#717680">{formattedDate}</Text>
           </Text>
           <View
             style={{
@@ -321,7 +324,7 @@ const PrintParcel = ({  navigation }: Props) => {
           >
             <View style={{ padding: 4, borderRadius: 8 }}>
               <Text size={12}>
-                Time: <Text color="#717680">01:30 PM</Text>
+                Time: <Text color="#717680">{formattedTime}</Text>
               </Text>
             </View>
           </View>
@@ -347,7 +350,7 @@ const PrintParcel = ({  navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Name: </Text>
-              <Text style={styles.infoText}>{formData.senderFullName} </Text>
+              <Text style={styles.infoText}>{parcelItem?.sender.fullName} </Text>
             </View>
             <View
               style={{
@@ -357,7 +360,7 @@ const PrintParcel = ({  navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Email: </Text>
-              <Text style={styles.infoText}>{formData.senderEmail} </Text>
+              <Text style={styles.infoText}>{parcelItem?.sender.email} </Text>
             </View>
             <View
               style={{
@@ -367,7 +370,7 @@ const PrintParcel = ({  navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>{formData.senderPhoneNumber} </Text>
+              <Text style={styles.infoText}>{parcelItem?.sender.phone} </Text>
             </View>
             <View
               style={{
@@ -377,7 +380,7 @@ const PrintParcel = ({  navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Dispatch Park </Text>
-              <Text style={styles.infoText}>{formData.sendingFrom}</Text>
+              <Text style={styles.infoText}>{parcelItem?.park.source}</Text>
             </View>
           </View>
         </View>
@@ -402,7 +405,7 @@ const PrintParcel = ({  navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Name </Text>
-              <Text style={styles.infoText}>{formData.receiverFullName} </Text>
+              <Text style={styles.infoText}>{parcelItem?.receiver.fullName} </Text>
             </View>
             <View
               style={{
@@ -412,7 +415,7 @@ const PrintParcel = ({  navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Email </Text>
-              <Text style={styles.infoText}>{formData.receiverEmail} </Text>
+              <Text style={styles.infoText}>{parcelItem?.receiver.email} </Text>
             </View>
             <View
               style={{
@@ -423,7 +426,7 @@ const PrintParcel = ({  navigation }: Props) => {
             >
               <Text style={styles.infoText}>Phone Number</Text>
               <Text style={styles.infoText}>
-                {formData.receiverPhoneNumber}
+                {parcelItem?.receiver.phone}
               </Text>
             </View>
             <View
@@ -435,7 +438,7 @@ const PrintParcel = ({  navigation }: Props) => {
             >
               <Text style={styles.infoText}>Delivery Park</Text>
               <Text style={styles.infoText}>
-                {"Challenge Motor Park (Terminal 1)"}
+                {parcelItem?.park.destination}
               </Text>
             </View>
           </View>
@@ -461,7 +464,7 @@ const PrintParcel = ({  navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Name</Text>
-              <Text style={styles.infoText}>{"Chinedu Joseph"}</Text>
+              <Text style={styles.infoText}> {parcelItem?.driver}</Text>
             </View>
             <View
               style={{
@@ -490,7 +493,7 @@ const PrintParcel = ({  navigation }: Props) => {
             <View style={styles.barcodeContainer}>
               <Barcode
                     format="CODE128"
-                    value={parcelId}
+                    value={parcelItem?.parcelId || ""}
                     text={BarValue ? BarValue : 'lintangwisesa'}
                     style={{ marginBottom: 20 }}
                     textStyle={{ color:'#000' }}

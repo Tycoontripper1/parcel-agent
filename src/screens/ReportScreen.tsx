@@ -48,87 +48,104 @@ interface ParcelDetails {
 const Reportscreen = ({navigation}: Props) => {
 
   const [allShipments, setAllShipments] = useState<ParcelDetails[]>([]);
-  const [paidShipments, setPaidShipments] = useState<ParcelDetails[]>([]); // Add this
-  
-  useEffect(() => {
-    const fetchDriver = async () => {
-      try {
-        const result = await getShipmentsHistory();
-        const rows = result?.data?.details?.rows || [];
-        setAllShipments(rows);
-        setPaidShipments(rows.filter((item: ParcelDetails) => item.paymentStatus === 'paid')); // Filter paid
-      } catch (error) {
-        console.error("Failed to fetch drivers:", error);
-      }
-    };
-    fetchDriver();
-  }, []);
+const [paidShipments, setPaidShipments] = useState<ParcelDetails[]>([]);
 
-  const calculateCounts = () => {
-    const counts = {
-      received: 0,
-      unassigned: 0,
-      assigned: 0,
-      collected: 0,
-      unpaid: 0,
-      overdue: 0,
-    };
-
-    allShipments.forEach(shipment => {
-      // Assuming each shipment has a status that can be used to determine its category
-      if (shipment.paymentStatus === 'received') counts.received++;
-      if (shipment.paymentStatus === 'paid') counts.unassigned++;
-      if (shipment.paymentStatus === 'assigned') counts.assigned++;
-      if (shipment.paymentStatus === 'collected') counts.collected++;
-      if (shipment.paymentStatus === 'unpaid') counts.unpaid++;
-      if (shipment.paymentStatus === 'overdue') counts.overdue++;
-    });
-
-    return counts;
+useEffect(() => {
+  const fetchDriver = async () => {
+    try {
+      const result = await getShipmentsHistory();
+      const rows = result?.data?.details?.rows || [];
+      setAllShipments(rows);
+      setPaidShipments(rows.filter((item: ParcelDetails) => item.paymentStatus === 'paid'));
+    } catch (error) {
+      console.error("Failed to fetch drivers:", error);
+    }
   };
+  fetchDriver();
+}, []);
 
-  const counts = calculateCounts();
+const filterByStatus = (status: string) => {
+  return allShipments.filter((item) => item.paymentStatus === status);
+};
 
-  const storeButtonData: IStoreButton[] = [
-    {
-      label: 'Parcel Received',
-      count: counts.received,
-      url: 'ReceivedParcelHistory',
-      icon: <ReceivedIcon />,
-    },
-    {
-      label: 'Unassigned Parcel',
-      count: counts.unassigned,
-      url: 'UnAssignParcelHistory',
-      icon: <UnassignedIcon />,
-      onPress: () => navigation.navigate('UnAssignParcelHistory', { data: paidShipments }),
-    },
-    {
-      label: 'Assigned Parcel',
-      count: counts.assigned,
-      url: 'AssignParcelHistory',
-      icon: <AssignedIcon />,
+const counts = {
+  received: filterByStatus('received').length,
+  unassigned: filterByStatus('paid').length,
+  assigned: filterByStatus('assigned').length,
+  collected: filterByStatus('collected').length,
+  unpaid: filterByStatus('unpaid').length,
+  overdue: filterByStatus('overdue').length,
+};
 
-    },
-    {
-      label: 'Parcels Collected',
-      count: counts.collected,
-      url: 'ParcelCollectedHistory',
-      icon: <CollectedIcon />,
-    },
-    {
-      label: 'Unpaid Parcel',
-      count: counts.unpaid,
-      url: 'UnpaidParcelHistory',
-      icon: <UnpaidIcon />,
-    },
-    {
-      label: 'Overdue Parcel',
-      count: counts.overdue,
-      url: 'OverdueParcelHistory',
-      icon: <OverdueIcon />,
-    },
-  ];
+const storeButtonData: IStoreButton[] = [
+  {
+    label: 'Parcel Received',
+    count: counts.received,
+    url: 'UnAssignParcelHistory',
+    icon: <ReceivedIcon />,
+    onPress: () =>
+      navigation.navigate('UnAssignParcelHistory', {
+        data: filterByStatus('received'),
+        label: 'Parcel Received',
+      }),
+  },
+  {
+    label: 'Unassigned Parcel',
+    count: counts.unassigned,
+    url: 'UnAssignParcelHistory',
+    icon: <UnassignedIcon />,
+    onPress: () =>
+      navigation.navigate('UnAssignParcelHistory', {
+        data: filterByStatus('paid'),
+        label: 'Unassigned Parcel',
+      }),
+  },
+  {
+    label: 'Assigned Parcel',
+    count: counts.assigned,
+    url: 'UnAssignParcelHistory',
+    icon: <AssignedIcon />,
+    onPress: () =>
+      navigation.navigate('UnAssignParcelHistory', {
+        data: filterByStatus('assigned'),
+        label: 'Assigned Parcel',
+      }),
+  },
+  {
+    label: 'Parcels Collected',
+    count: counts.collected,
+    url: 'UnAssignParcelHistory',
+    icon: <CollectedIcon />,
+    onPress: () =>
+      navigation.navigate('UnAssignParcelHistory', {
+        data: filterByStatus('collected'),
+        label: 'Parcels Collected',
+      }),
+  },
+  {
+    label: 'Unpaid Parcel',
+    count: counts.unpaid,
+    url: 'UnAssignParcelHistory',
+    icon: <UnpaidIcon />,
+    onPress: () =>
+      navigation.navigate('UnAssignParcelHistory', {
+        data: filterByStatus('unpaid'),
+        label: 'Unpaid Parcel',
+      }),
+  },
+  {
+    label: 'Overdue Parcel',
+    count: counts.overdue,
+    url: 'UnAssignParcelHistory',
+    icon: <OverdueIcon />,
+    onPress: () =>
+      navigation.navigate('UnAssignParcelHistory', {
+        data: filterByStatus('overdue'),
+        label: 'Overdue Parcel',
+      }),
+  },
+];
+
   const financeButtonData: IFinanceButton[] = [
     {
       label: 'Paid to Driver',

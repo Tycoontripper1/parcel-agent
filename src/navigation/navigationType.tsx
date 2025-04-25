@@ -104,7 +104,7 @@ export type ReportStackList = {
   OverdueParcelDetails: {id: any};
   ParcelcollectedDetails: {id:any};
   ParcelCollectedHistory: undefined;
-  UnAssignParcelHistory: {data: any};
+  UnAssignParcelHistory: {data: any, label:string};
   UnAssignParcelDetails: {item: any};
   UnpaidParcelHistory: undefined;
   UnPaidParcelDetails: {id: any};
