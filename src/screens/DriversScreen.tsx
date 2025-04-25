@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import EmptyWallet from "@/components/svg/EmptyEarning";
 import UserIcon from "@/components/svg/userIcon";
 import { DriverStackList } from "@/navigation/navigationType";
+import { getAllDrivers } from "../../services/auth";
 
 const drivers = [
   {
@@ -57,6 +58,8 @@ const drivers = [
   },
 ];
 
+
+
 const { width } = Dimensions.get("window");
 type Props = NativeStackScreenProps<DriverStackList, "DriversScreen">;
 
@@ -65,16 +68,52 @@ export interface Wallet {
   title: string;
   icon: React.ReactNode;
 }
+export interface Driver {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  createdAt: string;
+  driverId: string;
+}
+
 
 const DriversScreen = ({ navigation }: Props) => {
   const [isWallet, setIsWallet] = useState(false);
-  const groupedDrivers = drivers.reduce<
-    Record<string, (typeof drivers)[number][]>
-  >((acc, driver) => {
-    if (!acc[driver.date]) acc[driver.date] = [];
-    acc[driver.date].push(driver);
-    return acc;
-  }, {});
+    const [allDrivers, setAllDrivers] = useState<Driver[]>([]);
+
+  useEffect(() => {
+    const fetchDriver = async () => {
+      try {
+        const result = await getAllDrivers();
+        console.log(result, 'result');
+        setAllDrivers(result?.data?.details?.rows);
+      } catch (error) {
+        console.error('Failed to fetch drivers:', error);
+      }
+    };
+    fetchDriver();
+  }, []);
+
+
+
+
+
+const groupedDrivers = allDrivers.reduce<
+  Record<string, (typeof drivers)[number][]>
+>((acc, driver) => {
+  const date = driver.createdAt.split('T')[0]; // Extracts '2025-04-23'
+  if (!acc[date]) acc[date] = [];
+  acc[date].push({
+    id: driver.id,
+    name: `${driver.firstName} ${driver.lastName}`,
+    phone: driver.phone,
+    driverId: driver.driverId,
+    date: date,
+  });
+  return acc;
+}, {});
+
 
   const $bodyHeader: ViewStyle = {
     flexDirection: "row",

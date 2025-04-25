@@ -24,6 +24,7 @@ import TextAreaInput from '@/components/TextAreaInput';
 import ShootButton from '@/components/svg/ShootButton';
 import ConfirmPaymentModal from '@/components/ComfirmPaymentModal';
 import ParcelPhotoModal from '@/components/ParcelPhotoModal';
+import { FormatPhoneNumber11 } from '@/components/FormatNumber';
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const ParcelInDriverUnRegistered = ({navigation}: Props) => {
@@ -41,39 +42,59 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
     const [senderPhoneError, setSenderPhoneError] = useState('');
 
 
+    const formatPhoneNumber11 = (value: string) => {
+      const digits = value.replace(/\D/g, '').slice(0, 11);
+      if (digits.length <= 4) return digits;
+      if (digits.length <= 7) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+      return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+    };
   const handleValidation = () => {
     let isValid = true;
 
-    if (!formData.driverNumber) {
+    const cleanDriverNumber = formData.driverNumber.replace(/\D/g, '');
+
+    if (!cleanDriverNumber) {
       setDriverPhoneError('Phone Number is required.');
       isValid = false;
-    } else if (formData.driverNumber.length < 11 || formData.driverNumber.length > 11) {
-      setDriverPhoneError('Please enter a valid mobile number.');
+    } else if (cleanDriverNumber.length !== 11) {
+      setDriverPhoneError('Please enter a valid 11-digit mobile number.');
       isValid = false;
     } else {
       setDriverPhoneError('');
     }
 
-    if (!formData.senderPhoneNumber) {
+    const cleanSenderPhone = formData.senderPhoneNumber.replace(/\D/g, '');
+
+    if (!cleanSenderPhone) {
       setSenderPhoneError('Phone Number is required.');
       isValid = false;
-    } else if (formData.senderPhoneNumber.length < 11 || formData.senderPhoneNumber.length > 11) {
-      setSenderPhoneError('Please enter a valid mobile number.');
+    } else if (cleanSenderPhone.length !== 11) {
+      setSenderPhoneError('Please enter a valid 11-digit mobile number.');
       isValid = false;
     } else {
       setSenderPhoneError('');
     }
 
-    if (!formData.receiverPhoneNumber) {
+    // if (!formData.receiverPhoneNumber) {
+    //   setReceiverPhoneError('Phone Number is required.');
+    //   isValid = false;
+    // } else if (formData.receiverPhoneNumber.length < 11 || formData.receiverPhoneNumber.length > 11) {
+    //   setReceiverPhoneError('Please enter a valid mobile number.');
+    //   isValid = false;
+    // } else {
+    //   setReceiverPhoneError('');
+    // }
+    const cleanReceiverPhone = formData.receiverPhoneNumber.replace(/\D/g, '');
+
+    if (!cleanReceiverPhone) {
       setReceiverPhoneError('Phone Number is required.');
       isValid = false;
-    } else if (formData.receiverPhoneNumber.length < 11 || formData.receiverPhoneNumber.length > 11) {
-      setReceiverPhoneError('Please enter a valid mobile number.');
+    } else if (cleanReceiverPhone.length !== 11) {
+      setReceiverPhoneError('Please enter a valid 11-digit mobile number.');
       isValid = false;
     } else {
       setReceiverPhoneError('');
     }
-
     return isValid;
   };
 
@@ -137,14 +158,18 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             placeholder='Enter phone number'
             placeholderTextColor='#B8C2CC'
             value={formData.driverNumber}
-            onChangeText={(value) =>
-              dispatch(updateField({key: 'driverNumber', value}))
-            }
+            onChangeText={(value) => {
+                          const cleaned = value.replace(/\D/g, '').slice(0, 11);
+                          dispatch(updateField({
+                            key: 'driverNumber',
+                            value: formatPhoneNumber11(cleaned),
+                          }));
+                        }}
             keyboardType='number-pad'
             errorMessage={driverPhoneError}
           />
           <SelectInput
-            label='Departure State?'
+            label='Arriving From?'
             data={[
               'Lagos State',
               'Ondo State',
@@ -165,9 +190,12 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             placeholder='Enter phone number'
             placeholderTextColor='#B8C2CC'
             value={formData.senderPhoneNumber}
-            onChangeText={(value) =>
-              dispatch(updateField({key: 'senderPhoneNumber', value}))
-            }
+            onChangeText={(value) => {
+              const cleaned = value.replace(/\D/g, '').slice(0, 11);
+              const formatted = FormatPhoneNumber11(cleaned);
+              dispatch(updateField({ key: 'senderPhoneNumber', value: formatPhoneNumber11(cleaned) }));
+              console.log('formatted:', formatPhoneNumber11(cleaned));
+            }}
             keyboardType='number-pad'
             errorMessage={senderPhoneError}
           />
@@ -176,14 +204,18 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             placeholder='Enter phone number'
             placeholderTextColor='#B8C2CC'
             value={formData.receiverPhoneNumber}
-            onChangeText={(value) =>
-              dispatch(updateField({key: 'receiverPhoneNumber', value}))
-            }
+            onChangeText={(value) => {
+              const cleaned = value.replace(/\D/g, '').slice(0, 11);
+              dispatch(updateField({
+                key: 'receiverPhoneNumber',
+                value: formatPhoneNumber11(cleaned),
+              }));
+            }}
             keyboardType='number-pad'
             errorMessage={receiverPhoneError}
           />
           <Input
-            label='Delivery Motor Park'
+            label='Destination Motor Park'
             placeholder='Enter delivery park'
             placeholderTextColor='#B8C2CC'
             value={formData.deliveryMotorPark}
@@ -244,7 +276,7 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
           </View>
           <SelectInput
             label='Charges to be paid by?'
-            data={['Sender', 'Receiver']}
+            data={['sender', 'receiver']}
             placeholder='Select option'
             onSelect={(value) =>
               dispatch(updateField({key: 'chargesPayBy', value}))

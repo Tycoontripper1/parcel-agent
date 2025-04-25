@@ -70,7 +70,7 @@ export type HomeStackList = {
   ParcelReceiverOutPreviewScreen: undefined;
   ParcelOutReceiver: undefined;
   ParcelOtpVerificationReceiver: undefined;
-  ParcelCongratulation: {message: string};
+  ParcelCongratulation: {message: string, note: string};
 };
 export type WalletStackList = {
   Wallet: undefined;
@@ -104,8 +104,8 @@ export type ReportStackList = {
   OverdueParcelDetails: {id: any};
   ParcelcollectedDetails: {id:any};
   ParcelCollectedHistory: undefined;
-  UnAssignParcelHistory: undefined;
-  UnAssignParcelDetails: {id: any};
+  UnAssignParcelHistory: {data: any};
+  UnAssignParcelDetails: {item: any};
   UnpaidParcelHistory: undefined;
   UnPaidParcelDetails: {id: any};
   ReceivedParcelHistory: undefined;

@@ -10,7 +10,7 @@ import ViewShot from "react-native-view-shot";
 import * as Print from "expo-print";
 
 import { PDFDocument, rgb } from "pdf-lib";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import {
   View,
@@ -30,21 +30,53 @@ import * as Sharing from 'expo-sharing';
 import { WebView } from "react-native-webview";
 import JsBarcode from "jsbarcode";
 import Barcode from '@kichiyaki/react-native-barcode-generator';
+import { singleParcelInterface } from "@/utils/interface";
+import { getParcelDetails } from "../../services/parcel";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
 type TransactionType = "Handling fee" | "Overdue fee" | "Upfront fee";
 
-interface Transaction {
+interface ParcelDetailsType {
   id: string;
-  type: TransactionType;
-  amount: number;
-  date: string;
-  receiver: string;
-  sender: string;
-  title: string;
-  properDate: string;
+  sender: {
+    phone: string;
+    fullName: string;
+    email: string;
+    address: string;
+  };
+  receiver: {
+    phone: string;
+    fullName: string;
+    email: string;
+    address: string;
+  };
+  parcel: {
+    type: string;
+    value: string;
+    chargesPayable: string;
+    chargesPaidBy: string;
+    handlingFee: string;
+    totalFee: string;
+    description: string;
+    thumbnails: string[];
+  };
+  park: {
+    source: string;
+    destination: string;
+  };
+  addedBy: {
+    name: string;
+    phone: string;
+  };
+  paymentOption: string | null;
+  paymentStatus: string;
+  driver: string | null;
   status: string;
+  parcelId: string;
+  qrImage: string;
+  createdAt: string;
 }
 
 
@@ -57,6 +89,36 @@ const PrintParcel = ({  navigation }: Props) => {
   const viewShotRef = useRef<ViewShot | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [BarValue, setBarValue] = useState('lintangwisesa');
+  const [parcelItem, setParcelItem] = useState<ParcelDetailsType | null>(null);
+    const [parcelDetails, setParcelDetails] = useState<singleParcelInterface | null>(null);
+    useEffect(() => {
+      const fetchParcelDetails = async () => {
+        const parcel = await getParcelDetails();
+        setParcelDetails(parcel)
+      };
+      fetchParcelDetails();
+    }
+    , []);
+   
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        const storedItem = await AsyncStorage.getItem('parcelItem');
+        if (storedItem !== null) {
+          setParcelItem(JSON.parse(storedItem)); // Parse the stored string back to an object
+        }
+      } catch (error) {
+        console.error('Error retrieving item from AsyncStorage:', error);
+      }
+    };
+
+    fetchItem();
+  }, []);
+
+
+
+
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -213,7 +275,7 @@ const PrintParcel = ({  navigation }: Props) => {
             marginTop: RFValue(8),
           }}
         >
-          <Text size={12}>PEH658498706</Text>
+          <Text size={12}>{parcelItem?.parcelId}</Text>
           <View
             style={{
               flexDirection: "row",

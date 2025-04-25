@@ -1,53 +1,103 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {View, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {Text} from '@/components';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {color} from '@/constants/Colors';
+import { getShipmentsHistory } from '../../services/parcel';
+import { formatDate } from '@/utils/formartDates';
 
-interface ShipmentItem {
-  image: any;
-  sender: string;
-  receiver: string;
-  time: string;
-  charges: string;
+interface ParcelDetails {
+  id: string;
+  sender: {
+    phone: string;
+    fullName: string;
+    email: string;
+    address: string;
+  };
+  receiver: {
+    phone: string;
+    fullName: string;
+    email: string;
+    address: string;
+  };
+  parcel: {
+    type: string;
+    value: string;
+    chargesPayable: string;
+    chargesPaidBy: string;
+    handlingFee: string;
+    totalFee: string;
+    description: string;
+    thumbnails: string[];
+  };
+  park: {
+    source: string;
+    destination: string;
+  };
+  addedBy: {
+    name: string;
+    phone: string;
+  };
+  paymentOption: string | null;
+  paymentStatus: string;
+  driver: string | null;
   status: string;
+  parcelId: string;
+  qrImage: string;
+  createdAt: string;
 }
 
+
 interface ShipmentHistoryProps {
-  data: ShipmentItem[];
   onViewAll: () => void;
 }
 
-const HomeShipmentHistory = ({data, onViewAll}: ShipmentHistoryProps) => {
+const HomeShipmentHistory = ({onViewAll}: ShipmentHistoryProps) => {
+  const [allShipments, setAllShipments] = useState<ParcelDetails[]>([]);
+  useEffect(() => {
+    const fetchDriver = async () => {
+      try {
+        const result = await getShipmentsHistory();
+        console.log(result, "result");
+        setAllShipments(result?.data?.details?.rows);
+      } catch (error) {
+        console.error("Failed to fetch drivers:", error);
+      }
+    };
+    fetchDriver();
+  }, []);
+
+
+
   return (
     <View style={styles.shipmentContainer}>
       <Text style={styles.shipmentLabel} font='SemiBold'>
         Shipment History
       </Text>
-      {data.map((item, index) => (
+      {allShipments.map((item, index) => (
         <View key={index} style={styles.shipmentRow}>
-          <Image source={item.image} style={styles.shipmentImage} />
+          <Image source={{ uri: item?.parcel?.thumbnails[0] }} style={styles.shipmentImage} />
           <View style={styles.shipmentDetails}>
             <View style={{flexDirection: 'column', gap: 4}}>
               <Text size={11} color='#717680'>
                 Sender
               </Text>
-              <Text size={12}>{item.sender}</Text>
+              <Text size={12}>{item.sender.fullName}</Text>
               <Text size={10} color='#717680'>
-                {item.time}
+                {formatDate(item.createdAt)}
               </Text>
             </View>
             <View style={{flexDirection: 'column', gap: 4}}>
               <Text size={10} color='#717680'>
                 Receiver
               </Text>
-              <Text size={12}>{item.receiver}</Text>
+              <Text size={12}>{item?.receiver.fullName}</Text>
             </View>
             <View style={{flexDirection: 'column', gap: 4}}>
               <Text size={10} color='#717680'>
                 Charges
               </Text>
-              <Text size={12}>{item.charges}</Text>
+              <Text size={12}>₦{item?.parcel.totalFee}</Text>
               <View
                 style={{
                   backgroundColor:

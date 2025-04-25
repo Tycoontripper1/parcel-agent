@@ -5,7 +5,7 @@ import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {color} from '@/constants/Colors';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, ViewStyle} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
@@ -14,7 +14,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '@/redux/store';
 import {updateField} from '@/redux/slices/formSlice';
 import {AuthStackParamList} from '@/navigation/navigationType';
-import { resendOtp, verifyOtpAccount } from '../../../services/auth';
+import { getUser, resendOtp, verifyOtpAccount } from '../../../services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp,useRoute } from '@react-navigation/native';
 
@@ -32,6 +32,15 @@ const OTPVerificationScreen = ({navigation}: Props) => {
   const { phone } = route.params;
   const otp = useSelector((state: RootState) => state.form.otp);
   const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userDetails = await getUser();
+      const email = userDetails?.email;
+      console.log(email, 'email');
+    };
+  
+    fetchUser();
+  }, []);
 
   const handleOtpChange = (newOtp: string) => {
     const updatedOtp = newOtp;
@@ -52,11 +61,14 @@ const OTPVerificationScreen = ({navigation}: Props) => {
     }
   
     setLoading(true);
+        const userDetails =  await getUser();
+        const email = userDetails?.email;
+        console.log(email, 'email');
   
     try {
       const payload = {
         otp,
-        email: 'oayodeji27@gmail.com', // replace with dynamic email if needed
+        email: email, 
       };
   
       const result = await verifyOtpAccount(payload);
@@ -91,10 +103,12 @@ const OTPVerificationScreen = ({navigation}: Props) => {
   
   const handleSentOTP = async () => {
     setLoading(true);
-  
+    const userDetails =  await getUser();
+    const email = userDetails?.email;
+    console.log(email, 'email');
     try {
       const payload = {
-        email: 'oayodeji27@gmail.com', // Ideally, replace this with dynamic email if possible
+        email: email
       };
   
       const result = await resendOtp(payload);

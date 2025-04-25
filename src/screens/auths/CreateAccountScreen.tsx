@@ -30,6 +30,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../../services/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const CreateAccountScreen = ({ navigation }: Props) => {
@@ -172,13 +173,13 @@ const CreateAccountScreen = ({ navigation }: Props) => {
 
     setLoading(true);
     console.log(formData.phone, "formData");
-
+    const plainPhone = formData.phone.replace(/\D/g, "");
     try {
       const payload = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         dateOfBirth: formData.dateOfBirth,
-        phone: formData.phone,
+        phone: plainPhone,
         email: formData.email,
         password: formData.password,
         confirm: formData.confirm,
@@ -193,9 +194,10 @@ const CreateAccountScreen = ({ navigation }: Props) => {
       Toast.show({
         type: "success",
         text1: "Success",
-        text2: result?.message || "OTP sent successfully",
+        text2: result?.message || "Account Created successfully",
       });
-
+      const userDetails = result?.data?.details;
+      await AsyncStorage.setItem('user', JSON.stringify(userDetails));
       navigation.navigate("OTPVerificationScreen", { phone: formData.phone });
     } catch (error: any) {
       console.log(error, "error");
@@ -301,8 +303,8 @@ const CreateAccountScreen = ({ navigation }: Props) => {
             placeholderTextColor="#B8C2CC"
             value={formData.phone}
             onChangeText={(value) => {
-              // const formatted = formatPhoneNumber(value);
-              updateFormField("phone", value);
+              const formatted = formatPhoneNumber(value);
+              updateFormField("phone", formatted);
             }}
             LeftIcon={
               <SimpleLineIcons name="phone" size={18} color={color.gray} />

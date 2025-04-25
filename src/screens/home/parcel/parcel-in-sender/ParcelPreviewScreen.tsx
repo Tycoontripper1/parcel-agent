@@ -16,27 +16,75 @@ import {
 } from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
-import {useSelector} from 'react-redux';
+import {useSelector,useDispatch} from 'react-redux';
+import { SendParcelData } from '../../../../../services/parcel';
+import { resetForm } from '@/redux/slices/formSlice';
+
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const ParcelPreviewScreen = ({navigation}: Props) => {
   const formData = useSelector((state: RootState) => state.parcel);
-
+const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const HandleContinue = () => {
+  const HandleParcelInSender = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+  
+    try {
+      const payload = {
+        sender: {
+          phone: formData.senderPhoneNumber.replace(/-/g, ''),
+          fullName: formData.senderFullName,
+          email: formData.senderEmail,
+          address: formData.senderAddress,
+        },
+        receiver: {
+          phone: formData.receiverPhoneNumber.replace(/-/g, ''),
+          fullName: formData.receiverFullName,
+          email: formData.receiverEmail,
+          address: formData.receiverAddress,
+        },
+        park: {
+          source: formData.sendingFrom,
+          destination: formData.deliveryMotorPark,
+        },
+        parcel: {
+          type: formData.parcelType,
+          value: String(Number(formData.parcelValue)),
+          chargesPayable: String(Number(formData.chargesPayable)),
+          chargesPaidBy: formData.chargesPayBy,
+          handlingFee: '1000',
+          totalFee: String(Number(formData.parcelValue) + Number(formData.chargesPayable)),
+          description: formData.parcelDescription,
+          thumbnails: formData.parcelImages,
+        },
+        paymentOption: "bank",
+      };
+      
+  
+      const result = await SendParcelData(payload); 
+  console.log(result, 'result');
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: 'Parcel Received!',
+        text2: result?.data?.message ||'Parcel Received!',
       });
-      navigation.navigate('Dashboard');
-    }, 2000);
-    console.log({formData});
+  
+      dispatch(resetForm()); // 🧼 clear form
+  
+      navigation.navigate('Dashboard'); // ✅ go home
+    } catch (error: any) {
+      console.error('Parcel submission error:', error);
+  
+      Toast.show({
+        type: 'error',
+        text1: 'Submission Failed',
+        text2: error.message || 'Something went wrong',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
-
+  
   // Styles
   const $bodyHeader: ViewStyle = {
     padding: RFValue(16),
@@ -250,7 +298,7 @@ const ParcelPreviewScreen = ({navigation}: Props) => {
               }}>
               <Text style={styles.infoText}>Handling Fee:</Text>
               <Text style={styles.infoText}>
-                {formData.parcelValue + formData.chargesPayable}
+                  {parseFloat(formData.parcelValue) * 0.1}
               </Text>
             </View>
             <View
@@ -261,7 +309,7 @@ const ParcelPreviewScreen = ({navigation}: Props) => {
               }}>
               <Text style={styles.infoText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-                {formData.parcelValue + formData.chargesPayable}
+                {parseFloat(formData.parcelValue) + parseFloat(formData.chargesPayable)}
               </Text>
             </View>
           </View>
@@ -308,7 +356,7 @@ const ParcelPreviewScreen = ({navigation}: Props) => {
         )}
         <View style={$buttonsContainer}>
           <ButtonHome
-            onPress={HandleContinue}
+            onPress={HandleParcelInSender}
             title='Receive Parcel'
             style={{height: 55}}
             disabled={!formData.parcelDescription}

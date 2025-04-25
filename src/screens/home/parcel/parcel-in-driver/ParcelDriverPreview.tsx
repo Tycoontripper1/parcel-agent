@@ -5,8 +5,9 @@ import BackButton from '@/components/share/BackButton';
 import StepProgress from '@/components/share/StepProgress';
 import {HomeStackList} from '@/navigation/navigationType';
 import {RootState} from '@/redux/store';
+import { singleParcelInterface } from '@/utils/interface';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -17,11 +18,19 @@ import {
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
 import {useSelector} from 'react-redux';
+import { getSingleParcel } from '../../../../../services/parcel';
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const ParcelDriverPreviewScreen = ({navigation}: Props) => {
-  const formData = useSelector((state: RootState) => state.parcel);
-
+  const [singleParcel, setSingleParcel] = useState<singleParcelInterface | null>(null);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const parcel = await getSingleParcel();
+      setSingleParcel(parcel)
+    };
+    fetchUser();
+  }
+  , []);
   const [loading, setLoading] = useState(false);
   const HandleContinue = () => {
     setLoading(true);
@@ -34,9 +43,10 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
       });
       navigation.navigate('ParcelCongratulation', {
         message: 'Parcel received successfully',
+        note: 'SMS has been sent to notify the sender/receiver.',
       });
     }, 2000);
-    console.log({formData});
+    console.log({singleParcel});
   };
 
   // Styles
@@ -69,7 +79,7 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
             paddingVertical: 6,
             padding: RFValue(16),
           }}>
-          <Text size={14}>Status</Text>
+          <Text size={14}>{singleParcel?.status}</Text>
           <View
             style={{backgroundColor: '#FFF8E6', padding: 4, borderRadius: 8}}>
             <Text color='#F79009'> In Transit</Text>
@@ -92,8 +102,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Name: </Text>
-              <Text style={styles.infoText}>{formData.senderFullName} </Text>
+              <Text style={styles.descriptionText}>Name: </Text>
+              <Text style={styles.infoText}>{singleParcel?.sender?.fullName} </Text>
             </View>
             <View
               style={{
@@ -101,8 +111,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Email: </Text>
-              <Text style={styles.infoText}>{formData.senderEmail} </Text>
+              <Text style={styles.descriptionText}>Email: </Text>
+              <Text style={styles.infoText}>{singleParcel?.sender.email} </Text>
             </View>
             <View
               style={{
@@ -110,8 +120,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>{formData.senderPhoneNumber} </Text>
+              <Text style={styles.descriptionText}>Phone Number:</Text>
+              <Text style={styles.infoText}>{singleParcel?.sender.phone} </Text>
             </View>
             <View
               style={{
@@ -119,8 +129,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Address: </Text>
-              <Text style={styles.infoText}>{formData.senderAddress} </Text>
+              <Text style={styles.descriptionText}>Address: </Text>
+              <Text style={styles.infoText}>{singleParcel?.sender.address} </Text>
             </View>
           </View>
         </View>
@@ -142,8 +152,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Name: </Text>
-              <Text style={styles.infoText}>{formData.receiverFullName} </Text>
+              <Text style={styles.descriptionText}>Name: </Text>
+              <Text style={styles.infoText}>{singleParcel?.receiver.fullName} </Text>
             </View>
             <View
               style={{
@@ -151,8 +161,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Email: </Text>
-              <Text style={styles.infoText}>{formData.receiverEmail} </Text>
+              <Text style={styles.descriptionText}>Email: </Text>
+              <Text style={styles.infoText}>{singleParcel?.receiver.email} </Text>
             </View>
             <View
               style={{
@@ -160,9 +170,9 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Phone Number:</Text>
+              <Text style={styles.descriptionText}>Phone Number:</Text>
               <Text style={styles.infoText}>
-                {formData.receiverPhoneNumber}{' '}
+                {singleParcel?.receiver.phone}
               </Text>
             </View>
             <View
@@ -171,8 +181,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Address: </Text>
-              <Text style={styles.infoText}>{formData.receiverAddress} </Text>
+              <Text style={styles.descriptionText}>Address: </Text>
+              <Text style={styles.infoText}>{singleParcel?.receiver.address} </Text>
             </View>
           </View>
         </View>
@@ -194,8 +204,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Dispatch Park:</Text>
-              <Text style={styles.infoText}> {formData.sendingFrom}</Text>
+              <Text style={styles.descriptionText}>Dispatch Park:</Text>
+              <Text style={styles.infoText}> {singleParcel?.park.source}</Text>
             </View>
             <View
               style={{
@@ -203,8 +213,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Delivery Park:</Text>
-              <Text style={styles.infoText}>{formData.deliveryMotorPark}</Text>
+              <Text style={styles.descriptionText}>Delivery Park:</Text>
+              <Text style={styles.infoText}>{singleParcel?.park.destination}</Text>
             </View>
           </View>
         </View>
@@ -226,8 +236,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Charges Paid By:</Text>
-              <Text style={styles.infoText}>{formData.chargesPayBy}</Text>
+              <Text style={styles.descriptionText}>Charges Paid By:</Text>
+              <Text style={styles.infoText}>{singleParcel?.parcel.chargesPaidBy}</Text>
             </View>
             <View
               style={{
@@ -235,8 +245,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Parcel Type:</Text>
-              <Text style={styles.infoText}>{formData.parcelType}</Text>
+              <Text style={styles.descriptionText}>Parcel Type:</Text>
+              <Text style={styles.infoText}>{singleParcel?.parcel.type}</Text>
             </View>
             <View
               style={{
@@ -244,8 +254,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Parcel Worth:</Text>
-              <Text style={styles.infoText}>{formData.parcelValue}</Text>
+              <Text style={styles.descriptionText}>Parcel Worth:</Text>
+              <Text style={styles.infoText}>{singleParcel?.parcel.value}</Text>
             </View>
             <View
               style={{
@@ -255,8 +265,8 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 borderBottomWidth: 1,
                 borderBottomColor: '#E9EAEB',
               }}>
-              <Text style={styles.infoText}>Charges Payable:</Text>
-              <Text style={styles.infoText}>{formData.chargesPayable}</Text>
+              <Text style={styles.descriptionText}>Charges Payable:</Text>
+              <Text style={styles.infoText}>{singleParcel?.parcel.chargesPayable}</Text>
             </View>
             <View
               style={{
@@ -264,9 +274,9 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Handling Fee:</Text>
+              <Text style={styles.descriptionText}>Handling Fee:</Text>
               <Text style={styles.infoText}>
-                {formData.parcelValue + formData.chargesPayable}
+                {(Number(singleParcel?.parcel.value) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
               </Text>
             </View>
             <View
@@ -275,9 +285,9 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}>
-              <Text style={styles.infoText}>Total Paid:</Text>
+              <Text style={styles.descriptionText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-                {formData.parcelValue + formData.chargesPayable}
+              {(Number(singleParcel?.parcel.value) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
               </Text>
             </View>
           </View>
@@ -295,20 +305,20 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
               borderRadius: 8,
             }}>
             <Text style={styles.descriptionText}>
-              {formData.parcelDescription}
+              {singleParcel?.parcel.description}
             </Text>
           </View>
         </View>
 
-        {formData.parcelImages &&
-        formData.parcelImages.filter((photo) => photo).length > 0 ? (
+        {singleParcel?.parcel.thumbnails &&
+        singleParcel?.parcel.thumbnails.filter((photo) => photo).length > 0 ? (
           <View style={{paddingVertical: RFValue(10), padding: RFValue(16)}}>
             <Text style={styles.counter}>
-              {formData.parcelImages.filter((photo) => photo !== null).length}
+              {singleParcel?.parcel.thumbnails.filter((photo) => photo !== null).length}
            /2 photos
             </Text>
             <View style={styles.photoGrid}>
-              {formData.parcelImages.map((photo, index) => (
+              {singleParcel?.parcel.thumbnails.map((photo, index) => (
                 <TouchableOpacity key={index} style={styles.photoBox}>
                   {photo ? (
                     <Image source={{uri: photo}} style={styles.photoPreview} />
@@ -342,7 +352,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   sectionContainer: {
-    marginBottom: RFValue(10),
+    // marginBottom: RFValue(10),
     // paddingVertical: RFValue(12),
     backgroundColor: '#FDFDFD',
     borderRadius: RFValue(8),
@@ -355,12 +365,12 @@ const styles = StyleSheet.create({
     marginBottom: RFValue(6),
   },
   infoText: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(10),
     marginBottom: RFValue(4),
-    color: '#717680',
+    color: '#252B37',
   },
   descriptionText: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(10),
     color: '#717680',
   },
   imageContainer: {

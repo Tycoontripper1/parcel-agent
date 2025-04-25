@@ -11,6 +11,7 @@ export interface IStoreButton {
   count: number;
   icon?: React.ReactNode;
   url?: string;
+  onPress?: () => void; // Optional onPress function
 }
 
 interface StoreButtonsProps {
@@ -25,21 +26,24 @@ const StoreButton = ({buttons}: StoreButtonsProps) => {
     <View style={styles.parcelButtonsContainer}>
       {buttons.map((button, index) => (
         <TouchableOpacity
-          onPress={() => {
-            if (button.url) {
-              navigation.navigate('ReportStack', {screen: button.url as never}); // Ensure correct typing
-            }
-          }}
+        onPress={() => {
+          if (button.onPress) {
+            button.onPress(); // Call the custom function if it exists
+          } else if (button.url) {
+            navigation.navigate('ReportStack', { screen: button.url as never }); // Default navigation
+          }
+        }}
           key={index}
           style={[
             styles.parcelButton,
             {backgroundColor: buttonColors[index % buttonColors.length]}, // Assign dynamic color
           ]}>
           <View
-            style={{flexDirection: 'column', gap: RFValue(20), }}>
+            style={{flexDirection: 'column', gap: RFValue(8), }}>
+            <View>{button.icon}</View>
             <Text style={styles.parcelText} color='#252B37'>
               {button.count}
-            </Text>
+            </Text> 
             <Text style={styles.parcelLabel} font='SemiBold'>
               {button.label}
             </Text>

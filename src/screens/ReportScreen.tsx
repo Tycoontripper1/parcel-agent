@@ -9,7 +9,7 @@ import {
   View,
   ImageBackground,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {CustomView, Text} from '@/components';
 import HomeHeader from '@/components/share/HomeHeader';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -28,92 +28,105 @@ import {HomeStackList, ReportStackList} from '@/navigation/navigationType';
 import StoreButton, { IStoreButton } from '@/components/StoreButton';
 import FinanceButton, {IFinanceButton} from '@/components/Financebutton';
 import ScreenHeader from '@/components/share/ScreenHeader';
+import ReceivedIcon from '@/components/svg/receivedIcon';
+import UnassignedIcon from '@/components/svg/unassignedIcon';
+import AssignedIcon from '@/components/svg/assignedIcon';
+import CollectedIcon from '@/components/svg/collectedIcon';
+import UnpaidIcon from '@/components/svg/unpaidIcon';
+import OverdueIcon from '@/components/svg/overdueIcon';
+import { getShipmentsHistory } from '../../services/parcel';
 
 const {width} = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<ReportStackList & HomeStackList>;
+interface ParcelDetails {
+  id: string;
+
+  paymentStatus: string;
+
+}
 const Reportscreen = ({navigation}: Props) => {
-  const shipmentData = [
-    {
-      image: Package,
-      sender: 'Adewale Jinad',
-      receiver: 'Mary Kolade',
-      time: 'Today • 01:30 PM',
-      charges: '₦5,000.00',
-      status: 'Arrived',
-    },
-    {
-      image: Package,
-      sender: 'John Doe',
-      receiver: 'Jane Smith',
-      time: 'Yesterday • 04:20 PM',
-      charges: '₦3,500.00',
-      status: 'Delivered',
-    },
-    {
-      image: Package,
-      sender: 'Peter Obi',
-      receiver: 'Ngozi Okonjo',
-      time: 'Last Week • 10:15 AM',
-      charges: '₦10,000.00',
-      status: 'In Transit',
-    },
-    {
-      image: Package,
-      sender: 'Adewale Jinad',
-      receiver: 'Mary Kolade',
-      time: 'Today • 01:30 PM',
-      charges: '₦5,000.00',
-      status: 'Arrived',
-    },
-    {
-      image: Package,
-      sender: 'John Doe',
-      receiver: 'Jane Smith',
-      time: 'Yesterday • 04:20 PM',
-      charges: '₦3,500.00',
-      status: 'Delivered',
-    },
-    {
-      image: Package,
-      sender: 'Peter Obi',
-      receiver: 'Ngozi Okonjo',
-      time: 'Last Week • 10:15 AM',
-      charges: '₦10,000.00',
-      status: 'In Transit',
-    },
-  ];
+
+  const [allShipments, setAllShipments] = useState<ParcelDetails[]>([]);
+  const [paidShipments, setPaidShipments] = useState<ParcelDetails[]>([]); // Add this
+  
+  useEffect(() => {
+    const fetchDriver = async () => {
+      try {
+        const result = await getShipmentsHistory();
+        const rows = result?.data?.details?.rows || [];
+        setAllShipments(rows);
+        setPaidShipments(rows.filter((item: ParcelDetails) => item.paymentStatus === 'paid')); // Filter paid
+      } catch (error) {
+        console.error("Failed to fetch drivers:", error);
+      }
+    };
+    fetchDriver();
+  }, []);
+
+  const calculateCounts = () => {
+    const counts = {
+      received: 0,
+      unassigned: 0,
+      assigned: 0,
+      collected: 0,
+      unpaid: 0,
+      overdue: 0,
+    };
+
+    allShipments.forEach(shipment => {
+      // Assuming each shipment has a status that can be used to determine its category
+      if (shipment.paymentStatus === 'received') counts.received++;
+      if (shipment.paymentStatus === 'paid') counts.unassigned++;
+      if (shipment.paymentStatus === 'assigned') counts.assigned++;
+      if (shipment.paymentStatus === 'collected') counts.collected++;
+      if (shipment.paymentStatus === 'unpaid') counts.unpaid++;
+      if (shipment.paymentStatus === 'overdue') counts.overdue++;
+    });
+
+    return counts;
+  };
+
+  const counts = calculateCounts();
 
   const storeButtonData: IStoreButton[] = [
     {
       label: 'Parcel Received',
-      count: 50,
+      count: counts.received,
       url: 'ReceivedParcelHistory',
+      icon: <ReceivedIcon />,
     },
     {
       label: 'Unassigned Parcel',
-      count: 25,
+      count: counts.unassigned,
       url: 'UnAssignParcelHistory',
+      icon: <UnassignedIcon />,
+      onPress: () => navigation.navigate('UnAssignParcelHistory', { data: paidShipments }),
     },
     {
       label: 'Assigned Parcel',
-      count: 25,
+      count: counts.assigned,
       url: 'AssignParcelHistory',
+      icon: <AssignedIcon />,
+
     },
     {
       label: 'Parcels Collected',
-      count: 20,
+      count: counts.collected,
       url: 'ParcelCollectedHistory',
+      icon: <CollectedIcon />,
     },
     {
       label: 'Unpaid Parcel',
-      count: 20,
+      count: counts.unpaid,
       url: 'UnpaidParcelHistory',
+      icon: <UnpaidIcon />,
     },
     {
       label: 'Overdue Parcel',
-      count: 20,
+      count: counts.overdue,
       url: 'OverdueParcelHistory',
+      icon: <OverdueIcon />,
     },
   ];
   const financeButtonData: IFinanceButton[] = [
@@ -198,7 +211,7 @@ const Reportscreen = ({navigation}: Props) => {
                 <FinanceButton buttons={financeButtonData} />
 
           {/* Shipment History */}
-          <HomeShipmentHistory data={shipmentData} onViewAll={handleViewAll} />
+          <HomeShipmentHistory onViewAll={handleViewAll} />
         </ScrollView>
       </KeyboardAvoidingView>
     </CustomView>

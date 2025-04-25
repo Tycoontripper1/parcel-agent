@@ -19,47 +19,78 @@ import { useSelector } from "react-redux";
 import HomeHeader from "@/components/share/HomeHeader";
 import { Avatar } from "../../../../../assets/images";
 import PaymentOption from "@/components/PaymentOption";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-    type TransactionType = "Handling fee" | "Overdue fee" | "Upfront fee";
-
-interface Transaction {
+// ParcelDetailsType as the type for the parcel details passed through route params
+interface ParcelDetailsType {
   id: string;
-  type: TransactionType;
-  amount: number;
-  date: string;
-  receiver:string
-  sender: string
-  title: string;
-  properDate:string
-  status:string
+  sender: {
+    phone: string;
+    fullName: string;
+    email: string;
+    address: string;
+  };
+  receiver: {
+    phone: string;
+    fullName: string;
+    email: string;
+    address: string;
+  };
+  parcel: {
+    type: string;
+    value: string;
+    chargesPayable: string;
+    chargesPaidBy: string;
+    handlingFee: string;
+    totalFee: string;
+    description: string;
+    thumbnails: string[];
+  };
+  park: {
+    source: string;
+    destination: string;
+  };
+  addedBy: {
+    name: string;
+    phone: string;
+  };
+  paymentOption: string | null;
+  paymentStatus: string;
+  driver: string | null;
+  status: string;
+  parcelId: string;
+  qrImage: string;
+  createdAt: string;
 }
 
-
-  
 // Define the props correctly
 type Props = NativeStackScreenProps<ReportStackList, "UnAssignParcelDetails">;
 
-// OR if you only need the `route` prop:
-interface RouteProps {
-  route: RouteProp<ReportStackList, "UnAssignParcelDetails">;
-}
 const UnAssignParcelDetails = ({ route, navigation }: Props) => {
-      const formData = useSelector((state: RootState) => state.parcel);
-        const [selectedOption, setSelectedOption] = useState<string>('Online');
-        const [selectedPaymentAnswer, setSelectedPaymentAnswer] = useState<
-          string | null
-        >(null);
-         const [modalVisible, setModalVisible] = useState(false);
-    
-      const HandleContinue = () => {
-        console.log({formData});
-        // navigation.navigate('');
-      };
-    const { idFrontImage, idBackImage } = useSelector(
-      (state: RootState) => state.form
-    );
-  const { id } = route.params;
+  const { item } = route.params; // Get item from route params
+  // Extract date and time from createdAt
+  const createdAt = item.createdAt;
+  const date = new Date(createdAt);
+  const formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+  const formattedTime = `${date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()} ${date.getHours() < 12 ? 'AM' : 'PM'}`;
 
+
+  const [selectedOption, setSelectedOption] = useState<string>("Online");
+  const [selectedPaymentAnswer, setSelectedPaymentAnswer] = useState<
+    string | null
+  >(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const HandleContinue = async () => {
+    try {
+      // Store the item in AsyncStorage as a JSON string
+      await AsyncStorage.setItem('parcelItem', JSON.stringify(item));
+      console.log(item);
+      navigation.navigate('PrintParcel');
+    } catch (error) {
+      console.error('Error storing item in AsyncStorage:', error);
+    }
+  };
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -75,8 +106,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
   };
 
   return (
-    <CustomView style={{paddingVertical: RFValue(10)}}>
-
+    <CustomView style={{ paddingVertical: RFValue(10) }}>
       {modalVisible && (
         <ConfirmPaymentModal
           selectedOption={selectedPaymentAnswer}
@@ -93,146 +123,107 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
       <KeyBoardView padded={false}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
             paddingVertical: 6,
             padding: RFValue(16),
             marginTop: RFValue(8),
-          }}>
+          }}
+        >
           <Text size={12}>Status</Text>
-         <View style={{   flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 6}}>
-         <View
-            style={{backgroundColor: '#EBE9FE', padding: 4, borderRadius: 8,}}>
-            <Text color='#7A5AF8' size={10}>Assigned</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <View style={{ backgroundColor: "#EBE9FE", padding: 4, borderRadius: 8 }}>
+              <Text color="#7A5AF8" size={10}>{item.status}</Text>
+            </View>
           </View>
-         </View>
         </View>
+
+        {/* Date & Time */}
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
             paddingVertical: 6,
             padding: RFValue(16),
-          }}>
-          <Text size={12}>Date: <Text color="#717680">01-10-2024</Text></Text>
-         <View style={{   flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 6}}>
-         <View
-            style={{ padding: 4, borderRadius: 8,}}>
-             <Text size={12}>Time: <Text color="#717680">01:30 PM</Text></Text>
+          }}
+        >
+          <Text size={12}>
+            Date: <Text color="#717680">{formattedDate}</Text>
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <View style={{ padding: 4, borderRadius: 8 }}>
+              <Text size={12}>Time: <Text color="#717680">{formattedTime}</Text></Text>
+            </View>
           </View>
-         </View>
         </View>
 
         {/* Sender's Information */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Sender's Information
           </Text>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+          <View style={{ backgroundColor: "white", padding: RFValue(6), borderRadius: 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <Text style={styles.infoText}>Name: </Text>
-              <Text style={styles.infoText}>{formData.senderFullName} </Text>
+              <Text style={styles.infoText}>{item.sender.fullName}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <Text style={styles.infoText}>Email: </Text>
-              <Text style={styles.infoText}>{formData.senderEmail} </Text>
+              <Text style={styles.infoText}>{item.sender.email}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>{formData.senderPhoneNumber} </Text>
+              <Text style={styles.infoText}>{item.sender.phone}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <Text style={styles.infoText}>Address: </Text>
-              <Text style={styles.infoText}>{formData.senderAddress} </Text>
+              <Text style={styles.infoText}>{item.sender.address}</Text>
             </View>
           </View>
         </View>
 
         {/* Receiver's Information */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Receiver's Information
           </Text>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+          <View style={{ backgroundColor: "white", padding: RFValue(6), borderRadius: 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <Text style={styles.infoText}>Name: </Text>
-              <Text style={styles.infoText}>{formData.receiverFullName} </Text>
+              <Text style={styles.infoText}>{item.receiver.fullName}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <Text style={styles.infoText}>Email: </Text>
-              <Text style={styles.infoText}>{formData.receiverEmail} </Text>
+              <Text style={styles.infoText}>{item.receiver.email}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>{formData.receiverPhoneNumber}</Text>
+              <Text style={styles.infoText}>{item.receiver.phone}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <Text style={styles.infoText}>Address:</Text>
-              <Text style={styles.infoText}>{formData.receiverAddress}</Text>
+              <Text style={styles.infoText}>{item.receiver.address}</Text>
             </View>
           </View>
         </View>
-
-        {/* Park Detail */}
-        <View style={styles.sectionContainer}>
+   {/* Park Detail */}
+   <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader} font='SemiBold' size={14}>
             Park Detail
           </Text>
@@ -249,7 +240,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.infoText}>Dispatch Park:</Text>
-              <Text style={styles.infoText}>{formData.sendingFrom}</Text>
+              <Text style={styles.infoText}>{item.park.source}</Text>
             </View>
             <View
               style={{
@@ -258,7 +249,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.infoText}>Delivery Park:</Text>
-              <Text style={styles.infoText}>{formData.deliveryMotorPark}</Text>
+              <Text style={styles.infoText}>{item.park.destination}</Text>
             </View>
           </View>
         </View>
@@ -281,7 +272,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.infoText}>Charges Paid By:</Text>
-              <Text style={styles.infoText}>{formData.chargesPayBy}</Text>
+              <Text style={styles.infoText}>{item.parcel.chargesPaidBy}</Text>
             </View>
             <View
               style={{
@@ -290,7 +281,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.infoText}>Parcel Type:</Text>
-              <Text style={styles.infoText}>{formData.parcelType}</Text>
+              <Text style={styles.infoText}>{item.parcel.type}</Text>
             </View>
             <View
               style={{
@@ -299,7 +290,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.infoText}>Parcel Worth:</Text>
-              <Text style={styles.infoText}>{formData.parcelValue}</Text>
+              <Text style={styles.infoText}>{item.parcel.value}</Text>
             </View>
             <View
               style={{
@@ -310,61 +301,52 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                 borderBottomColor: '#E9EAEB',
               }}>
               <Text style={styles.infoText}>Charges Payable:</Text>
-              <Text style={styles.infoText}>{formData.chargesPayable}</Text>
+              <Text style={styles.infoText}>{item.parcel.chargesPayable}</Text>
             </View>
           </View>
         </View>
-
         {/* Parcel Description */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Parcel Description
           </Text>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}>
+          <View style={{ backgroundColor: "white", padding: RFValue(6), borderRadius: 8 }}>
             <Text style={styles.descriptionText}>
-              {formData.parcelDescription}
+              {item.parcel.description}
             </Text>
           </View>
         </View>
 
-        {formData.parcelImages &&
-        formData.parcelImages.filter((photo) => photo).length > 0 ? (
-          <View style={{paddingVertical: RFValue(10), padding: RFValue(16)}}>
+        {item.parcel.thumbnails.length > 0 && (
+          <View style={{ paddingVertical: RFValue(10), padding: RFValue(16) }}>
             <Text style={styles.counter}>
-              {formData.parcelImages.filter((photo) => photo !== null).length}
-           /2 photos
+              {item.parcel.thumbnails.length} /2 photos
             </Text>
             <View style={styles.photoGrid}>
-              {formData.parcelImages.map((photo, index) => (
+                {item.parcel.thumbnails.map((photo: string, index: number) => (
                 <TouchableOpacity key={index} style={styles.photoBox}>
-                  {photo ? (
-                    <Image source={{uri: photo}} style={styles.photoPreview} />
-                  ) : (
-                    <View></View>
-                  )}
+                  {photo ? <Image source={{ uri: photo }} style={styles.photoPreview} /> : null}
                 </TouchableOpacity>
-              ))}
+                ))}
             </View>
           </View>
-        ) : (
-          <View></View>
         )}
+
         <View style={$buttonsContainer}>
           <ButtonHome
             onPress={HandleContinue}
-            title='View Parcel Slip'
-            style={{height: 55}}
+            title="View Parcel Slip"
+            style={{ height: 55 }}
           />
         </View>
       </KeyBoardView>
     </CustomView>
   );
 };
+
+
+
+
 
 const styles = StyleSheet.create({
   header: {

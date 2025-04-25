@@ -143,7 +143,7 @@ const ScreenTwo = ({navigation}: Props) => {
           </View>
           <SelectInput
             label='Charges to be paid by?'
-            data={['Sender', 'Receiver']}
+            data={['sender', 'receiver']}
             placeholder='Select option'
             onSelect={(value) =>
               dispatch(updateField({key: 'chargesPayBy', value}))

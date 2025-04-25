@@ -33,7 +33,7 @@ const LoginScreen = ({navigation}: Props) => {
   const handleValidation = () => {
     let isValid = true;
     const emailRegex = /\S+@\S+\.\S+/;
-    const phoneRegex = /^\d{4}-\d{3}-\d{3}$/;
+    const phoneRegex = /^\d{4}-\d{3}-\d{4}$/;
 
     if (!email) {
       setEmailError('Email or Phone number is required.');
@@ -59,7 +59,7 @@ const LoginScreen = ({navigation}: Props) => {
   };
 
   const formatPhoneNumber = (value: string) => {
-    const digits = value.replace(/\D/g, '').slice(0, 10);
+    const digits = value.replace(/\D/g, '').slice(0, 11);
     if (digits.length <= 4) return digits;
     if (digits.length <= 7) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
     return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
@@ -70,7 +70,7 @@ const LoginScreen = ({navigation}: Props) => {
     setLoading(true);
 
     try {
-      const cleanedInput = /^\d{4}-\d{3}-\d{3}$/.test(email) ? email.replace(/-/g, '') : email;
+      const cleanedInput = /^\d{4}-\d{3}-\d{4}$/.test(email) ? email.replace(/-/g, '') : email;
 
       const result = await loginUser({emailPhone: cleanedInput, password});
       setLoading(false);

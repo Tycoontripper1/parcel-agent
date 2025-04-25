@@ -1,5 +1,3 @@
-
-
 // export default FacialVerification;
 import { Button, CustomView, Spinner, Text } from "@/components";
 import BackButton from "@/components/share/BackButton";
@@ -28,9 +26,11 @@ import {
 } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Toast from "react-native-toast-message";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SwapCameraIcon from "@/components/svg/SwapCameraIcon";
 import GalleryIcon from "@/components/svg/Gallery";
+import { uploadSingleImage } from "../../../../services/upload";
+import { getUser } from "../../../../services/auth";
 
 const { width } = Dimensions.get("window");
 
@@ -40,10 +40,12 @@ const FacialVerification = ({ navigation }: Props) => {
   const [loading, setLoading] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const { facialVerificationImage } = useSelector(
+    (state: RootState) => state.form
+  );
   const cameraRef = useRef<CameraView | null>(null);
   const dispatch = useDispatch();
   const [facing, setFacing] = useState<CameraType>("front");
-  
 
   if (!permission) return <View />;
 
@@ -67,7 +69,6 @@ const FacialVerification = ({ navigation }: Props) => {
   //     }
   //   })();
   // }, [permission, requestPermission]);
-  
 
   const capturePhoto = async () => {
     if (cameraRef.current) {
@@ -116,18 +117,46 @@ const FacialVerification = ({ navigation }: Props) => {
     setFacing((prevFacing) => (prevFacing === "front" ? "back" : "front"));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    const userDetails = await getUser();
+    console.log(userDetails, "userDetails");
+    const username = userDetails?.firstName;
+
+    try {
+      const userImageUrl = await uploadSingleImage(
+        facialVerificationImage,
+        username
+      );
+      console.log(userImageUrl, "userImageUrl");
+      if (userImageUrl?.data.url) {
+        // Update Redux with the URLs
+        dispatch(
+          updateField({
+            key: "facialVerificationImage",
+            value: userImageUrl?.data.url,
+          })
+        );
+      }
+
       Helper.vibrate();
       Toast.show({
         type: "success",
         text1: "Success",
-        text2: "Image Saved Successfully",
+        text2: "facial Images uploaded successfully",
       });
+
       navigation.navigate("FrontImageScreenDriver");
-    }, 2000);
+    } catch (error: any) {
+      console.log(error, "❌ KYC submission error");
+      Toast.show({
+        type: "error",
+        text1: "uoad Failed",
+        text2: error.message || "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -184,13 +213,15 @@ const FacialVerification = ({ navigation }: Props) => {
                 <TouchableOpacity
                   style={styles.shootButton}
                   onPress={pickImageFromGallery}
-                ><GalleryIcon /></TouchableOpacity>
+                >
+                  <GalleryIcon />
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.shootButtonBorder}
                   onPress={capturePhoto}
                 />
                 <TouchableOpacity
-                  style={[ styles.shootButton]}
+                  style={[styles.shootButton]}
                   onPress={toggleCameraType}
                 >
                   <SwapCameraIcon />
@@ -248,16 +279,16 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   shootButtonBorder: {
-    backgroundColor:  color.allWhite,
+    backgroundColor: color.allWhite,
     width: 72,
     height: 72,
     borderRadius: 50,
-    borderWidth:RFValue(10),
-    borderColor:"#17171714",
+    borderWidth: RFValue(10),
+    borderColor: "#17171714",
     marginTop: 40,
-    display:"flex",
-    justifyContent:"center",
-    alignItems:"center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     alignSelf: "center",
   },
   shootButton: {
@@ -266,9 +297,9 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     marginTop: 40,
-    display:"flex",
-    justifyContent:"center",
-    alignItems:"center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     alignSelf: "center",
   },
   buttonContainer: {

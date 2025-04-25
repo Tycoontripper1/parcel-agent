@@ -6,13 +6,31 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "TEST_API_KEY": "http://185.230.64.174:8001/parcel/v1.0/api"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "TEST_API_KEY": "http://185.230.64.174:8001/parcel/v1.0/api"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "TEST_API_KEY": "http://185.230.64.174:8001/parcel/v1.0/api"
+      }
+    },
+    "internal": {
+      "android": {
+        "buildType": "apk",
+        "distribution": "internal"
+      },
+      "env": {
+        "TEST_API_KEY": "http://185.230.64.174:8001/parcel/v1.0/api"
+      }
     }
   },
   "submit": {

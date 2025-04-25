@@ -4,6 +4,7 @@ import KeyBoardView from '@/components/KeyBoardView';
 import BackButton from '@/components/share/BackButton';
 import ShootButton from '@/components/svg/ShootButton';
 import {HomeStackList} from '@/navigation/navigationType';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {
@@ -16,6 +17,7 @@ import {
 } from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
+import { getSingleParcelData } from '../../../../../services/parcel';
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const SearchParcelOutReceiver = ({navigation}: Props) => {
@@ -38,22 +40,38 @@ const SearchParcelOutReceiver = ({navigation}: Props) => {
   };
 
   // Function to handle parcel search
-  const handleSearchParcel = () => {
+  const handleSearchParcel = async () => {
     if (!parcelId) {
       Alert.alert('Please enter a parcel ID!');
       return;
     }
+  
     setLoading(true);
-    setTimeout(() => {
-      setParcelId(generateRandomNumbers(10));
-      setLoading(false);
+  
+    try {
+      const result = await getSingleParcelData(parcelId);
+  
+      // ✅ Save to local storage
+      await AsyncStorage.setItem('singleParcelData', JSON.stringify(result?.data?.details?.rows[0]));
+  
       Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Parcel loaded!',
+        type: "success",
+        text1: "Success",
+        text2: result?.data?.message || "Parcel loaded!",
       });
+  
       navigation.navigate('ParcelReceiverOutPreviewScreen');
-    }, 3000);
+    } catch (error: any) {
+      console.error("Parcel submission error:", error);
+  
+      Toast.show({
+        type: "error",
+        text1: "Submission Failed",
+        text2: error.message || "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Helper to generate random 10-digit number

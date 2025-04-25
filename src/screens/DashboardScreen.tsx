@@ -9,7 +9,7 @@ import {
   View,
   ImageBackground,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {CustomView, Text} from '@/components';
 import HomeHeader from '@/components/share/HomeHeader';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -33,11 +33,24 @@ import FundWallet, {Wallet} from '@/components/FundWallet';
 import WalletIcon from '@/components/svg/WalletIcon';
 import TransferIcon from '@/components/svg/TransferIcon';
 import USSDIcon from '@/components/svg/USSDIcon';
+import { getUser } from '../../services/auth';
+import { UserDetails } from '@/utils/interface';
 
 const {width} = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const DashboardScreen = ({navigation}: Props) => {
+  const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userDetails = await getUser();
+      console.log(userDetails, 'userDetails');
+      setUserDetails(userDetails)
+    };
+    fetchUser();
+  }
+  , []);
   const shipmentData = [
     {
       image: Package,
@@ -140,10 +153,10 @@ const DashboardScreen = ({navigation}: Props) => {
         OnNotificationClick={() => navigation.navigate('NotificationScreen')}>
         <View style={{flexDirection: 'column', gap: 2}}>
           <Text size={18} font='Medium'>
-            Hello, Bombay
+            Hello, {userDetail?.firstName}
           </Text>
           <Text size={14} font='Medium' color='#717680'>
-            Agent ID: PP64763
+            Agent ID: {userDetail?.agentId}
           </Text>
           <View
             style={{
@@ -154,7 +167,7 @@ const DashboardScreen = ({navigation}: Props) => {
             }}>
             <Location color='#000' size={16} />
             <Text size={12} font='Medium'>
-              Lagos
+              {userDetail?.state}
             </Text>
           </View>
         </View>

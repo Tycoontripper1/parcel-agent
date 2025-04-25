@@ -1,18 +1,24 @@
 // api/auth.ts
+import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const BASE_URL = 'http://185.230.64.174:8001/parcel/v1.0/api'; // change this
-
-
+const apiKey = Constants.expoConfig?.extra?.apiKey;
 
 export const getToken = async (): Promise<string | null> => {
   try {
     const token = await AsyncStorage.getItem('token');
+
+    if (!token) {
+      console.warn('No token found in AsyncStorage.');
+      return null;
+    }
+
     return token;
   } catch (error) {
     console.error('Error getting token:', error);
     return null;
   }
 };
+
 
 
 export const getUser = async (): Promise<any | null> => {
@@ -42,7 +48,7 @@ export const registerUser = async (data: {
   password: string;
 }) => {
   try {
-    const response = await fetch(`${BASE_URL}/auth/signup`, {
+    const response = await fetch(`${apiKey}/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,7 +72,8 @@ export const loginUser = async (data: {
   password: string;
 }) => {
   try {
-    const response = await fetch(`${BASE_URL}/auth/signin?userType=agent`, {
+
+    const response = await fetch(`${apiKey}/auth/signin?userType=agent`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,7 +97,7 @@ export const verifyOtpAccount = async (data: {
   otp: string;
 }) => {
   try {
-    const response = await fetch(`${BASE_URL}/auth/otp/verify?type=account_confirmation&userType=agent`, {
+    const response = await fetch(`${apiKey}/auth/otp/verify?type=account_confirmation&userType=agent`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -114,7 +121,7 @@ export const resendOtp = async (data: {
   email: string;
 }) => {
   try {
-    const response = await fetch(`${BASE_URL}/auth/otp/send?userType=agent`, {
+    const response = await fetch(`${apiKey}/auth/otp/send?userType=agent`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -150,8 +157,46 @@ export const updateUserKyc = async (
   
   try {
     const token = await getToken()
-    console.log(token, 'token')
-    const response = await fetch(`${BASE_URL}/users/update?type=kyc&userType=agent`, {
+    // console.log(token, 'token')
+    const response = await fetch(`${apiKey}/users/update?type=kyc&userType=agent`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'user kyc update failed');
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateDriverKyc = async (
+  payload: {
+    // businessName: string;
+    // state: string;
+    // address: string;
+    // location: string;
+    // store: boolean;
+    // identificationType: string;
+    // identificationNumber: string;
+    identificationImages: string[];
+    userImage: string;
+  },
+) => {
+  
+  try {
+    const token = await getToken()
+    // console.log(token, 'token')
+    const response = await fetch(`${apiKey}/users/update?type=kyc&userType=driver`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -173,30 +218,33 @@ export const updateUserKyc = async (
 };
 
 export const onboardingDriver = async (
-  data: {
+  DriverOnboardingPayload: {
     firstName: string;
     lastName: string;
     dateOfBirth: string;
+    email?: string;
     phone: string;
     address: string;
-    parkLocation: string;
+    // identificationType: string;
+    // identificationNumber: string;
     vehicleType: string;
     vehicleRegistrationNumber: string;
-    email?: string;
-  },
+    parkLocation: string;
+  }
 
 ) => {
-  const token = getToken()
+  const token = await getToken()
+  console.log(token, 'token')
   try {
     const response = await fetch(
-      `${BASE_URL}/auth/onboarding`,
+      `${apiKey}/auth/onboarding`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(DriverOnboardingPayload),
       }
     );
 
@@ -211,5 +259,30 @@ export const onboardingDriver = async (
     throw error;
   }
 };
+
+// drivers
+export const getAllDrivers = async () => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/users?userType=driver
+`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get drivers failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
 
 

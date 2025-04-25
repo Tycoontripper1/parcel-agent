@@ -31,7 +31,7 @@ const FinanceButton = ({buttons}: FinanceButtonsProps) => {
             <Text style={styles.parcelText} color='#A4A7AE'>
               {button.label}
             </Text>
-            <Text style={styles.parcelLabel} font='SemiBold'>
+            <Text style={styles.parcelLabel} font='Regular' size={12}>
               {button.amount}
             </Text>
           </View>

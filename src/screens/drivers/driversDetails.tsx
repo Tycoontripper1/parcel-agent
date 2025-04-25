@@ -4,7 +4,9 @@ import ConfirmPaymentModal from "@/components/ComfirmPaymentModal";
 import KeyBoardView from "@/components/KeyBoardView";
 import { RootState } from "@/redux/store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useState } from "react";
+import { Ionicons } from '@expo/vector-icons';
+
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -18,218 +20,31 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useSelector } from "react-redux";
 import HomeHeader from "@/components/share/HomeHeader";
 import { Avatar } from "../../../assets/images";
+import { getAllDrivers } from "../../../services/auth";
 
-const drivers = [
-  {
-    id: "1",
-    name: "John Doe",
-    phone: "+234 812 345 6789",
-    driverId: "DR-1001",
-    email: "johndoe@email.com",
-    homeAddress: "123 Main St, Lagos",
-    idType: "National ID",
-    idNumber: "NID-123456",
-    vehicleType: "Sedan",
-    vehicle: "Toyota Camry",
-    regNumber: "ABC-123XY",
-    motorPark: "Ojota Motor Park",
-    date: "2025-03-03",
-    parcelAssigned: "",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    phone: "+234 902 876 5432",
-    driverId: "DR-1002",
-    email: "janesmith@email.com",
-    homeAddress: "456 Broad St, Abuja",
-    idType: "Driver's License",
-    idNumber: "DL-987654",
-    vehicleType: "SUV",
-    vehicle: "Honda CR-V",
-    regNumber: "XYZ-567AB",
-    motorPark: "Gudu Park",
-    date: "2025-03-03",
-    parcelAssigned: "No",
-  },
-  {
-    id: "3",
-    name: "Michael Johnson",
-    phone: "+234 701 234 5678",
-    driverId: "DR-1003",
-    email: "michaelj@email.com",
-    homeAddress: "789 Victoria Island, Lagos",
-    idType: "Voter's Card",
-    idNumber: "VC-112233",
-    vehicleType: "Minivan",
-    vehicle: "Kia Carnival",
-    regNumber: "DEF-456YZ",
-    motorPark: "Mile 2 Motor Park",
-    date: "2025-03-02",
-    parcelAssigned: "Yes",
-  },
-  {
-    id: "4",
-    name: "Emily Davis",
-    phone: "+234 815 987 6543",
-    driverId: "DR-1004",
-    email: "emilyd@email.com",
-    homeAddress: "22 Lekki Phase 1, Lagos",
-    idType: "International Passport",
-    idNumber: "P-445566",
-    vehicleType: "Truck",
-    vehicle: "Mercedes Actros",
-    regNumber: "GHI-789WX",
-    motorPark: "Ojuelegba Park",
-    date: "2025-03-02",
-    parcelAssigned: "No",
-  },
-  {
-    id: "5",
-    name: "James Brown",
-    phone: "+234 808 654 3210",
-    driverId: "DR-1005",
-    email: "jamesb@email.com",
-    homeAddress: "Ikeja, Lagos",
-    idType: "National ID",
-    idNumber: "NID-789101",
-    vehicleType: "Bus",
-    vehicle: "Toyota HiAce",
-    regNumber: "JKL-012MN",
-    motorPark: "Ikeja Park",
-    date: "2025-03-01",
-    parcelAssigned: "Yes",
-  },
-  {
-    id: "6",
-    name: "Grace Wilson",
-    phone: "+234 806 213 5478",
-    driverId: "DR-1006",
-    email: "gracew@email.com",
-    homeAddress: "Surulere, Lagos",
-    idType: "Driver's License",
-    idNumber: "DL-345678",
-    vehicleType: "Pickup",
-    vehicle: "Ford Ranger",
-    regNumber: "MNO-345PQ",
-    motorPark: "Surulere Terminal",
-    date: "2025-03-01",
-    parcelAssigned: "No",
-  },
-  {
-    id: "7",
-    name: "Samuel Green",
-    phone: "+234 705 987 6321",
-    driverId: "DR-1007",
-    email: "samuelg@email.com",
-    homeAddress: "Yaba, Lagos",
-    idType: "Voter's Card",
-    idNumber: "VC-667788",
-    vehicleType: "SUV",
-    vehicle: "Lexus RX",
-    regNumber: "PQR-678ST",
-    motorPark: "Yaba Motor Park",
-    date: "2025-02-28",
-    parcelAssigned: "Yes",
-  },
-  {
-    id: "8",
-    name: "Olivia Adams",
-    phone: "+234 813 678 5432",
-    driverId: "DR-1008",
-    email: "oliviaa@email.com",
-    homeAddress: "Victoria Island, Lagos",
-    idType: "International Passport",
-    idNumber: "P-778899",
-    vehicleType: "Hatchback",
-    vehicle: "Volkswagen Golf",
-    regNumber: "STU-901VW",
-    motorPark: "VI Bus Stop",
-    date: "2025-02-28",
-    parcelAssigned: "No",
-  },
-  {
-    id: "9",
-    name: "William Clark",
-    phone: "+234 814 567 2345",
-    driverId: "DR-1009",
-    email: "williamc@email.com",
-    homeAddress: "Ogudu, Lagos",
-    idType: "National ID",
-    idNumber: "NID-112233",
-    vehicleType: "Truck",
-    vehicle: "MAN TGS",
-    regNumber: "VWX-234YZ",
-    motorPark: "Ogudu Terminal",
-    date: "2025-02-27",
-    parcelAssigned: "Yes",
-  },
-  {
-    id: "10",
-    name: "Sophia Martinez",
-    phone: "+234 810 345 6789",
-    driverId: "DR-1010",
-    email: "sophiam@email.com",
-    homeAddress: "Iyana Ipaja, Lagos",
-    idType: "Driver's License",
-    idNumber: "DL-889900",
-    vehicleType: "Minivan",
-    vehicle: "Nissan Quest",
-    regNumber: "YZA-567BC",
-    motorPark: "Iyana Ipaja Park",
-    date: "2025-02-27",
-    parcelAssigned: "No",
-  },
-  {
-    id: "11",
-    name: "Benjamin White",
-    phone: "+234 907 112 2334",
-    driverId: "DR-1011",
-    email: "benjaminw@email.com",
-    homeAddress: "Festac, Lagos",
-    idType: "National ID",
-    idNumber: "NID-334455",
-    vehicleType: "Bus",
-    vehicle: "Mercedes Sprinter",
-    regNumber: "BCD-678EF",
-    motorPark: "Festac Motor Park",
-    date: "2025-02-26",
-    parcelAssigned: "Yes",
-  },
-  {
-    id: "12",
-    name: "Emma Rodriguez",
-    phone: "+234 909 334 5567",
-    driverId: "DR-1012",
-    email: "emmar@email.com",
-    homeAddress: "Ajah, Lagos",
-    idType: "Voter's Card",
-    idNumber: "VC-556677",
-    vehicleType: "Pickup",
-    vehicle: "Isuzu D-Max",
-    regNumber: "EFG-901HI",
-    motorPark: "Ajah Terminal",
-    date: "2025-02-26",
-    parcelAssigned: "No",
-  },
-  {
-    id: "13",
-    name: "Daniel Scott",
-    phone: "+234 912 778 8899",
-    driverId: "DR-1013",
-    email: "daniels@email.com",
-    homeAddress: "Ikeja, Lagos",
-    idType: "International Passport",
-    idNumber: "P-990011",
-    vehicleType: "SUV",
-    vehicle: "Range Rover Evoque",
-    regNumber: "HIJ-234KL",
-    motorPark: "Ikeja Bus Stop",
-    date: "2025-02-25",
-    parcelAssigned: "Yes",
-  },
-  // Add more as needed...
-];
+
+type Driver = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  dateOfBirth: string;
+  identificationType: string | null;
+  identificationNumber: string | null;
+  identificationImages: string[] | null; // assuming it's an array of image URLs
+  vehicleType: string;
+  vehicleRegistrationNumber: string;
+  userImage: string | null;
+  isActive: boolean;
+  isKycComplete: boolean;
+  driverId: string;
+  parcelAssigned: number;
+  parkLocation: string;
+  addedBy: string;
+  createdAt: string; // ISO format like "2025-04-23T16:04:39.645Z"
+};
 // Define the props correctly
 type Props = NativeStackScreenProps<DriverStackList, "DriversDetails">;
 
@@ -238,25 +53,46 @@ interface RouteProps {
   route: RouteProp<DriverStackList, "DriversDetails">;
 }
 const DriversDetails = ({ route }: Props) => {
-    const { idFrontImage, idBackImage } = useSelector(
-      (state: RootState) => state.form
-    );
+  const [allDrivers, setAllDrivers] = useState<Driver[]>([]);
+  const { idFrontImage, idBackImage } = useSelector(
+    (state: RootState) => state.form
+  );
   const { id } = route.params;
-  const driver = drivers.find((x) => x.id === id) ?? {
+
+  useEffect(() => {
+    const fetchDriver = async () => {
+      try {
+        const result = await getAllDrivers();
+        console.log(result, "result");
+        setAllDrivers(result?.data?.details?.rows);
+      } catch (error) {
+        console.error("Failed to fetch drivers:", error);
+      }
+    };
+    fetchDriver();
+  }, []);
+
+  const driver = allDrivers.find((x) => x.id === id) ?? {
     id: "Nill",
-    name: "Nill",
-    phone: "Nill",
-    driverId: "Nill",
+    firstName: "Nill",
+    lastName: "Nill",
     email: "Nill",
-    homeAddress: "Nill",
-    idType: "Nill",
-    idNumber: "Nill",
+    phone: "Nill",
+    address: "Nill",
+    dateOfBirth: "Nill",
+    identificationType: "Nill",
+    identificationNumber: "Nill",
+    identificationImages: null,
     vehicleType: "Nill",
-    vehicle: "Nill",
-    regNumber: "Nill",
-    motorPark: "Nill",
-    date: "Nill",
-    parcelAssigned: "Nill",
+    vehicleRegistrationNumber: "Nill",
+    userImage: null,
+    isActive: false,
+    isKycComplete: false,
+    driverId: "Nill",
+    parcelAssigned: 0,
+    parkLocation: "Nill",
+    addedBy: "Nill",
+    createdAt: "Nill",
   };
 
   // Styles
@@ -271,6 +107,18 @@ const DriversDetails = ({ route }: Props) => {
   const $buttonsContainer: ViewStyle = {
     padding: RFValue(16),
   };
+  const InfoRow = ({ label, value }: { label: string; value: string }) => (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <Text style={styles.descriptionText}>{label}</Text>
+      <Text style={styles.infoText}>{value}</Text>
+    </View>
+  );
 
   return (
     <CustomView style={{ paddingVertical: RFValue(10) }}>
@@ -290,7 +138,7 @@ const DriversDetails = ({ route }: Props) => {
         >
           {/* Profile Image */}
           <Image
-            source={Avatar}
+            source={driver.userImage ? { uri: driver.userImage } : Avatar}
             style={{
               width: 84,
               height: 84,
@@ -299,35 +147,61 @@ const DriversDetails = ({ route }: Props) => {
             }}
             resizeMode="cover"
           />
-          <TouchableOpacity
-            style={{
-              backgroundColor: "",
-              padding: RFValue(4),
-              borderRadius: RFValue(6),
-            }}
-          >
-            <Text font="Regular" size={12} color="#F04438">
-              Inactive
-            </Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+      style={{
+        backgroundColor:  driver.isActive ? "#ECFDF3" : "#FEF3F2",
+        padding: RFValue(4),
+        borderRadius: RFValue(6),
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
+      {/* Conditional Icon and Text */}
+      <Ionicons
+        name={driver.isActive ? "checkmark-circle" : "close-circle"}
+        size={RFValue(16)}
+        color={driver.isActive ? "#12B76A" : "#F04438"}
+      />
+      <Text
+        font="Regular"
+        size={12}
+        color={driver.isActive ? "#12B76A" : "#F04438"}
+        style={{ marginLeft: RFValue(4) }}
+      >
+        {driver.isActive ? "Active" : "Inactive"}
+      </Text>
+
+    </TouchableOpacity>
         </View>
+
         <View style={$bodyHeader}>
           <Text font="SemiBold" size={16}>
-            {driver.name}
+            {driver.firstName} {driver.lastName}
           </Text>
           <View
-            style={{
-              borderWidth: 1,
-              padding: RFValue(6),
-              borderRadius: RFValue(8),
-              borderColor: "#E9EAEB",
-            }}
-          >
-            <Text size={12} font="Medium" color="#717680">
-              Delete Profile
-            </Text>
-          </View>
+      style={{
+        borderWidth: 1,
+        padding: RFValue(6),
+        borderRadius: RFValue(8),
+        borderColor: "#E9EAEB",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      {/* Delete Profile Section */}
+      <Ionicons
+        name="trash-bin"
+        size={RFValue(14)}
+        color="#000"
+      />
+      <Text size={12} font="Medium" color="#717680">
+        Delete Profile
+      </Text>
+    </View>
+
         </View>
+
         {/* Sender's Information */}
         <View style={styles.sectionContainer}>
           <View
@@ -337,36 +211,9 @@ const DriversDetails = ({ route }: Props) => {
               borderRadius: 8,
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Phone Number </Text>
-              <Text style={styles.infoText}>{driver?.phone} </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Driver ID </Text>
-              <Text style={styles.infoText}>{driver?.driverId} </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Email</Text>
-              <Text style={styles.infoText}>{driver?.email} </Text>
-            </View>
+            <InfoRow label="Phone Number" value={driver.phone} />
+            <InfoRow label="Driver ID" value={driver.driverId} />
+            <InfoRow label="Email" value={driver.email} />
           </View>
         </View>
 
@@ -379,76 +226,21 @@ const DriversDetails = ({ route }: Props) => {
               borderRadius: 8,
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Home address</Text>
-              <Text style={styles.infoText}>{driver.homeAddress} </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>ID type </Text>
-              <Text style={styles.infoText}>{driver.idType} </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>ID number</Text>
-              <Text style={styles.infoText}>{driver.idNumber}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Vehicle type</Text>
-              <Text style={styles.infoText}>{driver.vehicleType}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Vehicle reg. number</Text>
-              <Text style={styles.infoText}>{driver.vehicle}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Vehicle type</Text>
-              <Text style={styles.infoText}>{driver.vehicleType}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Motor park location</Text>
-              <Text style={styles.infoText}>{driver.motorPark}</Text>
-            </View>
+            <InfoRow label="Home address" value={driver.address} />
+            <InfoRow
+              label="ID type"
+              value={driver.identificationType ?? "N/A"}
+            />
+            <InfoRow
+              label="ID number"
+              value={driver.identificationNumber ?? "N/A"}
+            />
+            <InfoRow label="Vehicle type" value={driver.vehicleType} />
+            <InfoRow
+              label="Vehicle reg. number"
+              value={driver.vehicleRegistrationNumber}
+            />
+            <InfoRow label="Motor park location" value={driver.parkLocation} />
           </View>
         </View>
 
@@ -461,16 +253,10 @@ const DriversDetails = ({ route }: Props) => {
               borderRadius: 8,
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Registered Date</Text>
-              <Text style={styles.infoText}>{driver.date}</Text>
-            </View>
+            <InfoRow
+              label="Registered Date"
+              value={driver.createdAt?.split("T")[0] ?? "N/A"}
+            />
           </View>
         </View>
 
@@ -483,25 +269,35 @@ const DriversDetails = ({ route }: Props) => {
               borderRadius: 8,
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.infoText}>Parcel Assigned</Text>
-              <Text style={styles.infoText}>{driver.parcelAssigned}</Text>
-            </View>
+            <InfoRow
+              label="Parcel Assigned"
+              value={driver.parcelAssigned.toString()}
+            />
           </View>
         </View>
+
         {/* image id Information */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.title}>Front Image</Text>
-          <Image source={{ uri: idFrontImage }} style={styles.image} />
-          <Text style={styles.title}>Back Image</Text>
-          <Image source={{ uri: idBackImage }} style={styles.image} />
-        </View>
+        {Array.isArray(driver.identificationImages) &&
+        driver.identificationImages.length >= 2 ? (
+          <View style={styles.sectionContainer}>
+            <Text style={styles.title}>Front Image</Text>
+            <Image
+              source={{ uri: driver.identificationImages[0] }}
+              style={styles.image}
+            />
+            <Text style={styles.title}>Back Image</Text>
+            <Image
+              source={{ uri: driver.identificationImages[1] }}
+              style={styles.image}
+            />
+          </View>
+        ) : (
+          <View style={styles.sectionContainer}>
+            <Text style={styles.title}>
+              Identification Images Not Available
+            </Text>
+          </View>
+        )}
       </KeyBoardView>
     </CustomView>
   );
@@ -539,12 +335,13 @@ const styles = StyleSheet.create({
     marginBottom: RFValue(6),
   },
   infoText: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(10),
     marginBottom: RFValue(4),
-    color: "#717680",
+    color: "#252B37",
   },
   descriptionText: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(10),
+    marginBottom: RFValue(4),
     color: "#717680",
   },
   imageContainer: {

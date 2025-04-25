@@ -34,6 +34,7 @@ const SearchParcelOutDriverId = ({navigation}: Props) => {
       });
       navigation.navigate('ParcelCongratulation', {
         message: 'Parcel released successfully',
+        note:''
       });
     }, 3000);
   };

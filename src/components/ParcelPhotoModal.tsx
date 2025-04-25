@@ -229,6 +229,11 @@ import CustomView from './CustomView';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons } from '@expo/vector-icons';
 import ShootButton from './svg/ShootButton';
+import { uploadBulkImages } from '../../services/upload';
+import { getUser } from '../../services/auth';
+import Toast from 'react-native-toast-message';
+import { Helper } from '@/helper/helper';
+import Spinner from './Spinner';
 
 interface ParcelPhotoModalProps {
   visible: boolean;
@@ -242,7 +247,7 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
   onSave,
 }) => {
   const [photos, setPhotos] = useState<(string | null)[]>([null, null]);
-
+  const [loading, setLoading] = useState(false);
   const handleCapture = async (index: number) => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
@@ -254,23 +259,59 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false, // No cropping
       quality: 1,
+      base64:false,
     });
 
     if (!result.canceled) {
+      const selected = result.assets[0];
+      console.log('Captured photo URI:', selected.uri); // 👈 Add this
       const updatedPhotos = [...photos];
-      updatedPhotos[index] = result.assets[0].uri;
+      updatedPhotos[index] = selected.uri;
       setPhotos(updatedPhotos);
     }
   };
 
-  const handleSave = () => {
-    onSave(photos.filter((photo) => photo !== null) as string[]);
-    onClose();
+
+  const handleSave = async () => {
+    console.log(photos, 'photos');
+    setLoading(true);
+    try {
+      if (photos.filter((p) => p !== null).length < 2) return;
+  
+      const userDetails = await getUser();
+      const username = userDetails?.firstName || 'unknown_user';
+
+      // Upload to Cloudinary
+      const response = await uploadBulkImages(photos as string[], username);
+  
+      if (response?.data?.urls?.length === 2) {
+        onSave(response.data.urls);
+        onClose();
+      } 
+      Helper.vibrate();
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Parcel Images uploaded successfully',
+      });
+      setLoading(false);
+    } catch (error:any) {
+      console.error('Upload error:', error);
+            Toast.show({
+              type: 'error',
+              text1: 'Upload Failed',
+              text2: error.message || 'Something went wrong',
+            });
+            setLoading(false);
+      // alert('Something went wrong during image upload.');
+    }
   };
+  
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <CustomView style={{ paddingVertical: RFValue(10) }} padded>
+      {loading && <Spinner />}
         <View
           style={{
             flexDirection: 'row',

@@ -24,7 +24,7 @@ const ParcelCongratulation = ({navigation, route}: Props) => {
   const [loading, setLoading] = useState(false);
   const formData = useSelector((state: RootState) => state.parcel);
   const dispatch = useDispatch();
-  const {message} = route.params;
+  const {message, note} = route.params;
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -69,6 +69,9 @@ const ParcelCongratulation = ({navigation, route}: Props) => {
           <View style={$bodyHeader}>
             <Text font='SemiBold' size={18}>
               {message}
+            </Text>
+            <Text size={14}>
+              {note}
             </Text>
           </View>
           <Button

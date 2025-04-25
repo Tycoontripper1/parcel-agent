@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Image,
@@ -18,8 +18,50 @@ import {Package} from '../../../assets/images';
 import HomeHeader from '@/components/share/HomeHeader';
 import {Filter, SearchNormal1} from 'iconsax-react-native';
 import {MaterialIcons} from '@expo/vector-icons';
+import { getShipmentsHistory } from '../../../services/parcel';
+import { formatDate } from '@/utils/formartDates';
+interface ParcelDetails {
+  id: string;
+  sender: {
+    phone: string;
+    fullName: string;
+    email: string;
+    address: string;
+  };
+  receiver: {
+    phone: string;
+    fullName: string;
+    email: string;
+    address: string;
+  };
+  parcel: {
+    type: string;
+    value: string;
+    chargesPayable: string;
+    chargesPaidBy: string;
+    handlingFee: string;
+    totalFee: string;
+    description: string;
+    thumbnails: string[];
+  };
+  park: {
+    source: string;
+    destination: string;
+  };
+  addedBy: {
+    name: string;
+    phone: string;
+  };
+  paymentOption: string | null;
+  paymentStatus: string;
+  driver: string | null;
+  status: string;
+  parcelId: string;
+  qrImage: string;
+  createdAt: string;
+}
 
-interface ShipmentItem {
+interface FilteredShipment {
   image: string;
   sender: string;
   receiver: string;
@@ -29,63 +71,27 @@ interface ShipmentItem {
 }
 
 const ShipmentHistory = () => {
-  const data = [
-    {
-      image: Package,
-      sender: 'Adewale Jinad',
-      receiver: 'Mary Kolade',
-      time: 'Today • 01:30 PM',
-      charges: '₦5,000.00',
-      status: 'Arrived',
-    },
-    {
-      image: Package,
-      sender: 'John Doe',
-      receiver: 'Jane Smith',
-      time: 'Yesterday • 04:20 PM',
-      charges: '₦3,500.00',
-      status: 'Delivered',
-    },
-    {
-      image: Package,
-      sender: 'Peter Obi',
-      receiver: 'Ngozi Okonjo',
-      time: 'Last Week • 10:15 AM',
-      charges: '₦10,000.00',
-      status: 'In-Transit',
-    },
-    {
-      image: Package,
-      sender: 'Adewale Jinad',
-      receiver: 'Mary Kolade',
-      time: 'Today • 01:30 PM',
-      charges: '₦5,000.00',
-      status: 'Arrived',
-    },
-    {
-      image: Package,
-      sender: 'John Doe',
-      receiver: 'Jane Smith',
-      time: 'Yesterday • 04:20 PM',
-      charges: '₦3,500.00',
-      status: 'Delivered',
-    },
-    {
-      image: Package,
-      sender: 'Peter Obi',
-      receiver: 'Ngozi Okonjo',
-      time: 'Last Week • 10:15 AM',
-      charges: '₦10,000.00',
-      status: 'In-Transit',
-    },
-  ];
+
+    const [allShipments, setAllShipments] = useState<ParcelDetails[]>([]);
+    useEffect(() => {
+      const fetchDriver = async () => {
+        try {
+          const result = await getShipmentsHistory();
+          console.log(result, "result");
+          setAllShipments(result?.data?.details?.rows);
+        } catch (error) {
+          console.error("Failed to fetch drivers:", error);
+        }
+      };
+      fetchDriver();
+    }, []);
 
   const [activeTab, setActiveTab] = useState<string>('All');
 
   const tabs = ['All', 'Arrived', 'In-Transit', 'Delivered'];
   const [isOpen, setIsOpen] = useState(false);
 
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState<FilteredShipment[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter the employees based on the search query
@@ -94,16 +100,34 @@ const ShipmentHistory = () => {
 
     if (text.trim() === '') {
       // If the search input is empty, show all employees
-      setFilteredData(data);
+      setFilteredData(
+        allShipments.map((shipment) => ({
+          image: shipment.parcel.thumbnails[0],
+          sender: shipment.sender.fullName,
+          receiver: shipment.receiver.fullName,
+          time: formatDate(shipment.createdAt), 
+          charges: `₦${shipment.parcel.totalFee}`,
+          status: shipment.status,
+        }))
+      );
     } else {
       // Filter employees by name or job
-      const filtered = data.filter(
+      const filtered = allShipments.filter(
         (item) =>
-          item.sender.toLowerCase().includes(text.toLowerCase()) ||
-          item.receiver.toLowerCase().includes(text.toLowerCase()) ||
+          item.sender.fullName.toLowerCase().includes(text.toLowerCase()) ||
+          item.receiver.fullName.toLowerCase().includes(text.toLowerCase()) ||
           item.status.toLowerCase().includes(text.toLowerCase())
       );
-      setFilteredData(filtered);
+      setFilteredData(
+        filtered.map((shipment) => ({
+          image: shipment.parcel.thumbnails[0], // Assuming a default image for all shipments
+          sender: shipment.sender.fullName,
+          receiver: shipment.receiver.fullName,
+          time: formatDate(shipment.createdAt), // Format the date as needed
+          charges: `₦${shipment.parcel.totalFee}`,
+          status: shipment.status,
+        }))
+      );
     }
   };
 
@@ -111,7 +135,7 @@ const ShipmentHistory = () => {
   const isFiltered =
     activeTab === 'All'
       ? filteredData
-      : filteredData.filter((x) => x.status === activeTab);
+      : filteredData.filter((x:any) => x.status === activeTab);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -222,58 +246,58 @@ const ShipmentHistory = () => {
                 <Text font='Medium'>No Shipment found!</Text>
               </View>
             ) : (
-              <>
-                {isFiltered.map((item, index) => (
+                <>
+                {isFiltered.map((item: FilteredShipment, index: number) => (
                   <View key={index} style={styles.shipmentRow}>
-                    <Image source={item.image} style={styles.shipmentImage} />
-                    <View style={styles.shipmentDetails}>
-                      <View style={{flexDirection: 'column', gap: 4}}>
-                        <Text size={11} color='#717680'>
-                          Sender
-                        </Text>
-                        <Text size={12}>{item.sender}</Text>
-                        <Text size={10}>{item.time}</Text>
-                      </View>
-                      <View style={{flexDirection: 'column', gap: 4}}>
-                        <Text size={10} color='#717680'>
-                          Receiver
-                        </Text>
-                        <Text size={12}>{item.receiver}</Text>
-                      </View>
-                      <View style={{flexDirection: 'column', gap: 4}}>
-                        <Text size={10} color='#717680'>
-                          Charges
-                        </Text>
-                        <Text size={12}>{item.charges}</Text>
-                        <View
-                          style={{
-                            backgroundColor:
-                              item.status === 'Arrived'
-                                ? '#F7F9FC'
-                                : item.status === 'Delivered'
-                                ? '#ECFDF3'
-                                : '#FFF6ED',
-                            justifyContent: 'center',
-                            flexDirection: 'row',
-                            borderRadius: 8,
-                          }}>
-                          <Text
-                            size={10}
-                            color={
-                              item.status === 'Arrived'
-                                ? '#213264'
-                                : item.status === 'Delivered'
-                                ? '#12B76A'
-                                : '#FB6514'
-                            }>
-                            {item.status}{' '}
-                          </Text>
-                        </View>
-                      </View>
+                  <Image source={{ uri: item.image }} style={styles.shipmentImage} />
+                  <View style={styles.shipmentDetails}>
+                    <View style={{flexDirection: 'column', gap: 4}}>
+                    <Text size={11} color='#717680'>
+                      Sender
+                    </Text>
+                    <Text size={12}>{item.sender}</Text>
+                    <Text size={10}>{item.time}</Text>
+                    </View>
+                    <View style={{flexDirection: 'column', gap: 4}}>
+                    <Text size={10} color='#717680'>
+                      Receiver
+                    </Text>
+                    <Text size={12}>{item.receiver}</Text>
+                    </View>
+                    <View style={{flexDirection: 'column', gap: 4}}>
+                    <Text size={10} color='#717680'>
+                      Charges
+                    </Text>
+                    <Text size={12}>{item.charges}</Text>
+                    <View
+                      style={{
+                      backgroundColor:
+                        item.status === 'Arrived'
+                        ? '#F7F9FC'
+                        : item.status === 'Delivered'
+                        ? '#ECFDF3'
+                        : '#FFF6ED',
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      borderRadius: 8,
+                      }}>
+                      <Text
+                      size={10}
+                      color={
+                        item.status === 'Arrived'
+                        ? '#213264'
+                        : item.status === 'Delivered'
+                        ? '#12B76A'
+                        : '#FB6514'
+                      }>
+                      {item.status}{' '}
+                      </Text>
+                    </View>
                     </View>
                   </View>
+                  </View>
                 ))}
-              </>
+                </>
             )}
           </View>
         </ScrollView>

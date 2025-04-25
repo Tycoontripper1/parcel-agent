@@ -23,6 +23,7 @@ const PreviewScreen = ({navigation}: Props) => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    console.log(idFrontImage, idBackImage, 'images');
     try {
       setLoading(true);
   
@@ -48,7 +49,7 @@ const PreviewScreen = ({navigation}: Props) => {
       // Navigate next
       navigation.navigate('FacialVerification');
     } catch (error: any) {
-      console.error('Image upload failed:', error);
+      // console.error('Image upload failed:', error);
       Toast.show({
         type: 'error',
         text1: 'Upload Failed',

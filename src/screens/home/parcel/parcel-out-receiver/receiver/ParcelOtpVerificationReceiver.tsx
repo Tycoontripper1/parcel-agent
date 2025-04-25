@@ -42,9 +42,12 @@ const ParcelOtpVerificationReceiver = ({navigation}: Props) => {
       });
       navigation.navigate('ParcelCongratulation', {
         message: 'Parcel released successfully',
+        note:'',
       });
     }, 3000);
   };
+
+  // Function to handle resend OTP
   const handleSentOTP = () => {
     setLoading(true);
     setTimeout(() => {
