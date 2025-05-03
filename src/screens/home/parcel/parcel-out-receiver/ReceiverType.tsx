@@ -37,7 +37,7 @@ const ReceiverType = ({navigation}: Props) => {
         </View>
         <View style={{flexDirection: 'column', gap: 20, alignItems: 'center'}}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('ParcelOutReceiver')}
+            onPress={() => navigation.navigate('ParcelOutReceiver', { readOnly: true })}
             style={{
               width: '100%',
               paddingHorizontal: 20,
@@ -56,9 +56,7 @@ const ReceiverType = ({navigation}: Props) => {
             <Ionicons name='arrow-forward' size={20} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('ScreenOneParcelInDriverSearchParcel')
-            }
+             onPress={() => navigation.navigate('ParcelOutReceiver', { readOnly: false })}
             style={{
               width: '100%',
               paddingHorizontal: 20,

@@ -13,7 +13,7 @@ import { Helper } from "@/helper/helper";
 import { DriverStackList } from "@/navigation/navigationType";
 import { RootState } from "@/redux/store";
 import { updateField } from "@/redux/slices/formSlice";
-import { getUser, updateDriverKyc } from "../../../../services/auth";
+import { getDriver, getUser, updateDriverKyc } from "../../../../services/auth";
 import { uploadBulkImages } from "../../../../services/upload";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -27,7 +27,7 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imagesUploaded, setImagesUploaded] = useState(false); // Track upload status
+  const [imagesUploaded, setImagesUploaded] = useState(false);
 
   const handleImageUpload = async () => {
     setLoading(true);
@@ -40,8 +40,9 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
       if (idImageUrls?.data.urls.length === 2) {
         dispatch(updateField({ key: "idFrontImage", value: idImageUrls.data.urls[0] }));
         dispatch(updateField({ key: "idBackImage", value: idImageUrls.data.urls[1] }));
-        setImagesUploaded(true); // Images successfully uploaded
+        setImagesUploaded(true);
       }
+      console.log(idBackImage,idFrontImage, "idImageUrls")
 
       Helper.vibrate();
       Toast.show({
@@ -50,6 +51,7 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
         text2: "ID Images uploaded successfully",
       });
     } catch (error: any) {
+      console.log(error)
       Toast.show({
         type: "error",
         text1: "Upload Failed",
@@ -61,38 +63,42 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
   };
 
   const handleCompleteRegistration = async () => {
-   setLoading(true);
+    setLoading(true);
+    const driver = await getDriver();
+    const driverId = driver.id
+    try {
+      const payload = {
+        identificationImages: [idFrontImage, idBackImage],
+        userImage: facialVerificationImage,
+      };
+      console.log(idFrontImage)
 
-     
-       try {
-        
-         const payload = {
-           identificationImages: [idFrontImage, idBackImage],
-           userImage: facialVerificationImage
-         };
-         console.log(payload, 'payload');
-     
-         const result = await updateDriverKyc(payload);
-         console.log(result, '✅ KYC submitted');
-     
-         Helper.vibrate();
-         setModalVisible(true);
-         Toast.show({
-           type: 'success',
-           text1: 'Success',
-           text2: result?.message || 'KYC submitted successfully',
-         });
-     
-       } catch (error: any) {
-         console.log(error, '❌ KYC submission error');
-         Toast.show({
-           type: 'error',
-           text1: 'Error',
-           text2: error.message || 'Something went wrong',
-         });
-       } finally {
-         setLoading(false);
-       }
+      const result = await updateDriverKyc(payload, driverId);
+
+      Helper.vibrate();
+      setModalVisible(true);
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: result?.message || "KYC submitted successfully",
+      });
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message || "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (imagesUploaded) {
+      handleCompleteRegistration();
+    } else {
+      handleImageUpload();
+    }
   };
 
   return (
@@ -114,9 +120,7 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
         <View style={styles.container}>
-          <Text style={{ fontSize: RFValue(16), fontWeight: "600" }}>
-            Take photo of the Driver’s ID
-          </Text>
+          <Text style={styles.headerText}>Take photo of the Driver’s ID</Text>
           <Text style={styles.instructions}>
             Ensure your ID fits in the shape before taking the image
           </Text>
@@ -127,7 +131,7 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
           <Image source={{ uri: idBackImage }} style={styles.image} />
 
           <Button
-            onPress={imagesUploaded ? handleCompleteRegistration : handleImageUpload}
+            onPress={handleButtonClick}
             title={imagesUploaded ? "Complete Registration" : "Upload Images"}
             style={{ height: 55, marginVertical: RFValue(16) }}
           />
@@ -139,12 +143,14 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, justifyContent: "center" },
+  headerText: { fontSize: RFValue(16), fontWeight: "600" },
   title: { textAlign: "center", marginBottom: 16 },
   image: { width: "100%", height: 200, alignSelf: "center", marginBottom: 16 },
   instructions: {
     fontSize: RFValue(14),
     paddingVertical: RFValue(6),
     color: color.textGray,
+    textAlign: "center",
   },
 });
 

@@ -1,7 +1,7 @@
 // api/auth.ts
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const apiKey = Constants.expoConfig?.extra?.apiKey;
+export const apiKey = Constants.expoConfig?.extra?.apiKey;
 
 export const getToken = async (): Promise<string | null> => {
   try {
@@ -30,6 +30,16 @@ export const getUser = async (): Promise<any | null> => {
     return null;
   }
 };
+export const getDriver = async (): Promise<any | null> => {
+  try {
+    const driver = await AsyncStorage.getItem('driver');
+    return driver ? JSON.parse(driver) : null;
+  } catch (error) {
+    console.error('Error getting driver:', error);
+    return null;
+  }
+};
+
 
 export const clearAuth = async () => {
   try {
@@ -85,6 +95,33 @@ export const loginUser = async (data: {
 
     if (!response.ok) {
       throw new Error(result.message || 'Login failed');
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const changePassword = async (data: {
+  password: string;
+  confirm: string;
+}) => {
+  try {
+   const token = await getToken()
+    const response = await fetch(`${apiKey}/auth/password?userType=agent`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'password reset failed');
     }
 
     return result;
@@ -178,25 +215,51 @@ export const updateUserKyc = async (
     throw error;
   }
 };
-
-export const updateDriverKyc = async (
+export const updateUserProfile = async (
   payload: {
-    // businessName: string;
-    // state: string;
-    // address: string;
-    // location: string;
-    // store: boolean;
-    // identificationType: string;
-    // identificationNumber: string;
-    identificationImages: string[];
     userImage: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
   },
 ) => {
   
   try {
     const token = await getToken()
     // console.log(token, 'token')
-    const response = await fetch(`${apiKey}/users/update?type=kyc&userType=driver`, {
+    const response = await fetch(`${apiKey}/users/update?type=profile&userType=agent`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'user kyc update failed');
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateDriverKyc = async (
+  payload: {
+    identificationImages: string[];
+    userImage: string;
+  },driverId:string
+) => {
+  
+  try {
+    const token = await getToken()
+    // console.log(token, 'token')
+    const response = await fetch(`${apiKey}/users/driver/${driverId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -277,6 +340,29 @@ export const getAllDrivers = async () => {
   
       if (!response.ok) {
         throw new Error(result.message || 'get drivers failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+export const getDriverById = async (driverId:string) => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/users?userType=driver&driverId=${driverId}
+`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get driver failed');
       }
   
       return result;

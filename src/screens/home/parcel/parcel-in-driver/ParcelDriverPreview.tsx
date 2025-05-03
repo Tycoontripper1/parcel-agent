@@ -18,11 +18,14 @@ import {
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
 import {useSelector} from 'react-redux';
-import { getSingleParcel } from '../../../../../services/parcel';
+import { getSingleParcel, updateParcel } from '../../../../../services/parcel';
+import { Helper } from '@/helper/helper';
+import { apiKey, getToken } from '../../../../../services/auth';
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const ParcelDriverPreviewScreen = ({navigation}: Props) => {
   const [singleParcel, setSingleParcel] = useState<singleParcelInterface | null>(null);
+  const parcelId = singleParcel?.id
   useEffect(() => {
     const fetchUser = async () => {
       const parcel = await getSingleParcel();
@@ -31,22 +34,50 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
     fetchUser();
   }
   , []);
+  
   const [loading, setLoading] = useState(false);
-  const HandleContinue = () => {
+  const HandleContinue = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Parcel Received!',
-      });
-      navigation.navigate('ParcelCongratulation', {
-        message: 'Parcel received successfully',
-        note: 'SMS has been sent to notify the sender/receiver.',
-      });
-    }, 2000);
-    console.log({singleParcel});
+    try {
+          const payload = {
+            status:"arrived"
+          };
+    
+          // const result = await updateParcel(payload, parcelId);
+           const token = await getToken()
+                const response = await fetch(`${apiKey}/shipment/${parcelId}`, {
+                  method: 'PATCH',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify(payload),
+                
+                });
+            
+                const result = await response.json();
+          setLoading(false)
+          Helper.vibrate();
+          Toast.show({
+            type: "success",
+            text1: "Success",
+            text2: result?.message || " Parcel Received!",
+          });
+          navigation.navigate('ParcelCongratulation', {
+               message: 'Parcel received successfully',
+               note: 'SMS has been sent to notify the sender/receiver.',
+        });
+      }catch (error: any) {
+          console.error("Save Error:", error);
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: error?.message || "Something went wrong!",
+          });
+        } finally {
+          setLoading(false);
+        }
+
   };
 
   // Styles

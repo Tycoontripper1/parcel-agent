@@ -13,6 +13,7 @@ import SelectInput from "@/components/SelectInput";
 import { FormatPhoneNumber11 } from "@/components/FormatNumber";
 import { onboardingDriver } from "../../../../services/auth";
 import { Helper } from "@/helper/helper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type Props = NativeStackScreenProps<DriverStackList>;
 
 const ScreenOne = ({ navigation }: Props) => {
@@ -104,8 +105,10 @@ const ScreenOne = ({ navigation }: Props) => {
 
       const result = await onboardingDriver(DriverOnboardingPayload);
       console.log(result, "✅ Driver Onooarded");
+      await AsyncStorage.setItem("driver", JSON.stringify(result?.data?.details));
+      await AsyncStorage.setItem("driverId", result?.data?.id);
 
-      Helper.vibrate();
+      Helper.vibrate(); 
       Toast.show({
         type: "success",
         text1: "Success",

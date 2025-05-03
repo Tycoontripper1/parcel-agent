@@ -19,6 +19,9 @@ import Toast from 'react-native-toast-message';
 import {RootStackParamList, AuthStackParamList} from '@/navigation/navigationType';
 import {loginUser} from '../../../services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// api/auth.ts
+import Constants from 'expo-constants';
+
 
 type Props = NativeStackScreenProps<RootStackParamList & AuthStackParamList>;
 
@@ -29,7 +32,8 @@ const LoginScreen = ({navigation}: Props) => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const {theme} = useTheme();
-
+   const apiKey = Constants.expoConfig?.extra?.apiKey;
+   console.log(apiKey, 'API KEY');
   const handleValidation = () => {
     let isValid = true;
     const emailRegex = /\S+@\S+\.\S+/;
@@ -91,9 +95,11 @@ const LoginScreen = ({navigation}: Props) => {
 
       if (!userDetails.isEmailVerified) {
         navigation.navigate('OTPVerificationScreen', {phone: userDetails.phone});
-      } else if (!userDetails.isKycComplete) {
-        navigation.navigate('BusinessInfoScreen');
-      } else {
+      }
+      //  else if (!userDetails.isKycComplete) {
+      //   navigation.navigate('BusinessInfoScreen');
+      // }
+      else {
         navigation.navigate('RootTabStack');
       }
     } catch (error: any) {

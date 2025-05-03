@@ -46,7 +46,7 @@ const ResendOTP = ({onResend}: ResendOTPProps) => {
           <Text style={styles.timerCountdown}>{formatTime(timer)}</Text>
         </Text>
       ) : (
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
+        <View style={{flexDirection: 'row', gap: 6}}>
           <Text style={styles.resendText}>Didn't get OTP?</Text>
           <TouchableOpacity onPress={handleResend}>
             <Text style={styles.resendLink}>Click here to resend</Text>
@@ -62,7 +62,7 @@ export default ResendOTP;
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
-    alignItems: 'center',
+    
   },
   timerText: {
     fontSize: 14,

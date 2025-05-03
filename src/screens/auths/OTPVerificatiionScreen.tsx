@@ -86,6 +86,7 @@ const OTPVerificationScreen = ({navigation}: Props) => {
         text1: 'Verified',
         text2: result?.data?.message || 'OTP verified successfully',
       });
+      dispatch(updateField({key: 'otp', value: ""}));
   
       navigation.navigate('BusinessInfoScreen');
     } catch (error: any) {

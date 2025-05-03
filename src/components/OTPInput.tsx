@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {View, TextInput, StyleSheet, Keyboard} from 'react-native';
 import * as Clipboard from 'expo-clipboard';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 interface OTPInputProps {
   value: string;
@@ -90,9 +91,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E2E2',
     textAlign: 'center',
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#22215B',
+    fontSize: RFValue(48),
+    fontWeight: '500',
+    color: '#252B37',
     backgroundColor: '#FFFFFF',
   },
 });

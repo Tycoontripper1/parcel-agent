@@ -5,7 +5,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AccountStackList } from "@/navigation/navigationType";
 import { Button, CustomView, Input, Text } from "@/components";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -25,6 +25,8 @@ import { color } from "@/constants/Colors";
 import { updateField } from "@/redux/slices/formSlice";
 import HomeHeader from "@/components/share/HomeHeader";
 import EditIcon from "@/components/svg/EditIcon";
+import { getUser } from "../../../../services/auth";
+import { UserDetails } from "@/utils/interface";
 
 type Props = NativeStackScreenProps<AccountStackList>;
 const AccountInformation = ({ navigation }: Props) => {
@@ -38,6 +40,8 @@ const AccountInformation = ({ navigation }: Props) => {
   const [fullNameError, setFullNameError] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
+
 
   const handleImagePick = () => {
     launchImageLibrary({ mediaType: "photo", quality: 0.8 }, (response) => {
@@ -104,14 +108,23 @@ const AccountInformation = ({ navigation }: Props) => {
     console.log({ formData });
     setLoading(false);
   };
+    useEffect(() => {
+      const fetchUser = async () => {
+        const userDetails = await getUser();
+        console.log(userDetails, 'userDetails');
+        setUserDetails(userDetails)
+      };
+      fetchUser();
+    }
+    , []);
 
   const handleEditProfile = () => {
       navigation.navigate('AccountEditProfile');
-    console.log({ formData });
+    
   };
   const handleChangePassword = () => {
       navigation.navigate('AccountChangePassword');
-    console.log({ formData });
+    
   };
 
   // Styles
@@ -150,7 +163,13 @@ const AccountInformation = ({ navigation }: Props) => {
         >
           {/* Profile Image */}
           <Image
-            source={selectedImage ? { uri: selectedImage } : Avatar}
+            source={
+              selectedImage
+                ? { uri: selectedImage }
+                : userDetail?.userImage
+                ? { uri: userDetail.userImage }
+                : undefined
+            }
             style={{
               width: 84,
               height: 84,
@@ -167,7 +186,7 @@ const AccountInformation = ({ navigation }: Props) => {
           </TouchableOpacity>
           <View style={$bodyHeader}>
             <Text font="SemiBold" size={16}>
-              Chinedu Marcus
+              {userDetail?.firstName} {userDetail?.lastName}
             </Text>
             <View
               style={{
@@ -178,7 +197,7 @@ const AccountInformation = ({ navigation }: Props) => {
               }}
             >
               <Text size={12} font="Medium" color="#717680">
-                Agent ID: PP64763
+                Agent ID: {userDetail?.agentId}
               </Text>
             </View>
           </View>
@@ -206,47 +225,42 @@ const AccountInformation = ({ navigation }: Props) => {
         </View>
         {/* forms */}
         <View style={$cardHeader}>
-          <Input
-            label="Full Name"
-            placeholder="Enter full name"
-            placeholderTextColor="#B8C2CC"
-            value={formData.fullName}
-            onChangeText={(value) =>
-              dispatch(updateField({ key: "fullName", value }))
-            }
-            LeftIcon={<Feather name="user" size={18} color={color.gray} />}
-            errorMessage={fullNameError}
-            keyboardType="default"
-          />
-          <Input
-            label="Phone Number"
-            placeholder="Enter phone number"
-            placeholderTextColor="#B8C2CC"
-            value={formData.phoneNumber}
-            onChangeText={(value) =>
-              dispatch(updateField({ key: "phoneNumber", value }))
-            }
-            LeftIcon={
-              <SimpleLineIcons name="phone" size={18} color={color.gray} />
-            }
-            errorMessage={phoneError}
-            keyboardType="number-pad"
-          />
+        <Input
+  label="First Name"
+  placeholder="Enter first name"
+  placeholderTextColor="#B8C2CC"
+  value={userDetail?.firstName || ""}
+  editable={false}
+  LeftIcon={<Feather name="user" size={18} color={color.gray} />}
+/>
 
-          <Input
-            label="Email Address (Optional)"
-            placeholder="Enter email"
-            placeholderTextColor="#B8C2CC"
-            value={formData.email}
-            onChangeText={(value) =>
-              dispatch(updateField({ key: "email", value }))
-            }
-            LeftIcon={
-              <MaterialIcons name="mail-outline" size={18} color={color.gray} />
-            }
-            errorMessage={passwordError}
-            keyboardType="email-address"
-          />
+<Input
+  label="Last Name"
+  placeholder="Enter last name"
+  placeholderTextColor="#B8C2CC"
+  value={userDetail?.lastName || ""}
+  editable={false}
+  LeftIcon={<Feather name="user" size={18} color={color.gray} />}
+/>
+
+<Input
+  label="Phone Number"
+  placeholder="Enter phone number"
+  placeholderTextColor="#B8C2CC"
+  value={userDetail?.phone || ""}
+  editable={false}
+  LeftIcon={<SimpleLineIcons name="phone" size={18} color={color.gray} />}
+/>
+
+<Input
+  label="Email Address (Optional)"
+  placeholder="Enter email"
+  placeholderTextColor="#B8C2CC"
+  value={userDetail?.email || ""}
+  editable={false}
+  LeftIcon={<MaterialIcons name="mail-outline" size={18} color={color.gray} />}
+/>
+
           <View style={$buttonsContainer}>
             <Button
               onPress={() => ""}
@@ -292,10 +306,8 @@ const AccountInformation = ({ navigation }: Props) => {
               label="Password"
               placeholder="Enter password"
               placeholderTextColor="#B8C2CC"
-              value={formData.password}
-              onChangeText={(value) =>
-                dispatch(updateField({ key: "password", value }))
-              }
+              value={"********"}
+              editable={false}
               LeftIcon={
                 <MaterialIcons
                   name="lock-outline"
@@ -303,9 +315,6 @@ const AccountInformation = ({ navigation }: Props) => {
                   color={color.gray}
                 />
               }
-              errorMessage={passwordError}
-              keyboardType="default"
-              type="password"
             />
             <View style={$buttonsContainer}>
               <Button

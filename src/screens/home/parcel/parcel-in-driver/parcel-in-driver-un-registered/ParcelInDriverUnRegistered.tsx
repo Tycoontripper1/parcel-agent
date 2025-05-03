@@ -154,6 +154,20 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
         </View>
         <View style={$cardHeader}>
           <Input
+            label='Driver Name'
+            placeholder='Enter driver name'
+            placeholderTextColor='#B8C2CC'
+            value={formData.driverName}
+            onChangeText={(value) => {
+                          dispatch(updateField({
+                            key: 'driverName',
+                            value,
+                          }));
+                        }}
+            keyboardType='default'
+            errorMessage={driverPhoneError}
+          />
+          <Input
             label='Driver Phone Number'
             placeholder='Enter phone number'
             placeholderTextColor='#B8C2CC'
@@ -197,7 +211,7 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
               console.log('formatted:', formatPhoneNumber11(cleaned));
             }}
             keyboardType='number-pad'
-            errorMessage={senderPhoneError}
+            
           />
           <Input
             label=' Receiver Phone Number'

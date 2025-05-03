@@ -32,35 +32,35 @@ import TransferIcon from "@/components/svg/TransferIcon";
 import USSDIcon from "@/components/svg/USSDIcon";
 import EmptyWallet from "@/components/svg/EmptyEarning";
 
-const transactions = [
-  {
-    id: "1",
-    type: "credit",
-    amount: 1500,
-    date: "2025-03-03",
-    title: "Salary",
-  },
-  {
-    id: "2",
-    type: "debit",
-    amount: 500,
-    date: "2025-03-03",
-    title: "Shopping",
-  },
-  {
-    id: "3",
-    type: "credit",
-    amount: 2000,
-    date: "2025-03-02",
-    title: "Freelance",
-  },
-  {
-    id: "4",
-    type: "debit",
-    amount: 300,
-    date: "2025-03-02",
-    title: "Groceries",
-  },
+const transactions:any = [
+  // {
+  //   id: "1",
+  //   type: "credit",
+  //   amount: 1500,
+  //   date: "2025-03-03",
+  //   title: "Salary",
+  // },
+  // {
+  //   id: "2",
+  //   type: "debit",
+  //   amount: 500,
+  //   date: "2025-03-03",
+  //   title: "Shopping",
+  // },
+  // {
+  //   id: "3",
+  //   type: "credit",
+  //   amount: 2000,
+  //   date: "2025-03-02",
+  //   title: "Freelance",
+  // },
+  // {
+  //   id: "4",
+  //   type: "debit",
+  //   amount: 300,
+  //   date: "2025-03-02",
+  //   title: "Groceries",
+  // },
 ];
 const { width } = Dimensions.get("window");
 type Props = NativeStackScreenProps< WalletStackList>;
@@ -73,10 +73,10 @@ export interface Wallet {
 const WalletScreen = ({ navigation }: Props) => {
   const [isWallet, setIsWallet] = useState(false);
   const [filter, setFilter] = useState("all");
-  const filteredTransactions = transactions.filter((tx) =>
+  const filteredTransactions = transactions?.filter((tx:any) =>
     filter === "all" ? true : tx.type === filter
   );
-  const groupedTransactions = filteredTransactions.reduce((acc, tx) => {
+  const groupedTransactions = filteredTransactions.reduce((acc:any, tx:any) => {
     if (!acc[tx.date]) acc[tx.date] = [];
     acc[tx.date].push(tx);
     return acc;
@@ -135,7 +135,7 @@ const WalletScreen = ({ navigation }: Props) => {
                   <View>
                     <WalletIconBlue />
                     <Text style={styles.balanceLabel}>Wallet Balance</Text>
-                    <Text style={styles.balance}>₦ 25,000.00</Text>
+                    <Text style={styles.balance}>₦0.00</Text>
                   </View>
                 </View>
               </View>
@@ -168,7 +168,7 @@ const WalletScreen = ({ navigation }: Props) => {
                   <View>
                     <EarningIcon />
                     <Text style={styles.balanceLabel}>Earnings</Text>
-                    <Text style={styles.balance}>₦ 15,000.00</Text>
+                    <Text style={styles.balance}>₦0.00</Text>
                   </View>
                 </View>
               </View>
@@ -257,7 +257,7 @@ const WalletScreen = ({ navigation }: Props) => {
       {Object.keys(groupedTransactions).map((date) => (
         <View key={date} style={styles.section}>
           <Text style={styles.sectionTitle}>{date}</Text>
-          {groupedTransactions[date].map((tx) => (
+          {groupedTransactions[date].map((tx:any) => (
             <View key={tx.id} style={styles.transactionRow}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <View style={styles.transactionIconContainer}>

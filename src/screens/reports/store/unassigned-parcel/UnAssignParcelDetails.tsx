@@ -21,47 +21,7 @@ import { Avatar } from "../../../../../assets/images";
 import PaymentOption from "@/components/PaymentOption";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// ParcelDetailsType as the type for the parcel details passed through route params
-interface ParcelDetailsType {
-  id: string;
-  sender: {
-    phone: string;
-    fullName: string;
-    email: string;
-    address: string;
-  };
-  receiver: {
-    phone: string;
-    fullName: string;
-    email: string;
-    address: string;
-  };
-  parcel: {
-    type: string;
-    value: string;
-    chargesPayable: string;
-    chargesPaidBy: string;
-    handlingFee: string;
-    totalFee: string;
-    description: string;
-    thumbnails: string[];
-  };
-  park: {
-    source: string;
-    destination: string;
-  };
-  addedBy: {
-    name: string;
-    phone: string;
-  };
-  paymentOption: string | null;
-  paymentStatus: string;
-  driver: string | null;
-  status: string;
-  parcelId: string;
-  qrImage: string;
-  createdAt: string;
-}
+
 
 // Define the props correctly
 type Props = NativeStackScreenProps<ReportStackList, "UnAssignParcelDetails">;
@@ -84,9 +44,9 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
   const HandleContinue = async () => {
     try {
       // Store the item in AsyncStorage as a JSON string
-      await AsyncStorage.setItem('parcelItem', JSON.stringify(item));
+      await AsyncStorage.setItem('parcelitem', JSON.stringify(item));
       console.log(item);
-      navigation.navigate('PrintParcel');
+      navigation.navigate('PrintParcelItem');
     } catch (error) {
       console.error('Error storing item in AsyncStorage:', error);
     }

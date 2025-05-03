@@ -49,13 +49,15 @@ interface ParcelDetails {
 
 
 interface ShipmentHistoryProps {
+  searchQuery: string;
+
   onViewAll: () => void;
 }
 
-const HomeShipmentHistory = ({onViewAll}: ShipmentHistoryProps) => {
+const HomeShipmentHistory = ({searchQuery,onViewAll}: ShipmentHistoryProps) => {
   const [allShipments, setAllShipments] = useState<ParcelDetails[]>([]);
   useEffect(() => {
-    const fetchDriver = async () => {
+    const fetchShipments = async () => {
       try {
         const result = await getShipmentsHistory();
         console.log(result, "result");
@@ -64,9 +66,14 @@ const HomeShipmentHistory = ({onViewAll}: ShipmentHistoryProps) => {
         console.error("Failed to fetch drivers:", error);
       }
     };
-    fetchDriver();
+    fetchShipments();
   }, []);
-
+  // Filter shipments based on the search query
+  const filteredShipments = allShipments?.filter(item =>
+    (item?.parcelId || '').toLowerCase().includes((searchQuery || '').toLowerCase())
+  );
+  
+  
 
 
   return (
@@ -74,7 +81,7 @@ const HomeShipmentHistory = ({onViewAll}: ShipmentHistoryProps) => {
       <Text style={styles.shipmentLabel} font='SemiBold'>
         Shipment History
       </Text>
-      {allShipments.map((item, index) => (
+      {filteredShipments.map((item, index) => (
         <View key={index} style={styles.shipmentRow}>
           <Image source={{ uri: item?.parcel?.thumbnails[0] }} style={styles.shipmentImage} />
           <View style={styles.shipmentDetails}>

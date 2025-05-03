@@ -26,17 +26,7 @@ const SearchParcelOutReceiver = ({navigation}: Props) => {
 
   // Function to simulate barcode scanning
   const handleScanBarcode = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setParcelId(generateRandomNumbers(10));
-      setLoading(false);
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Parcel loaded!',
-      });
-      navigation.navigate('ParcelDriverOutPreviewScreen');
-    }, 3000);
+    navigation.navigate('BarcodeScannerScreen');
   };
 
   // Function to handle parcel search

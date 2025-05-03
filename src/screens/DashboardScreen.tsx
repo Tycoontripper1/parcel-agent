@@ -41,7 +41,7 @@ const {width} = Dimensions.get('window');
 type Props = NativeStackScreenProps<HomeStackList>;
 const DashboardScreen = ({navigation}: Props) => {
   const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
-
+  const [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {
     const fetchUser = async () => {
       const userDetails = await getUser();
@@ -51,56 +51,10 @@ const DashboardScreen = ({navigation}: Props) => {
     fetchUser();
   }
   , []);
-  const shipmentData = [
-    {
-      image: Package,
-      sender: 'Adewale Jinad',
-      receiver: 'Mary Kolade',
-      time: 'Today • 01:30 PM',
-      charges: '₦5,000.00',
-      status: 'Arrived',
-    },
-    {
-      image: Package,
-      sender: 'John Doe',
-      receiver: 'Jane Smith',
-      time: 'Yesterday • 04:20 PM',
-      charges: '₦3,500.00',
-      status: 'Delivered',
-    },
-    {
-      image: Package,
-      sender: 'Peter Obi',
-      receiver: 'Ngozi Okonjo',
-      time: 'Last Week • 10:15 AM',
-      charges: '₦10,000.00',
-      status: 'In Transit',
-    },
-    {
-      image: Package,
-      sender: 'Adewale Jinad',
-      receiver: 'Mary Kolade',
-      time: 'Today • 01:30 PM',
-      charges: '₦5,000.00',
-      status: 'Arrived',
-    },
-    {
-      image: Package,
-      sender: 'John Doe',
-      receiver: 'Jane Smith',
-      time: 'Yesterday • 04:20 PM',
-      charges: '₦3,500.00',
-      status: 'Delivered',
-    },
-    {
-      image: Package,
-      sender: 'Peter Obi',
-      receiver: 'Ngozi Okonjo',
-      time: 'Last Week • 10:15 AM',
-      charges: '₦10,000.00',
-      status: 'In Transit',
-    },
-  ];
+
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+  };
 
   const parcelButtonData: IParcelButton[] = [
     {
@@ -195,7 +149,7 @@ const DashboardScreen = ({navigation}: Props) => {
                 }}>
                 <View>
                   <Text style={styles.balanceLabel}>Available Balance</Text>
-                  <Text style={styles.balance}>₦ 25,000.00</Text>
+                  <Text style={styles.balance}>₦0.00</Text>
                 </View>
                 <TouchableOpacity style={styles.transactionButton}>
                   <Text style={styles.transactionButtonText}>
@@ -224,25 +178,23 @@ const DashboardScreen = ({navigation}: Props) => {
           <ParcelButton buttons={parcelButtonData} />
           {/* Quick Search */}
           <View style={styles.quickSearchContainer}>
-            <Text style={styles.quickSearchLabel} font='Medium'>
-              Quick Search
-            </Text>
-            <View style={styles.searchInput}>
-              <SearchNormal1
-                color='#000'
-                size={18}
-                style={{flexBasis: '10%'}}
-              />
-              <TextInput
-                style={{flexBasis: '88%', height: '100%'}}
-                placeholder='Parcel ID or Phone Number'
-                placeholderTextColor='#aaa'
-              />
-            </View>
-          </View>
+        <Text style={styles.quickSearchLabel} font='Medium'>
+          Quick Search
+        </Text>
+        <View style={styles.searchInput}>
+          <SearchNormal1 color='#000' size={18} style={{flexBasis: '10%'}} />
+          <TextInput
+            style={{flexBasis: '88%', height: '100%'}}
+            placeholder='Parcel ID'
+            placeholderTextColor='#aaa'
+            value={searchQuery}
+            onChangeText={handleSearchChange}
+          />
+        </View>
+      </View>
 
-          {/* Shipment History */}
-          <HomeShipmentHistory data={shipmentData} onViewAll={handleViewAll} />
+      {/* Shipment History */}
+      <HomeShipmentHistory searchQuery={searchQuery} onViewAll={handleViewAll} />
         </ScrollView>
       </KeyboardAvoidingView>
     </CustomView>

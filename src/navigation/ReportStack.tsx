@@ -20,6 +20,7 @@ import UnAssignParcelDetails from '@/screens/reports/store/unassigned-parcel/UnA
 import UnpaidParcelHistory from '@/screens/reports/store/unpaid-parcel/UnpaidParcelHistory';
 import UnPaidParcelDetails from '@/screens/reports/store/unpaid-parcel/UnpaidParcelDetails';
 import PrintParcel from '@/components/PrintParcel';
+import PrintParcelItem from '@/components/printParcelItem';
 
 
 const Report = createStackNavigator<ReportStackList>();
@@ -129,6 +130,11 @@ const ReportStack = ({navigation}: Props) => {
             <Report.Screen
               name='PrintParcel'
               component={PrintParcel}
+              options={{headerShown: false}}
+            />
+            <Report.Screen
+              name='PrintParcelItem'
+              component={PrintParcelItem}
               options={{headerShown: false}}
             />
     </Report.Navigator>

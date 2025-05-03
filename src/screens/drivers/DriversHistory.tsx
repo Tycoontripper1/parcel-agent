@@ -16,7 +16,7 @@ import { SearchNormal1 } from "iconsax-react-native";
 import { color } from "@/constants/Colors";
 import { Feather } from "@expo/vector-icons";
 import { DriverStackList } from "@/navigation/navigationType";
-import { getAllDrivers } from "../../../services/auth";
+import { apiKey, getAllDrivers, getToken } from "../../../services/auth";
 type Driver = {
   id: string;
   firstName: string;
@@ -55,18 +55,34 @@ const DriversHistory = ({ navigation }: Props) => {
     }, 1500);
   }, []);
 
-  useEffect(() => {
-    const fetchDriver = async () => {
-      try {
-        const result = await getAllDrivers();
-        console.log(result, "result");
-        setAllDrivers(result?.data?.details?.rows);
-      } catch (error) {
-        console.error("Failed to fetch drivers:", error);
-      }
-    };
-    fetchDriver();
-  }, []);
+    useEffect(() => {
+      const fetchDrivers = async () => {
+        try {
+          const token = await getToken();
+          const response = await fetch(`${apiKey}/users?userType=driver`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          });
+    
+          const result = await response.json();
+    
+          if (!response.ok) {
+            throw new Error(result.message || 'Failed to fetch drivers');
+          }
+    
+          console.log(result, 'result');
+          setAllDrivers(result?.data?.details?.rows);
+        } catch (error) {
+          console.error('Failed to fetch drivers:', error);
+        }
+      };
+    
+      fetchDrivers();
+    }, []);
+    
 
   // Filter drivers based on search query
   const filteredDrivers = allDrivers.filter((driver) =>
@@ -117,7 +133,7 @@ const DriversHistory = ({ navigation }: Props) => {
 
       <View style={{ flexDirection: "column", gap: 12 }}>
         <Text style={styles.label}>Driver ID</Text>
-        <Text style={styles.value}>{item.driverId}ss</Text>
+        <Text style={styles.value}>{item.driverId}</Text>
       </View>
     </TouchableOpacity>
   );

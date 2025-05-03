@@ -88,7 +88,7 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
           <Text size={14}>{singleParcel?.status}</Text>
           <View
             style={{backgroundColor: '#FFF8E6', padding: 4, borderRadius: 8}}>
-            <Text color='#F79009'>{singleParcel?.status}</Text>
+            <Text color='#F79009'>{singleParcel?.paymentStatus}</Text>
           </View>
         </View>
         {/* Sender's Information */}
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: RFValue(14),
-    color: '#717680',
+    color: '#252B37',
   },
   imageContainer: {
     flexDirection: 'row',

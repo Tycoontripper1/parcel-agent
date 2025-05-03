@@ -187,7 +187,7 @@ export const getShipmentsHistory = async () => {
   export const verifyReceiverOtp = async ({code}: { code: string }) => {
     try {
        const token = await getToken()
-      const response = await fetch(`${apiKey}//shipment/verify?code=${code}`, {
+      const response = await fetch(`${apiKey}/shipment/verify?code=${code}`, {
         method: 'get',
           headers: {
             'Content-Type': 'application/json',
@@ -207,4 +207,29 @@ export const getShipmentsHistory = async () => {
       throw error;
     }
   };
+  export const updateParcel = async (payload:any, id:any) => {
+    try {
+       const token = await getToken()
+      const response = await fetch(`${apiKey}/shipment/${id}`, {
+        method: 'patch',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'parcel update failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+  
   

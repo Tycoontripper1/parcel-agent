@@ -1,7 +1,7 @@
 import { CustomView, Button, Text } from "@/components";
 import { RootStackParamList } from "@/navigation/navigationType";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { AccountStackList } from "@/navigation/navigationType";
 import { AuthStackParamList } from "@/navigation/navigationType";
@@ -12,12 +12,16 @@ import ArrowRight from "@/components/svg/ArrowRight";
 import AccountButton, { IAccountButton } from "@/components/AccountButton";
 import { RFValue } from "react-native-responsive-fontsize";
 import ScreenHeader from "@/components/share/ScreenHeader";
+import { getUser } from "../../services/auth";
+import { UserDetails } from "@/utils/interface";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = NativeStackScreenProps<
   RootStackParamList & AccountStackList & AuthStackParamList
 >;
 
 const SettingsPage = ({ navigation }: Props) => {
+    const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
   const accountButtonData: IAccountButton[] = [
     {
       label: "Account Information",
@@ -46,6 +50,24 @@ const SettingsPage = ({ navigation }: Props) => {
     alignItems: "center",
     paddingVertical: RFValue(18),
   };
+      useEffect(() => {
+        const fetchUser = async () => {
+          const userDetails = await getUser();
+          console.log(userDetails, 'userDetails');
+          setUserDetails(userDetails)
+        };
+        fetchUser();
+      }
+      , []);
+      const handleLogout = async () => {
+        try {
+          await AsyncStorage.clear(); // clear all saved user data
+          navigation.replace("AuthStacks", { screen: "Login" }); // go to login
+        } catch (error) {
+          console.error('Failed to clear AsyncStorage.', error);
+        }
+      };
+      
   return (
     <CustomView style={styles.container} padded>
 <ScreenHeader title="Account Settings" OnNotificationClick={() => navigation.navigate("NotificationsScreen")} type="Home" />
@@ -65,7 +87,7 @@ const SettingsPage = ({ navigation }: Props) => {
         >
           {/* Profile Image */}
           <Image
-            source={Avatar}
+            source={{ uri: userDetail?.userImage }}
             style={{
               width: 84,
               height: 84,
@@ -79,10 +101,10 @@ const SettingsPage = ({ navigation }: Props) => {
         <View style={styles.buttonContainer}>
           <View style={$bodyHeader}>
             <Text font="SemiBold" size={18}>
-              Chinedu Marcus
+              {userDetail?.firstName} {userDetail?.lastName}
             </Text>
             <Text size={14} font="Medium" color="#717680">
-              Agent ID: PP64763
+              Agent ID: {userDetail?.agentId}
             </Text>
           </View>
 
@@ -91,7 +113,7 @@ const SettingsPage = ({ navigation }: Props) => {
 
         {/* logout button */}
         <TouchableOpacity
-          onPress={() => navigation.replace("AuthStacks", { screen: "Login" })}
+          onPress={handleLogout}
           style={{
             width: "100%",
             padding: RFValue(8),

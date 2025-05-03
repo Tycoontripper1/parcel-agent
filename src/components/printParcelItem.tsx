@@ -38,12 +38,11 @@ import { WebView } from "react-native-webview";
 import JsBarcode from "jsbarcode";
 import Barcode from "@kichiyaki/react-native-barcode-generator";
 import { singleParcelInterface } from "@/utils/interface";
-import { getParcelDetails } from "../../services/parcel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type TransactionType = "Handling fee" | "Overdue fee" | "Upfront fee";
 
-interface ParcelDetailsType {
+interface parcelItemType {
   id: string;
   sender: {
     phone: string;
@@ -94,29 +93,19 @@ interface ParcelDetailsType {
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList & HomeStackList>;
-  route: RouteProp<HomeStackList, "PrintParcel">;
+  route: RouteProp<HomeStackList, "PrintParcelItem">;
 }
-const PrintParcel = ({ navigation }: Props) => {
+const PrintParcelItem = ({ navigation }: Props) => {
   const formData = useSelector((state: RootState) => state.parcel);
   const viewShotRef = useRef<ViewShot | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [BarValue, setBarValue] = useState("lintangwisesa");
-  const [parcelItem, setParcelItem] = useState<ParcelDetailsType | null>(null);
-  const [parcelDetails, setParcelDetails] =
-    useState<singleParcelInterface | null>(null);
-  useEffect(() => {
-    const fetchParcelDetails = async () => {
-      const parcel = await getParcelDetails();
-
-      setParcelDetails(parcel);
-    };
-    fetchParcelDetails();
-  }, []);
+  const [parcelItem, setParcelItem] = useState<parcelItemType | null>(null);
 
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const storedItem = await AsyncStorage.getItem("parcelItem");
+        const storedItem = await AsyncStorage.getItem("parcelitem");
         if (storedItem !== null) {
           setParcelItem(JSON.parse(storedItem)); // Parse the stored string back to an object
         }
@@ -135,6 +124,8 @@ const PrintParcel = ({ navigation }: Props) => {
   const formattedTime = `${date.getHours()}:${
     date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
   } ${date.getHours() < 12 ? "AM" : "PM"}`;
+
+  const safe = (value: string | undefined | null) => value || "N/A";
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -177,7 +168,7 @@ const PrintParcel = ({ navigation }: Props) => {
         await Sharing.shareAsync(uri);
         navigation.navigate("ParcelCongratulation", {
           message: "Parcel received successfully",
-          note: "SMS has been sent to notify the sender/receiver.",
+          note: "",
         });
       } else {
         Alert.alert("Error", "Failed to capture the image.");
@@ -247,7 +238,10 @@ const PrintParcel = ({ navigation }: Props) => {
           });
 
           console.log("PDF Saved at:", pdfUri);
-
+          navigation.navigate("ParcelCongratulation", {
+            message: "Parcel received successfully",
+            note: "SMS has been sent to notify the sender/receiver.",
+          });
           // Share or Save the PDF
           const canShare = await Sharing.isAvailableAsync();
           if (canShare) {
@@ -265,6 +259,7 @@ const PrintParcel = ({ navigation }: Props) => {
       Alert.alert("Error", "Something went wrong while exporting to PDF.");
     }
   };
+  const barcodeWidth = Dimensions.get("window").width / 1.5;
 
   return (
     <CustomView style={{ paddingVertical: RFValue(10) }}>
@@ -288,7 +283,7 @@ const PrintParcel = ({ navigation }: Props) => {
               marginTop: RFValue(8),
             }}
           >
-            <Text size={16}>{parcelDetails?.parcelId}</Text>
+            <Text size={16}>{parcelItem?.parcelId}</Text>
             <View
               style={{
                 flexDirection: "row",
@@ -311,7 +306,8 @@ const PrintParcel = ({ navigation }: Props) => {
               </TouchableOpacity>
             </View>
           </View>
-          <View
+         <View style={{paddingHorizontal: RFValue(16)}}>
+         <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
@@ -325,9 +321,12 @@ const PrintParcel = ({ navigation }: Props) => {
               marginTop: RFValue(8),
             }}
           >
-            <Text size={16}>{parcelDetails?.collectedOnArrivalBy.agentId}</Text>
-            <Text size={14}>₦{parcelDetails?.parcel.totalFee}</Text>
+            <Text size={16}>
+              {safe(parcelItem?.collectedOnArrivalBy?.agentId)}
+            </Text>
+            <Text size={14}>₦{parcelItem?.parcel.totalFee}</Text>
           </View>
+         </View>
           <View
             style={{
               flexDirection: "row",
@@ -377,7 +376,7 @@ const PrintParcel = ({ navigation }: Props) => {
               >
                 <Text style={styles.descriptionText}>Name: </Text>
                 <Text style={styles.infoText}>
-                  {parcelDetails?.sender.fullName}{" "}
+                  {parcelItem?.sender.fullName}{" "}
                 </Text>
               </View>
               <View
@@ -388,9 +387,7 @@ const PrintParcel = ({ navigation }: Props) => {
                 }}
               >
                 <Text style={styles.descriptionText}>Email: </Text>
-                <Text style={styles.infoText}>
-                  {parcelDetails?.sender.email}{" "}
-                </Text>
+                <Text style={styles.infoText}>{parcelItem?.sender.email} </Text>
               </View>
               <View
                 style={{
@@ -400,9 +397,7 @@ const PrintParcel = ({ navigation }: Props) => {
                 }}
               >
                 <Text style={styles.descriptionText}>Phone Number:</Text>
-                <Text style={styles.infoText}>
-                  {parcelDetails?.sender.phone}{" "}
-                </Text>
+                <Text style={styles.infoText}>{parcelItem?.sender.phone} </Text>
               </View>
               <View
                 style={{
@@ -412,9 +407,7 @@ const PrintParcel = ({ navigation }: Props) => {
                 }}
               >
                 <Text style={styles.descriptionText}>Dispatch Park </Text>
-                <Text style={styles.infoText}>
-                  {parcelDetails?.park.source}
-                </Text>
+                <Text style={styles.infoText}>{parcelItem?.park.source}</Text>
               </View>
             </View>
           </View>
@@ -440,7 +433,7 @@ const PrintParcel = ({ navigation }: Props) => {
               >
                 <Text style={styles.descriptionText}>Name </Text>
                 <Text style={styles.infoText}>
-                  {parcelDetails?.receiver.fullName}{" "}
+                  {parcelItem?.receiver.fullName}{" "}
                 </Text>
               </View>
               <View
@@ -452,7 +445,7 @@ const PrintParcel = ({ navigation }: Props) => {
               >
                 <Text style={styles.descriptionText}>Email </Text>
                 <Text style={styles.infoText}>
-                  {parcelDetails?.receiver.email}{" "}
+                  {parcelItem?.receiver.email}{" "}
                 </Text>
               </View>
               <View
@@ -464,7 +457,7 @@ const PrintParcel = ({ navigation }: Props) => {
               >
                 <Text style={styles.descriptionText}>Phone Number</Text>
                 <Text style={styles.infoText}>
-                  {parcelDetails?.receiver.phone}
+                  {parcelItem?.receiver.phone}
                 </Text>
               </View>
               <View
@@ -476,7 +469,7 @@ const PrintParcel = ({ navigation }: Props) => {
               >
                 <Text style={styles.descriptionText}>Delivery Park</Text>
                 <Text style={styles.infoText}>
-                  {parcelDetails?.park.destination}
+                  {parcelItem?.park.destination}
                 </Text>
               </View>
             </View>
@@ -494,15 +487,17 @@ const PrintParcel = ({ navigation }: Props) => {
             }}
           >
             <Text size={16}>Goods</Text>
-            <Text size={14}>{parcelDetails?.parcel.type}</Text>
+            <Text size={14}>{parcelItem?.parcel.type}</Text>
           </View>
 
           {/* Barcode */}
           <View style={styles.barcodeContainer}>
             <Barcode
               format="CODE128"
-              value={parcelDetails?.parcelId || "2222"}
-              text={parcelDetails?.parcelId ? parcelDetails?.parcelId : "lintangwisesa"}
+              value={parcelItem?.parcelId || "223-123456"}
+              // text={
+              //   parcelItem?.parcelId ? parcelItem?.parcelId : "lintangwisesa"
+              // }
               style={{ marginBottom: 20 }}
               textStyle={{ color: "#000" }}
               maxWidth={Dimensions.get("window").width / 1.5}
@@ -511,11 +506,11 @@ const PrintParcel = ({ navigation }: Props) => {
               width={2}
             />
           </View>
-          <Image
-            source={{ uri: `data:image/png;base64,${parcelDetails?.qrImage}` }}
-            style={{ width: Dimensions.get("window").width / 1.5, height: 100 }}
+          {/* <Image
+            source={{ uri: `data:image/png;base64,${parcelItem?.qrImage}` }}
+            style={{ width: barcodeWidth, height: 200 ,alignSelf: "center" }}
             resizeMode="contain"
-          />
+          /> */}
         </ViewShot>
         <View style={$buttonsContainer}>
           <ButtonHome
@@ -626,4 +621,4 @@ const styles = StyleSheet.create({
   image: { width: "100%", height: 200, alignSelf: "center", marginBottom: 16 },
 });
 
-export default PrintParcel;
+export default PrintParcelItem;

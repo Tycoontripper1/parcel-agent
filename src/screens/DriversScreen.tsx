@@ -25,38 +25,9 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import EmptyWallet from "@/components/svg/EmptyEarning";
 import UserIcon from "@/components/svg/userIcon";
 import { DriverStackList } from "@/navigation/navigationType";
-import { getAllDrivers } from "../../services/auth";
+import { apiKey, getAllDrivers, getToken } from "../../services/auth";
 
-const drivers = [
-  {
-    id: "1",
-    name: "John Doe",
-    phone: "+234 812 345 6789",
-    driverId: "DR-1001",
-    date: "2025-03-03",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    phone: "+234 902 876 5432",
-    driverId: "DR-1002",
-    date: "2025-03-03",
-  },
-  {
-    id: "3",
-    name: "Michael Johnson",
-    phone: "+234 701 234 5678",
-    driverId: "DR-1003",
-    date: "2025-03-02",
-  },
-  {
-    id: "4",
-    name: "Emily Davis",
-    phone: "+234 815 987 6543",
-    driverId: "DR-1004",
-    date: "2025-03-02",
-  },
-];
+
 
 
 
@@ -75,41 +46,70 @@ export interface Driver {
   phone: string;
   createdAt: string;
   driverId: string;
+  name?: string; // Optional property for transformed drivers
+  date?: string; // Optional property for transformed drivers
 }
 
 
 const DriversScreen = ({ navigation }: Props) => {
   const [isWallet, setIsWallet] = useState(false);
     const [allDrivers, setAllDrivers] = useState<Driver[]>([]);
+    console.log(allDrivers, 'allDrivers')
 
-  useEffect(() => {
-    const fetchDriver = async () => {
-      try {
-        const result = await getAllDrivers();
-        console.log(result, 'result');
-        setAllDrivers(result?.data?.details?.rows);
-      } catch (error) {
-        console.error('Failed to fetch drivers:', error);
-      }
-    };
-    fetchDriver();
-  }, []);
-
+    useEffect(() => {
+      const fetchDrivers = async () => {
+        try {
+          const token = await getToken();
+          const response = await fetch(`${apiKey}/users?userType=driver`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          });
+    
+          const result = await response.json();
+    
+          if (!response.ok) {
+            throw new Error(result.message || 'Failed to fetch drivers');
+          }
+    
+          console.log(result, 'result');
+          setAllDrivers(result?.data?.details?.rows);
+        } catch (error) {
+          console.error('Failed to fetch drivers:', error);
+        }
+      };
+    
+      fetchDrivers();
+    }, []);
+    
+const registeredDriversCount = allDrivers?.length || 0;
+// const parcelsAssignedCount = allDrivers.reduce((acc, driver) => {
+//   if (driver.parcelsAssigned) {
+//     return acc + driver.parcelsAssigned.length;
+//   }
+//   return acc;
+// }
 
 
 
 
 const groupedDrivers = allDrivers.reduce<
-  Record<string, (typeof drivers)[number][]>
+  Record<string, (typeof allDrivers)[number][]>
 >((acc, driver) => {
-  const date = driver.createdAt.split('T')[0]; // Extracts '2025-04-23'
+  const date = typeof driver.createdAt === "string" ? driver.createdAt.split('T')[0] : 'Unknown';
+
   if (!acc[date]) acc[date] = [];
   acc[date].push({
     id: driver.id,
-    name: `${driver.firstName} ${driver.lastName}`,
+    firstName: driver.firstName,
+    lastName: driver.lastName,
     phone: driver.phone,
-    driverId: driver.driverId,
+    createdAt: driver.createdAt,
+    name: `${driver.firstName} ${driver.lastName}`,
     date: date,
+    driverId: driver.driverId,
   });
   return acc;
 }, {});
@@ -154,7 +154,7 @@ const groupedDrivers = allDrivers.reduce<
                   alignItems: "flex-start",
                 }}
               >
-                <Text style={styles.balanceLabel}>10</Text>
+                <Text style={styles.balanceLabel}>{registeredDriversCount}</Text>
                 <Text style={styles.balance}>Registered Drivers</Text>
               </View>
             </View>
@@ -169,7 +169,7 @@ const groupedDrivers = allDrivers.reduce<
                   alignItems: "flex-start",
                 }}
               >
-                <Text style={styles.balanceLabel}>25</Text>
+                <Text style={styles.balanceLabel}>0</Text>
                 <Text style={styles.balance}>Parcels Assigned</Text>
               </View>
             </View>
@@ -241,7 +241,7 @@ const groupedDrivers = allDrivers.reduce<
             </View>
           ) : (
             <>
-              {Object.keys(groupedDrivers).map((date) => (
+              {Object?.keys(groupedDrivers).map((date) => (
                 <View key={date} style={styles.section}>
                   <Text style={styles.sectionTitle}>{date}</Text>
                   {groupedDrivers[date].map((driver) => (

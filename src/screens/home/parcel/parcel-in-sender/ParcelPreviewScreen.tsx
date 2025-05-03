@@ -62,7 +62,7 @@ const dispatch = useDispatch();
       
   
       const result = await SendParcelData(payload); 
-  console.log(result, 'result');
+      console.log(result, 'result');
       Toast.show({
         type: 'success',
         text1: 'Success',

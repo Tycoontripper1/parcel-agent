@@ -128,6 +128,7 @@ const FrontImageScreenDriver = ({ navigation }: Props) => {
     dispatch(updateField({ key: 'idFrontImage', value: frontImage }));
     navigation.navigate('BackImageScreenDriver');
   };
+  
 
   return (
     <CustomView style={{ paddingVertical: RFValue(10) }}>

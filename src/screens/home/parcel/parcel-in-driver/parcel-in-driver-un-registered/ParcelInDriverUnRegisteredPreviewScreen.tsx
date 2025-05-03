@@ -61,7 +61,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
         },
         driver: {
           phone: formData.driverNumber?.replace(/-/g, ""),
-          name: "Oladeji Toheeb",
+          name: formData.driverName,
         },
         paymentOption: "bank",
         status: "arrived" 
@@ -72,7 +72,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
       // ✅ Save to local storage
       await AsyncStorage.setItem(
         "parcelDetails",
-        JSON.stringify(result?.data?.details?.rows[0])
+        JSON.stringify(result?.data?.details)
       );
       Toast.show({
         type: "success",
@@ -81,11 +81,6 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
       });
 
       dispatch(resetForm()); // 🧼 clear form
-
-      // navigation.navigate("ParcelCongratulation", {
-      //   message: "Parcel received successfully",
-      //   note: "SMS has been sent to notify the sender/receiver.",
-      // });
       navigation.navigate("PrintParcel");
     } catch (error: any) {
       console.error("Parcel submission error:", error);

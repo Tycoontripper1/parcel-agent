@@ -49,6 +49,11 @@ export interface UserDetails {
       source: string;
       destination: string;
     };
+    
+    collectedOnArrivalBy: {
+      name: string;
+      agentId: string;
+  },
     paymentOption: string | null;
     paymentStatus: string;
     driver: string | null;

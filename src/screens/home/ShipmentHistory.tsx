@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Image,
@@ -8,56 +8,25 @@ import {
   Platform,
   ScrollView,
   TextInput,
-  Text as TextFilter,
   RefreshControl,
+  Text as TextFilter,
 } from 'react-native';
-import {CustomView, Text} from '@/components';
-import {RFValue} from 'react-native-responsive-fontsize';
-import {color} from '@/constants/Colors';
-import {Package} from '../../../assets/images';
+import { CustomView, Text } from '@/components';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { color } from '@/constants/Colors';
 import HomeHeader from '@/components/share/HomeHeader';
-import {Filter, SearchNormal1} from 'iconsax-react-native';
-import {MaterialIcons} from '@expo/vector-icons';
+import {  SearchNormal1 } from 'iconsax-react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { getShipmentsHistory } from '../../../services/parcel';
 import { formatDate } from '@/utils/formartDates';
+import EmptyWallet from '@/components/svg/EmptyEarning';
+
 interface ParcelDetails {
   id: string;
-  sender: {
-    phone: string;
-    fullName: string;
-    email: string;
-    address: string;
-  };
-  receiver: {
-    phone: string;
-    fullName: string;
-    email: string;
-    address: string;
-  };
-  parcel: {
-    type: string;
-    value: string;
-    chargesPayable: string;
-    chargesPaidBy: string;
-    handlingFee: string;
-    totalFee: string;
-    description: string;
-    thumbnails: string[];
-  };
-  park: {
-    source: string;
-    destination: string;
-  };
-  addedBy: {
-    name: string;
-    phone: string;
-  };
-  paymentOption: string | null;
-  paymentStatus: string;
-  driver: string | null;
+  sender: { fullName: string };
+  receiver: { fullName: string };
+  parcel: { thumbnails: string[]; totalFee: string };
   status: string;
-  parcelId: string;
-  qrImage: string;
   createdAt: string;
 }
 
@@ -71,233 +40,187 @@ interface FilteredShipment {
 }
 
 const ShipmentHistory = () => {
-
-    const [allShipments, setAllShipments] = useState<ParcelDetails[]>([]);
-    useEffect(() => {
-      const fetchDriver = async () => {
-        try {
-          const result = await getShipmentsHistory();
-          console.log(result, "result");
-          setAllShipments(result?.data?.details?.rows);
-        } catch (error) {
-          console.error("Failed to fetch drivers:", error);
-        }
-      };
-      fetchDriver();
-    }, []);
-
+  const [shipments, setShipments] = useState<ParcelDetails[]>([]);
+  const [filteredShipments, setFilteredShipments] = useState<FilteredShipment[]>([]);
   const [activeTab, setActiveTab] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const tabs = ['All', 'Arrived', 'In-Transit', 'Delivered'];
-  const [isOpen, setIsOpen] = useState(false);
 
-  const [filteredData, setFilteredData] = useState<FilteredShipment[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  useEffect(() => {
+    fetchShipments();
+  }, []);
 
-  // Filter the employees based on the search query
-  const handleSearch = (text: string) => {
-    setSearchQuery(text);
-
-    if (text.trim() === '') {
-      // If the search input is empty, show all employees
-      setFilteredData(
-        allShipments.map((shipment) => ({
-          image: shipment.parcel.thumbnails[0],
-          sender: shipment.sender.fullName,
-          receiver: shipment.receiver.fullName,
-          time: formatDate(shipment.createdAt), 
-          charges: `₦${shipment.parcel.totalFee}`,
-          status: shipment.status,
-        }))
-      );
-    } else {
-      // Filter employees by name or job
-      const filtered = allShipments.filter(
-        (item) =>
-          item.sender.fullName.toLowerCase().includes(text.toLowerCase()) ||
-          item.receiver.fullName.toLowerCase().includes(text.toLowerCase()) ||
-          item.status.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredData(
-        filtered.map((shipment) => ({
-          image: shipment.parcel.thumbnails[0], // Assuming a default image for all shipments
-          sender: shipment.sender.fullName,
-          receiver: shipment.receiver.fullName,
-          time: formatDate(shipment.createdAt), // Format the date as needed
-          charges: `₦${shipment.parcel.totalFee}`,
-          status: shipment.status,
-        }))
-      );
+  const fetchShipments = async () => {
+    try {
+      const result = await getShipmentsHistory();
+      const rows = result?.data?.details?.rows || [];
+      setShipments(rows);
+      setFilteredShipments(mapShipments(rows));
+    } catch (error) {
+      console.error('Failed to fetch shipments:', error);
     }
   };
 
-  //  filter logic
-  const isFiltered =
-    activeTab === 'All'
-      ? filteredData
-      : filteredData.filter((x:any) => x.status === activeTab);
+  const mapShipments = (data: ParcelDetails[]) => {
+    return data.map((shipment) => ({
+      image: shipment.parcel?.thumbnails[0] || '',
+      sender: shipment.sender.fullName,
+      receiver: shipment.receiver.fullName,
+      time: formatDate(shipment.createdAt),
+      charges: `₦${shipment.parcel.totalFee}`,
+      status: shipment.status,
+    }));
+  };
 
-  const [refreshing, setRefreshing] = useState(false);
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+  
+    const lowerText = text.toLowerCase();
+    const filtered = shipments.filter((shipment) => {
+      const senderName = shipment.sender?.fullName?.toLowerCase() || '';
+      const receiverName = shipment.receiver?.fullName?.toLowerCase() || '';
+      const status = shipment.status?.toLowerCase() || '';
+  
+      return (
+        senderName.includes(lowerText) ||
+        receiverName.includes(lowerText) ||
+        status.includes(lowerText)
+      );
+    });
+  
+    setFilteredShipments(mapShipments(filtered));
+  };
+  
+
+  const filteredByTab = activeTab === 'All'
+    ? filteredShipments
+    : filteredShipments.filter((shipment) => shipment.status === activeTab);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-
-    // Simulate a network request
-    setTimeout(() => {
-      setRefreshing(false); // End the refreshing state
-    }, 1500);
+    fetchShipments().finally(() => setRefreshing(false));
   }, []);
+
   return (
     <CustomView style={styles.container} padded>
-      {/* Header */}
-      <HomeHeader type='Stack' title='Shipments' />
+      <HomeHeader type="Stack" title="Shipments" />
       <KeyboardAvoidingView
-        style={{paddingTop: 20}}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ paddingTop: 20 }}
+      >
         <ScrollView
-          showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 20}}
-          keyboardShouldPersistTaps='handled'
+          contentContainerStyle={{ paddingBottom: 20 }}
+          keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              colors={
-                Platform.OS === 'android'
-                  ? [color.primary, color.inputColor, 'blue']
-                  : undefined
-              } // Android spinner colors
-              tintColor={Platform.OS === 'ios' ? color.primary : undefined} // iOS spinner color
+              colors={Platform.OS === 'android' ? [color.primary, color.inputColor, 'blue'] : undefined}
+              tintColor={Platform.OS === 'ios' ? color.primary : undefined}
             />
-          }>
+          }
+        >
+          {/* Search Input */}
           <View style={styles.searchInput}>
-            <SearchNormal1 color='#000' size={18} style={{flexBasis: '10%'}} />
+            <SearchNormal1 color="#000" size={18} style={{ flexBasis: '10%' }} />
             <TextInput
-              onChangeText={handleSearch}
-              style={{flexBasis: '88%', height: '100%'}}
-              placeholder='Search Parcel'
-              placeholderTextColor='#aaa'
+              placeholder="Search Parcel"
+              placeholderTextColor="#aaa"
+              style={{ flex: 1, height: '100%' }}
               value={searchQuery}
+              onChangeText={handleSearch}
             />
           </View>
-          {/* Filter */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginVertical: 20,
-            }}>
-            <Text size={16} font='Medium'>
-              Parcels
-            </Text>
-            <TouchableOpacity
-              onPress={() => setIsOpen(!isOpen)}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 4,
-                backgroundColor: '#fff',
-                borderWidth: 1,
-                borderColor: '#E9EAEB',
-                borderRadius: 10,
-                padding: 6,
-              }}>
-              <MaterialIcons name='filter-list' size={24} color='black' />
-              <Text size={16} font='Medium'>
-                Filter
-              </Text>
+
+          {/* Filter Button */}
+          <View style={styles.filterHeader}>
+            <Text size={16} font="Medium">Parcels</Text>
+            <TouchableOpacity onPress={() => setIsOpen(!isOpen)} style={styles.filterButton}>
+              <MaterialIcons name="filter-list" size={24} color="black" />
+              <Text size={16} font="Medium">Filter</Text>
             </TouchableOpacity>
           </View>
-          {/* Filters */}
+
+          {/* Tabs */}
           {isOpen && (
-            <View style={styles.filterContainer}>
+            <View style={styles.tabContainer}>
               {tabs.map((tab) => (
                 <TouchableOpacity
                   key={tab}
-                  style={[
-                    styles.tab,
-                    activeTab === tab && styles.activeTab, // Apply active style
-                  ]}
-                  onPress={() => setActiveTab(tab)}>
+                  style={[styles.tab, activeTab === tab && styles.activeTab]}
+                  onPress={() => setActiveTab(tab)}
+                >
                   <TextFilter
-                    style={[
-                      styles.tabText,
-                      activeTab === tab && styles.activeTabText, // Apply active text style
-                    ]}>
+                 style={[
+                  styles.tabText,
+                  activeTab === tab && styles.activeTabText, // Apply active text style
+                ]}>
                     {tab}
+                    
                   </TextFilter>
                 </TouchableOpacity>
               ))}
             </View>
           )}
+
+          {/* Shipment List */}
           <View style={styles.shipmentContainer}>
-            <Text style={styles.shipmentLabel} font='SemiBold'>
-              Shipment History
-            </Text>
-            {isFiltered.length === 0 ? (
-              <View
-                style={{
-                  alignSelf: 'center',
-                  paddingVertical: 20,
-                  height: 100,
-                }}>
-                <Text font='Medium'>No Shipment found!</Text>
+            <Text style={styles.shipmentLabel} font="SemiBold">Shipment History</Text>
+
+            {filteredByTab.length === 0 ? (
+              <View style={styles.emptyState}>
+                 <EmptyWallet />
+                <Text font="Medium">No Shipment found!</Text>
               </View>
             ) : (
-                <>
-                {isFiltered.map((item: FilteredShipment, index: number) => (
-                  <View key={index} style={styles.shipmentRow}>
+              filteredByTab.map((item, index) => (
+                <View key={index} style={styles.shipmentRow}>
                   <Image source={{ uri: item.image }} style={styles.shipmentImage} />
                   <View style={styles.shipmentDetails}>
-                    <View style={{flexDirection: 'column', gap: 4}}>
-                    <Text size={11} color='#717680'>
-                      Sender
-                    </Text>
-                    <Text size={12}>{item.sender}</Text>
-                    <Text size={10}>{item.time}</Text>
+                    <View style={styles.detailColumn}>
+                      <Text size={11} color="#717680">Sender</Text>
+                      <Text size={12}>{item.sender}</Text>
+                      <Text size={10}>{item.time}</Text>
                     </View>
-                    <View style={{flexDirection: 'column', gap: 4}}>
-                    <Text size={10} color='#717680'>
-                      Receiver
-                    </Text>
-                    <Text size={12}>{item.receiver}</Text>
+                    <View style={styles.detailColumn}>
+                      <Text size={10} color="#717680">Receiver</Text>
+                      <Text size={12}>{item.receiver}</Text>
                     </View>
-                    <View style={{flexDirection: 'column', gap: 4}}>
-                    <Text size={10} color='#717680'>
-                      Charges
-                    </Text>
-                    <Text size={12}>{item.charges}</Text>
-                    <View
-                      style={{
-                      backgroundColor:
-                        item.status === 'Arrived'
-                        ? '#F7F9FC'
-                        : item.status === 'Delivered'
-                        ? '#ECFDF3'
-                        : '#FFF6ED',
-                      justifyContent: 'center',
-                      flexDirection: 'row',
-                      borderRadius: 8,
-                      }}>
-                      <Text
-                      size={10}
-                      color={
-                        item.status === 'Arrived'
-                        ? '#213264'
-                        : item.status === 'Delivered'
-                        ? '#12B76A'
-                        : '#FB6514'
-                      }>
-                      {item.status}{' '}
-                      </Text>
-                    </View>
+                    <View style={styles.detailColumn}>
+                      <Text size={10} color="#717680">Charges</Text>
+                      <Text size={12}>{item.charges}</Text>
+                      <View style={[
+                        styles.statusBadge,
+                        {
+                          backgroundColor:
+                            item.status === 'Arrived'
+                              ? '#F7F9FC'
+                              : item.status === 'Delivered'
+                                ? '#ECFDF3'
+                                : '#FFF6ED',
+                        }
+                      ]}>
+                        <Text
+                          size={10}
+                          color={
+                            item.status === 'Arrived'
+                              ? '#213264'
+                              : item.status === 'Delivered'
+                                ? '#12B76A'
+                                : '#FB6514'
+                          }
+                        >
+                          {item.status}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                  </View>
-                ))}
-                </>
+                </View>
+              ))
             )}
           </View>
         </ScrollView>
@@ -310,32 +233,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  shipmentContainer: {
-    marginVertical: RFValue(16),
-    backgroundColor: color.offWhite,
-    paddingVertical: RFValue(16),
-    borderRadius: 10,
-  },
-  shipmentLabel: {
-    fontSize: RFValue(18),
-    marginBottom: RFValue(8),
-    alignSelf: 'center',
-  },
-  shipmentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: RFValue(10),
-    borderRadius: RFValue(10),
-    marginBottom: RFValue(8),
-    borderBottomWidth: 1,
-    borderBottomColor: '#EFEFF0',
-  },
-  shipmentImage: {
-    width: RFValue(40),
-    height: RFValue(40),
-    borderRadius: RFValue(20),
-    marginRight: RFValue(10),
-  },
   searchInput: {
     backgroundColor: '#fff',
     borderRadius: RFValue(8),
@@ -344,45 +241,92 @@ const styles = StyleSheet.create({
     borderColor: '#E9EAEB',
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: RFValue(10),
   },
-  shipmentDetails: {
-    flex: 1,
+  filterHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  viewAll: {
-    textAlign: 'center',
-    color: '#003399',
-    marginTop: RFValue(10),
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginVertical: RFValue(16),
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: color.offWhite,
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#E9EAEB',
     borderRadius: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 4,
+    padding: 6,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: RFValue(16),
   },
   tab: {
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
-    backgroundColor: 'transparent',
   },
   activeTab: {
-    backgroundColor: '#E9FBE7', // Light green for the active tab
+    backgroundColor: '#E9FBE7',
   },
   tabText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#717680', // Default gray text color
+    color: '#717680',
   },
   activeTabText: {
-    color: '#173A56', // Darker text color for the active tab
+    color: '#173A56',
     fontWeight: 'bold',
   },
+  shipmentContainer: {
+    backgroundColor: color.offWhite,
+    paddingVertical: RFValue(16),
+    paddingHorizontal: RFValue(10),
+    borderRadius: 10,
+  },
+  shipmentLabel: {
+    fontSize: RFValue(18),
+    marginBottom: RFValue(8),
+    alignSelf: 'center',
+  },
+  emptyState: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  shipmentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: RFValue(10),
+    borderBottomWidth: 1,
+    borderBottomColor: '#EFEFF0',
+    paddingBottom: RFValue(10),
+  },
+  shipmentImage: {
+    width: RFValue(40),
+    height: RFValue(40),
+    borderRadius: RFValue(20),
+    marginRight: RFValue(10),
+  },
+  shipmentDetails: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  detailColumn: {
+    flexDirection: 'column',
+    gap: 4,
+  },
+  statusBadge: {
+    marginTop: 4,
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    alignSelf: 'flex-start',
+  },
 });
+
 export default ShipmentHistory;

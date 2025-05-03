@@ -41,7 +41,7 @@ const {width} = Dimensions.get('window');
 type Props = NativeStackScreenProps<ReportStackList & HomeStackList>;
 interface ParcelDetails {
   id: string;
-
+status: string;
   paymentStatus: string;
 
 }
@@ -64,29 +64,33 @@ useEffect(() => {
   fetchDriver();
 }, []);
 
-const filterByStatus = (status: string) => {
-  return allShipments.filter((item) => item.paymentStatus === status);
+const filterShipments = (type: 'payment' | 'status', value: string) => {
+  if (type === 'payment') {
+    return allShipments.filter((item) => item.paymentStatus === value);
+  } else {
+    return allShipments.filter((item) => item.status === value);
+  }
 };
 
 const counts = {
-  received: filterByStatus('received').length,
-  unassigned: filterByStatus('paid').length,
-  assigned: filterByStatus('assigned').length,
-  collected: filterByStatus('collected').length,
-  unpaid: filterByStatus('unpaid').length,
-  overdue: filterByStatus('overdue').length,
+  paid: filterShipments('payment', 'paid').length,
+  unpaid: filterShipments('payment', 'unpaid').length,
+  unassigned: filterShipments('status', 'unassigned').length,
+  assigned: filterShipments('status', 'assigned').length,
+  collected: filterShipments('status', 'collected').length,
+  overdue: filterShipments('status', 'overdue').length,
 };
 
 const storeButtonData: IStoreButton[] = [
   {
-    label: 'Parcel Received',
-    count: counts.received,
+    label: 'Parcel Paid',
+    count: counts.paid,
     url: 'UnAssignParcelHistory',
     icon: <ReceivedIcon />,
     onPress: () =>
       navigation.navigate('UnAssignParcelHistory', {
-        data: filterByStatus('received'),
-        label: 'Parcel Received',
+        data: filterShipments('payment', 'paid'),
+        label: 'Parcel Paid',
       }),
   },
   {
@@ -96,7 +100,7 @@ const storeButtonData: IStoreButton[] = [
     icon: <UnassignedIcon />,
     onPress: () =>
       navigation.navigate('UnAssignParcelHistory', {
-        data: filterByStatus('paid'),
+        data: filterShipments('status', 'unassigned'),
         label: 'Unassigned Parcel',
       }),
   },
@@ -107,7 +111,7 @@ const storeButtonData: IStoreButton[] = [
     icon: <AssignedIcon />,
     onPress: () =>
       navigation.navigate('UnAssignParcelHistory', {
-        data: filterByStatus('assigned'),
+        data: filterShipments('status', 'assigned'),
         label: 'Assigned Parcel',
       }),
   },
@@ -118,7 +122,7 @@ const storeButtonData: IStoreButton[] = [
     icon: <CollectedIcon />,
     onPress: () =>
       navigation.navigate('UnAssignParcelHistory', {
-        data: filterByStatus('collected'),
+        data: filterShipments('status', 'collected'),
         label: 'Parcels Collected',
       }),
   },
@@ -129,7 +133,7 @@ const storeButtonData: IStoreButton[] = [
     icon: <UnpaidIcon />,
     onPress: () =>
       navigation.navigate('UnAssignParcelHistory', {
-        data: filterByStatus('unpaid'),
+        data: filterShipments('payment', 'unpaid'),
         label: 'Unpaid Parcel',
       }),
   },
@@ -140,28 +144,29 @@ const storeButtonData: IStoreButton[] = [
     icon: <OverdueIcon />,
     onPress: () =>
       navigation.navigate('UnAssignParcelHistory', {
-        data: filterByStatus('overdue'),
+        data: filterShipments('status', 'overdue'),
         label: 'Overdue Parcel',
       }),
   },
 ];
 
+
   const financeButtonData: IFinanceButton[] = [
     {
       label: 'Paid to Driver',
-      amount: "₦100,000.00",
+      amount: "₦0.00",
     },
     {
       label: 'Collected from Receiver',
-      amount:"₦200,000.00"
+      amount:"₦0.00"
     },
     {
       label: 'Collected from Sender',
-        amount:"₦50,000.00"
+        amount:"₦0.00"
     },
     {
       label: 'Expected Overdue Income',
-        amount:"₦25,500.30"
+        amount:"₦0.00"
     },
   ];
 
@@ -228,7 +233,7 @@ const storeButtonData: IStoreButton[] = [
                 <FinanceButton buttons={financeButtonData} />
 
           {/* Shipment History */}
-          <HomeShipmentHistory onViewAll={handleViewAll} />
+          <HomeShipmentHistory onViewAll={handleViewAll} searchQuery='' />
         </ScrollView>
       </KeyboardAvoidingView>
     </CustomView>

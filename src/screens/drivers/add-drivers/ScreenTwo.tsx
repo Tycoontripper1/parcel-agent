@@ -116,11 +116,12 @@ const FacialVerification = ({ navigation }: Props) => {
   const toggleCameraType = () => {
     setFacing((prevFacing) => (prevFacing === "front" ? "back" : "front"));
   };
+  
 
   const handleSubmit = async () => {
     setLoading(true);
     const userDetails = await getUser();
-    console.log(userDetails, "userDetails");
+    // console.log(userDetails, "userDetails");
     const username = userDetails?.firstName;
 
     try {
@@ -138,6 +139,7 @@ const FacialVerification = ({ navigation }: Props) => {
           })
         );
       }
+      console.log(facialVerificationImage, "facialVerificationImage");
 
       Helper.vibrate();
       Toast.show({
@@ -148,7 +150,7 @@ const FacialVerification = ({ navigation }: Props) => {
 
       navigation.navigate("FrontImageScreenDriver");
     } catch (error: any) {
-      console.log(error, "❌ KYC submission error");
+      console.log(error, "❌Driver KYC submission error");
       Toast.show({
         type: "error",
         text1: "uoad Failed",

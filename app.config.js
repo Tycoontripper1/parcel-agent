@@ -1,8 +1,12 @@
 export default ({ config }) => ({
-    ...config,
-    extra: {
-      ...config.extra,
-      apiKey: process.env.TEST_API_KEY,
-    },
-  });
-  
+  ...config,
+  plugins: [
+    ...(config.plugins || []), // keep existing plugins if any
+    "expo-barcode-scanner",
+  ],
+  extra: {
+    ...config.extra,
+    apiKey: "http://45.9.191.184:8001/parcel/v1.0/api",
+  },
+});
+// This is the configuration for the Expo app. It includes the barcode scanner plugin and an API key from environment variables.

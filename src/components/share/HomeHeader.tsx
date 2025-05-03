@@ -1,11 +1,13 @@
 import {Ionicons} from '@expo/vector-icons';
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Image, TouchableOpacity, View} from 'react-native';
 import Text from '../Text';
 import {color} from '@/constants/Colors';
 import {Avatar} from '../../../assets/images';
 import NotificationIcon from '../svg/NotificationIcon';
+import { getUser } from '../../../services/auth';
+import { UserDetails } from '@/utils/interface';
 
 interface IHeader {
   title?: string;
@@ -14,6 +16,16 @@ interface IHeader {
   OnNotificationClick?: () => void;
 }
 const HomeHeader = ({title, type, children, OnNotificationClick}: IHeader) => {
+   const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
+        useEffect(() => {
+          const fetchUser = async () => {
+            const userDetails = await getUser();
+            console.log(userDetails, 'userDetails');
+            setUserDetails(userDetails)
+          };
+          fetchUser();
+        }
+        , []);
   const navigation = useNavigation();
   return (
     <>
@@ -58,27 +70,36 @@ const HomeHeader = ({title, type, children, OnNotificationClick}: IHeader) => {
               alignItems: 'center',
               gap: 15,
             }}>
-            <TouchableOpacity
-              onPress={() => ''}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: color.IconNeutral,
-              }}>
-              <Image
-                source={Avatar}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  resizeMode: 'cover',
-                  borderRadius: 20,
-                }}
-              />
-            </TouchableOpacity>
+        <TouchableOpacity
+  onPress={() => ''}
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: color.IconNeutral,
+  }}
+>
+  {userDetail?.userImage ? (
+    <Image
+      source={{ uri: userDetail.userImage }}
+      style={{
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+        borderRadius: 20,
+      }}
+    />
+  ) : (
+    <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#555' }}>
+      {userDetail?.firstName?.[0]?.toUpperCase() || ''}
+      {userDetail?.lastName?.[0]?.toUpperCase() || ''}
+    </Text>
+  )}
+</TouchableOpacity>
+
             {children}
           </View>
           <TouchableOpacity onPress={OnNotificationClick}>

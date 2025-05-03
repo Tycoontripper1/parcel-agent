@@ -20,9 +20,10 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useSelector } from "react-redux";
 import HomeHeader from "@/components/share/HomeHeader";
 import { Avatar } from "../../../assets/images";
-import { getAllDrivers } from "../../../services/auth";
-
-
+import { apiKey, getAllDrivers, getToken } from "../../../services/auth";
+import { resetForm } from "@/redux/slices/formSlice";
+import { useDispatch } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type Driver = {
   id: string;
   firstName: string;
@@ -52,25 +53,42 @@ type Props = NativeStackScreenProps<DriverStackList, "DriversDetails">;
 interface RouteProps {
   route: RouteProp<DriverStackList, "DriversDetails">;
 }
-const DriversDetails = ({ route }: Props) => {
+const DriversDetails = ({ navigation,route }: Props) => {
   const [allDrivers, setAllDrivers] = useState<Driver[]>([]);
   const { idFrontImage, idBackImage } = useSelector(
     (state: RootState) => state.form
   );
+  const dispatch = useDispatch();
   const { id } = route.params;
 
-  useEffect(() => {
-    const fetchDriver = async () => {
-      try {
-        const result = await getAllDrivers();
-        console.log(result, "result");
-        setAllDrivers(result?.data?.details?.rows);
-      } catch (error) {
-        console.error("Failed to fetch drivers:", error);
-      }
-    };
-    fetchDriver();
-  }, []);
+    useEffect(() => {
+      const fetchDrivers = async () => {
+        try {
+          const token = await getToken();
+          const response = await fetch(`${apiKey}/users?userType=driver`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          });
+    
+          const result = await response.json();
+    
+          if (!response.ok) {
+            throw new Error(result.message || 'Failed to fetch drivers');
+          }
+    
+          console.log(result, 'result');
+          setAllDrivers(result?.data?.details?.rows);
+        } catch (error) {
+          console.error('Failed to fetch drivers:', error);
+        }
+      };
+    
+      fetchDrivers();
+    }, []);
+    
 
   const driver = allDrivers.find((x) => x.id === id) ?? {
     id: "Nill",
@@ -94,6 +112,14 @@ const DriversDetails = ({ route }: Props) => {
     addedBy: "Nill",
     createdAt: "Nill",
   };
+  const saveDriverDetails = async () => {
+    await AsyncStorage.setItem('driver', JSON.stringify(driver));
+    await AsyncStorage.setItem('driverId', driver?.id);
+  };
+
+  useEffect(() => {
+    saveDriverDetails();
+  }, [driver]);
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -136,17 +162,35 @@ const DriversDetails = ({ route }: Props) => {
             gap: RFValue(12),
           }}
         >
-          {/* Profile Image */}
-          <Image
-            source={driver.userImage ? { uri: driver.userImage } : Avatar}
-            style={{
-              width: 84,
-              height: 84,
-              borderRadius: 42,
-              backgroundColor: "#E0E0E0",
-            }}
-            resizeMode="cover"
-          />
+     {driver.userImage ? (
+  <Image
+    source={{ uri: driver.userImage }}
+    style={{
+      width: 84,
+      height: 84,
+      borderRadius: 42,
+      backgroundColor: "#E0E0E0",
+    }}
+    resizeMode="cover"
+  />
+) : (
+  <View
+    style={{
+      width: 84,
+      height: 84,
+      borderRadius: 42,
+      backgroundColor: "#E0E0E0",
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    <Text style={{ fontSize: 28, fontWeight: 'bold', color: '#555' }}>
+      {driver.firstName?.[0]?.toUpperCase() || ''}
+      {driver.lastName?.[0]?.toUpperCase() || ''}
+    </Text>
+  </View>
+)}
+
       <TouchableOpacity
       style={{
         backgroundColor:  driver.isActive ? "#ECFDF3" : "#FEF3F2",
@@ -277,27 +321,35 @@ const DriversDetails = ({ route }: Props) => {
         </View>
 
         {/* image id Information */}
-        {Array.isArray(driver.identificationImages) &&
-        driver.identificationImages.length >= 2 ? (
-          <View style={styles.sectionContainer}>
-            <Text style={styles.title}>Front Image</Text>
-            <Image
-              source={{ uri: driver.identificationImages[0] }}
-              style={styles.image}
-            />
-            <Text style={styles.title}>Back Image</Text>
-            <Image
-              source={{ uri: driver.identificationImages[1] }}
-              style={styles.image}
-            />
-          </View>
-        ) : (
-          <View style={styles.sectionContainer}>
-            <Text style={styles.title}>
-              Identification Images Not Available
-            </Text>
-          </View>
-        )}
+        {Array.isArray(driver.identificationImages) && driver.identificationImages.length >= 2 ? (
+  <View style={styles.sectionContainer}>
+    <Text style={styles.title}>Front Image</Text>
+    <Image
+      source={{ uri: driver.identificationImages[0] }}
+      style={styles.image}
+    />
+    <Text style={styles.title}>Back Image</Text>
+    <Image
+      source={{ uri: driver.identificationImages[1] }}
+      style={styles.image}
+    />
+  </View>
+) : (
+  <View style={styles.sectionContainer}>
+    <Text style={styles.title}>Identification Images Not Available</Text>
+    <TouchableOpacity 
+      style={styles.button} 
+      onPress={() => {
+        // 👉 navigate or open KYC completion screen
+        dispatch(resetForm());
+        navigation.navigate('FacialVerification'); // change to your screen name
+      }}
+    >
+      <Text style={styles.buttonText}>Complete Driver Registration / KYC</Text>
+    </TouchableOpacity>
+  </View>
+)}
+
       </KeyBoardView>
     </CustomView>
   );

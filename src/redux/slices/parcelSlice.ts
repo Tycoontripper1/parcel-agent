@@ -105,6 +105,7 @@ interface FormState {
   paymentMethod: string;
   parcelImages: string[];
   driverNumber: string;
+  driverName: string;
   departureState: string;
   frequency: string;
 }
@@ -122,6 +123,7 @@ const initialState: FormState = {
   deliveryMotorPark: '',
   parcelType: '',
   parcelValue: '',
+  driverName: '',
   chargesPayable: '',
   chargesPayBy: '',
   parcelDescription: '',

@@ -49,6 +49,7 @@ export type HomeStackList = {
   Dashboard: undefined;
   ComingSoon: undefined;
   PrintParcel: undefined;
+  PrintParcelItem: undefined;
   Shipments: undefined;
   NotificationScreen: undefined;
   NotificationDetails: {id: any};
@@ -68,9 +69,10 @@ export type HomeStackList = {
   SearchParcelOutReceiver: undefined;
   ReceiverType: undefined;
   ParcelReceiverOutPreviewScreen: undefined;
-  ParcelOutReceiver: undefined;
+  ParcelOutReceiver: {readOnly:boolean};
   ParcelOtpVerificationReceiver: undefined;
   ParcelCongratulation: {message: string, note: string};
+  BarcodeScannerScreen: undefined;
 };
 export type WalletStackList = {
   Wallet: undefined;
@@ -110,6 +112,7 @@ export type ReportStackList = {
   UnPaidParcelDetails: {id: any};
   ReceivedParcelHistory: undefined;
   PrintParcel: undefined;
+  PrintParcelItem: undefined;
 };
 export type DriverStackList = {
   Drivers: undefined;

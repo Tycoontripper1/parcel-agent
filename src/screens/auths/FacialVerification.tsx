@@ -89,6 +89,7 @@ const FacialVerification = ({navigation}: Props) => {
     const username = userDetails?.firstName;
   
     try {
+      console.log(facialVerificationImage, 'facialVerificationImage');
       
     const userImageUrl = await uploadSingleImage(facialVerificationImage, username);
       console.log(userImageUrl, 'userImageUrl');
