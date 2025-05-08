@@ -28,36 +28,86 @@ const ScreenOne = ({ navigation }: Props) => {
     if (digits.length <= 7) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
     return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
   };
+  const [formErrors, setFormErrors] = useState({
+    senderPhoneNumber: "",
+    receiverPhoneNumber: "",
+    senderFullName: "",
+    senderAddress: "",
+    receiverFullName: "",
+    receiverAddress: "",
+    sendingFrom: "",
+    deliveryMotorPark: "",
+  });
+  
 
   const handleValidation = () => {
     let isValid = true;
-
-    const cleanSenderPhone = formData.senderPhoneNumber.replace(/\D/g, "");
-
-    if (!cleanSenderPhone) {
-      setSenderPhoneError("Phone Number is required.");
+  
+    const senderPhone = formData.senderPhoneNumber.replace(/\D/g, "");
+    const receiverPhone = formData.receiverPhoneNumber.replace(/\D/g, "");
+  
+    const newErrors = {
+      senderPhoneNumber: "",
+      receiverPhoneNumber: "",
+      senderFullName: "",
+      senderAddress: "",
+      receiverFullName: "",
+      receiverAddress: "",
+      sendingFrom: "",
+      deliveryMotorPark: "",
+    };
+  
+    if (!senderPhone) {
+      newErrors.senderPhoneNumber = "Phone Number is required.";
       isValid = false;
-    } else if (cleanSenderPhone.length !== 11) {
-      setSenderPhoneError("Please enter a valid 11-digit mobile number.");
+    } else if (senderPhone.length !== 11) {
+      newErrors.senderPhoneNumber = "Please enter a valid 11-digit mobile number.";
       isValid = false;
-    } else {
-      setSenderPhoneError("");
     }
-
-    const cleanReceiverPhone = formData.receiverPhoneNumber.replace(/\D/g, "");
-
-    if (!cleanReceiverPhone) {
-      setReceiverPhoneError("Phone Number is required.");
+  
+    if (!receiverPhone) {
+      newErrors.receiverPhoneNumber = "Phone Number is required.";
       isValid = false;
-    } else if (cleanReceiverPhone.length !== 11) {
-      setReceiverPhoneError("Please enter a valid 11-digit mobile number.");
+    } else if (receiverPhone.length !== 11) {
+      newErrors.receiverPhoneNumber = "Please enter a valid 11-digit mobile number.";
       isValid = false;
-    } else {
-      setReceiverPhoneError("");
     }
-
+  
+    if (!formData.senderFullName.trim()) {
+      newErrors.senderFullName = "Sender's full name is required.";
+      isValid = false;
+    }
+  
+    if (!formData.senderAddress.trim()) {
+      newErrors.senderAddress = "Sender's address is required.";
+      isValid = false;
+    }
+  
+    if (!formData.receiverFullName.trim()) {
+      newErrors.receiverFullName = "Receiver's full name is required.";
+      isValid = false;
+    }
+  
+    if (!formData.receiverAddress.trim()) {
+      newErrors.receiverAddress = "Receiver's address is required.";
+      isValid = false;
+    }
+  
+    if (!formData.sendingFrom.trim()) {
+      newErrors.sendingFrom = "Sending park is required.";
+      isValid = false;
+    }
+  
+    if (!formData.deliveryMotorPark.trim()) {
+      newErrors.deliveryMotorPark = "Destination park is required.";
+      isValid = false;
+    }
+  
+    setFormErrors(newErrors);
     return isValid;
   };
+  
+  
 
   const handleNavigate = () => {
     if (!handleValidation()) {
@@ -113,7 +163,7 @@ const ScreenOne = ({ navigation }: Props) => {
               );
             }}
             keyboardType="number-pad"
-            errorMessage={senderPhoneError}
+            errorMessage={formErrors.senderPhoneNumber}
           />
 
           <Input
@@ -125,6 +175,7 @@ const ScreenOne = ({ navigation }: Props) => {
               dispatch(updateField({ key: "senderFullName", value }))
             }
             keyboardType="default"
+            errorMessage={formErrors.senderFullName}
           />
           <Input
             label="Email Address (Optional)"
@@ -145,6 +196,7 @@ const ScreenOne = ({ navigation }: Props) => {
               dispatch(updateField({ key: "senderAddress", value }))
             }
             keyboardType="default"
+            errorMessage={formErrors.senderAddress}
           />
 
           <Text size={18} style={{ paddingTop: 15, paddingBottom: 10 }}>
@@ -166,7 +218,7 @@ const ScreenOne = ({ navigation }: Props) => {
               );
             }}
             keyboardType="number-pad"
-            errorMessage={receiverPhoneError}
+            errorMessage={formErrors.receiverPhoneNumber}
           />
 
           <Input
@@ -178,6 +230,7 @@ const ScreenOne = ({ navigation }: Props) => {
               dispatch(updateField({ key: "receiverFullName", value }))
             }
             keyboardType="default"
+            errorMessage={formErrors.receiverFullName}
           />
           <Input
             label="Email Address (Optional)"
@@ -198,6 +251,7 @@ const ScreenOne = ({ navigation }: Props) => {
               dispatch(updateField({ key: "receiverAddress", value }))
             }
             keyboardType="default"
+            errorMessage={formErrors.receiverAddress}
           />
 
           <Text size={18} style={{ paddingTop: 15, paddingBottom: 10 }}>
@@ -212,6 +266,7 @@ const ScreenOne = ({ navigation }: Props) => {
               dispatch(updateField({ key: "sendingFrom", value }))
             }
             keyboardType="default"
+            errorMessage={formErrors.sendingFrom}
           />
           <Input
             label="Destination Motor Park"
@@ -222,6 +277,7 @@ const ScreenOne = ({ navigation }: Props) => {
               dispatch(updateField({ key: "deliveryMotorPark", value }))
             }
             keyboardType="default"
+            errorMessage={formErrors.deliveryMotorPark}
           />
 
           <View style={$buttonsContainer}>

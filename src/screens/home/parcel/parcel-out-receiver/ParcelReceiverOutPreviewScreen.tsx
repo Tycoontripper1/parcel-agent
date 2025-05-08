@@ -314,6 +314,34 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
               {singleParcel?.parcel.description}
             </Text>
           </View>
+
+          {/* Payment Option */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingVertical: 6,
+            }}>
+            <Text style={styles.descriptionText}>Select Payment Option:</Text>
+            </View>
+          {singleParcel?.parcel.chargesPaidBy === 'receiver' && (
+            <View style={{paddingBottom: 10}}>
+              {selectedPaymentAnswer == 'Yes' ? (
+                <TouchableOpacity style={styles.confirmButton}>
+                  <Text style={styles.confirmButtonText}>
+                    Payment Confirmed
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <PaymentOption
+                  selectedOption={selectedOption}
+                  setSelectedOption={setSelectedOption}
+                  onPress={() => setModalVisible(true)}
+                />
+              )}
+            </View>
+          )}
         </View>
 
         {singleParcel?.parcel.thumbnails &&

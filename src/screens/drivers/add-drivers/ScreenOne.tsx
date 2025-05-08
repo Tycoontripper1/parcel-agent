@@ -32,6 +32,7 @@ const ScreenOne = ({ navigation }: Props) => {
     vehicleRegistrationNumber: "",
     motorParkLocation: "",
   });
+  const [errorMessages, setErrorMessages] = useState<{ [key: string]: string }>({});
 
   // Handle input change dynamically
   const handleChange = (label: string, value: string) => {
@@ -68,17 +69,63 @@ const ScreenOne = ({ navigation }: Props) => {
 
   const handleValidation = () => {
     let isValid = true;
-    if (!formData.firstName || !formData.lastName) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Full name is required.",
-      });
+    const errors: { [key: string]: string } = {};
+  
+    if (!formData.firstName.trim()) {
+      errors.firstName = "First name is required";
       isValid = false;
     }
-
+  
+    if (!formData.lastName.trim()) {
+      errors.lastName = "Last name is required";
+      isValid = false;
+    }
+  
+    if (!formData.dateOfBirth.trim()) {
+      errors.dateOfBirth = "Date of birth is required";
+      isValid = false;
+    }
+  
+    const phoneDigits = formData.senderPhoneNumber.replace(/\D/g, "");
+    if (!phoneDigits || phoneDigits.length !== 11) {
+      errors.senderPhoneNumber = "Enter a valid 11-digit phone number";
+      isValid = false;
+    }
+  
+    if (!formData.senderAddress.trim()) {
+      errors.senderAddress = "Address is required";
+      isValid = false;
+    }
+  
+    if (!formData.idType.trim()) {
+      errors.idType = "ID type is required";
+      isValid = false;
+    }
+  
+    if (!formData.idNumber.trim()) {
+      errors.idNumber = "ID number is required";
+      isValid = false;
+    }
+  
+    if (!formData.vehicleType.trim()) {
+      errors.vehicleType = "Vehicle type is required";
+      isValid = false;
+    }
+  
+    if (!formData.vehicleRegistrationNumber.trim()) {
+      errors.vehicleRegistrationNumber = "Vehicle reg. number is required";
+      isValid = false;
+    }
+  
+    if (!formData.motorParkLocation.trim()) {
+      errors.motorParkLocation = "Motor park location is required";
+      isValid = false;
+    }
+  
+    setErrorMessages(errors);
     return isValid;
   };
+  
 
   const handleNavigate = async () => {
     if (!handleValidation()) {
@@ -161,6 +208,7 @@ const ScreenOne = ({ navigation }: Props) => {
             value={formData.firstName}
             onChangeText={(value) => handleChange("firstName", value)}
             keyboardType="default"
+            errorMessage={errorMessages.firstName}
           />
 
           <Input
@@ -170,6 +218,7 @@ const ScreenOne = ({ navigation }: Props) => {
             value={formData.lastName}
             onChangeText={(value) => handleChange("lastName", value)}
             keyboardType="default"
+            errorMessage={errorMessages.lastName}
           />
 
           <Input
@@ -182,6 +231,7 @@ const ScreenOne = ({ navigation }: Props) => {
               handleChange("dateOfBirth", formatted);
             }}
             keyboardType="default"
+            errorMessage={errorMessages.dateOfBirth}
           />
           <Input
             label="Email Address (Optional)"
@@ -190,6 +240,7 @@ const ScreenOne = ({ navigation }: Props) => {
             value={formData.senderEmail}
             onChangeText={(value) => handleChange("senderEmail", value)}
             keyboardType="email-address"
+              errorMessage={errorMessages.firstName}
           />
           <Input
             label="Phone Number"
@@ -201,7 +252,7 @@ const ScreenOne = ({ navigation }: Props) => {
               handleChange("senderPhoneNumber", formatted);
             }}
             keyboardType="number-pad"
-            errorMessage={phoneError}
+            errorMessage={errorMessages.senderPhoneNumber}
           />
           <Input
             label="Home Address"
@@ -210,6 +261,7 @@ const ScreenOne = ({ navigation }: Props) => {
             value={formData.senderAddress}
             onChangeText={(value) => handleChange("senderAddress", value)}
             keyboardType="default"
+            errorMessage={errorMessages.homeAddress}
           />
           <SelectInput
             label="ID type"
@@ -224,6 +276,7 @@ const ScreenOne = ({ navigation }: Props) => {
             value={formData.idNumber}
             onChangeText={(value) => handleChange("idNumber", value)}
             keyboardType="default"
+            errorMessage={errorMessages.idNumber}
           />
           <Input
             label="Vehicle Type"
@@ -232,6 +285,7 @@ const ScreenOne = ({ navigation }: Props) => {
             value={formData.vehicleType}
             onChangeText={(value) => handleChange("vehicleType", value)}
             keyboardType="default"
+            errorMessage={errorMessages.vehicleType}
           />
           <Input
             label="Vehicle Registration Number"
@@ -242,6 +296,7 @@ const ScreenOne = ({ navigation }: Props) => {
               handleChange("vehicleRegistrationNumber", value)
             }
             keyboardType="number-pad"
+            errorMessage={errorMessages.vehicleRegistrationNumber}
           />
           <Input
             label="Motor Park Location"
@@ -250,6 +305,7 @@ const ScreenOne = ({ navigation }: Props) => {
             value={formData.motorParkLocation}
             onChangeText={(value) => handleChange("motorParkLocation", value)}
             keyboardType="default"
+            errorMessage={errorMessages.motorParkLocation}
           />
 
           <View style={$buttonsContainer}>

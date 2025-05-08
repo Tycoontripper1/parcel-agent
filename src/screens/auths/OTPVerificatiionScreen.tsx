@@ -30,12 +30,14 @@ type OTPRouteProp = RouteProp<RootStackParamList, 'OTPVerificationScreen'>;
 const OTPVerificationScreen = ({navigation}: Props) => {
   const route = useRoute<OTPRouteProp>();
   const { phone } = route.params;
+  const [email, setEmail] = useState('');
   const otp = useSelector((state: RootState) => state.form.otp);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchUser = async () => {
       const userDetails = await getUser();
       const email = userDetails?.email;
+      setEmail(email)
       console.log(email, 'email');
     };
   
@@ -160,7 +162,7 @@ const OTPVerificationScreen = ({navigation}: Props) => {
             Verify your number
           </Text>
           <Text size={14} color={color.textGray}>
-            Enter the 4-digit code we sent to chimarcus03@gmail.com and
+            Enter the 4-digit code we sent to {email} and
             {phone}
           </Text>
         </View>

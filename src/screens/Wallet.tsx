@@ -88,12 +88,16 @@ const WalletScreen = ({ navigation }: Props) => {
   };
   const WalletData: Wallet[] = [
     {
-      title: 'Fund with Card',
-      icon: <WalletIcon />,
+      title: 'Bank Name',
+      icon: "Providus Virtual Account",
+      // title: 'Fund with Card',
+      // icon: <WalletIcon />,
     },
     {
-      title: 'Fund with Bank Transfer',
-      icon: <TransferIcon />,
+      title: 'Account Number',
+      icon: "1234567890",
+      // title: 'Fund with Bank Transfer',
+      // icon: <TransferIcon />,
     },
     {title: 'Fund with USSD', icon: <USSDIcon />},
   ];

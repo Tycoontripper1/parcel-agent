@@ -47,9 +47,12 @@ export type AuthStackParamList = {
 };
 export type HomeStackList = {
   Dashboard: undefined;
+  DriversScreen: undefined;
   ComingSoon: undefined;
+  TransactionHistory: undefined;
   PrintParcel: undefined;
   PrintParcelItem: undefined;
+  ComfirmationDriver: undefined;
   Shipments: undefined;
   NotificationScreen: undefined;
   NotificationDetails: {id: any};

@@ -14,6 +14,7 @@ import {
   Profile,
   ProfileCircle,
   UserAdd,
+  MoreSquare,
   Wallet,
 } from 'iconsax-react-native';
 import {color} from '@/constants/Colors';
@@ -26,15 +27,19 @@ import AccountStack from './AccountStack';
 import {StyleSheet, View} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useTheme} from '@/hooks/useTheme';
+import { getToken } from '../../services/auth';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const Navigation = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
+  const [token, setToken]= useState<string | null>(null);
 
   useEffect(() => {
     const checkOnboarding = async () => {
+      const isToken = await getToken();
+      setToken(isToken);
       const value = await AsyncStorage.getItem('hasSeenOnboarding');
       setHasSeenOnboarding(value === 'true');
       setIsLoading(false);
@@ -54,6 +59,7 @@ const Navigation = () => {
           <Stack.Screen name='RootTabStack' component={RootTabStack} />
         </Stack.Navigator>
       ) : (
+        
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name='AuthStacks' component={AuthStack} />
           <Stack.Screen name='RootTabStack' component={RootTabStack} />
@@ -113,11 +119,11 @@ const RootTabStack = () => {
           if (route.name === 'AccountStack') {
             return focused ? (
               <View style={[styles.iconContainer, focused && styles.activeTab]}>
-                <ProfileCircle size={24} color={color} variant='Bulk' />
+                <MoreSquare size={24} color={color} variant='Bulk' />
               </View>
             ) : (
               <View style={[styles.iconContainer, focused && styles.activeTab]}>
-                <ProfileCircle size={24} color={color} variant='Outline' />
+                <MoreSquare size={24} color={color} variant='Outline' />
               </View>
             );
           }

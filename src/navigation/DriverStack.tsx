@@ -27,7 +27,7 @@ const DriverStack = ({ navigation }: Props) => {
     if (state?.routes[0].state?.index && state.routes[0].state.index > 0) {
       navigation?.setOptions({
         tabBarStyle: {
-          display: 'none',
+          
           backgroundColor: theme.background,
         },
       });

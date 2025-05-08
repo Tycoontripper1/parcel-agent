@@ -30,6 +30,9 @@ import ParcelOutReceiver from "@/screens/home/parcel/parcel-out-receiver/receive
 import PrintParcel from "@/components/PrintParcel";
 import PrintParcelItem from "@/components/printParcelItem";
 import BarcodeScannerScreen from "@/components/BarcodeScannerScreen";
+import ComfirmationDriver from "@/components/confirmationDriver";
+import TransactionHistory from "@/components/TransactionHistory";
+import DriversScreen from "@/screens/DriversScreen";
 const Home = createStackNavigator<HomeStackList>();
 
 interface Props {
@@ -43,7 +46,7 @@ const HomeStack = ({ navigation }: Props) => {
     if (state?.routes[0].state?.index && state.routes[0].state.index > 0) {
       navigation?.setOptions({
         tabBarStyle: {
-          display: "none",
+          // display: "none",
           backgroundColor: theme.background,
         },
       });
@@ -187,6 +190,21 @@ const HomeStack = ({ navigation }: Props) => {
       <Home.Screen
         name="BarcodeScannerScreen"
         component={BarcodeScannerScreen}
+        options={{ headerShown: false }}
+      />
+      <Home.Screen
+        name="ComfirmationDriver"
+        component={ComfirmationDriver}
+        options={{ headerShown: false }}
+      />
+      <Home.Screen
+        name="TransactionHistory"
+        component={TransactionHistory}
+        options={{ headerShown: false }}
+      />
+      <Home.Screen
+        name="DriversScreen"
+        component={DriversScreen}
         options={{ headerShown: false }}
       />
     </Home.Navigator>

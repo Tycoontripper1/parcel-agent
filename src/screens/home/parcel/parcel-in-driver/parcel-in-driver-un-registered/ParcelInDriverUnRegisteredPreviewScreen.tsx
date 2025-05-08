@@ -84,7 +84,6 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
       navigation.navigate("PrintParcel");
     } catch (error: any) {
       console.error("Parcel submission error:", error);
-
       Toast.show({
         type: "error",
         text1: "Submission Failed",
@@ -310,7 +309,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
             >
               <Text style={styles.infoText}>Handling Fee:</Text>
               <Text style={styles.infoText}>
-                {formData.parcelValue + formData.chargesPayable}
+                {formData.handlingFee}
               </Text>
             </View>
             <View
@@ -322,7 +321,11 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
             >
               <Text style={styles.infoText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-                {formData.parcelValue + formData.chargesPayable}
+              {formData.handlingFee && formData.chargesPayable
+              ? String(
+                  Number(formData.handlingFee) + Number(formData.chargesPayable)
+                )
+              : ""}
               </Text>
             </View>
           </View>

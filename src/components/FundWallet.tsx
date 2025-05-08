@@ -96,7 +96,8 @@ const FundWallet = ({
                   style={styles.option}
                   onPress={() => handleSelect(item.title)}>
                   <Text style={styles.optionText}>{item.title}</Text>
-                  <View>{item.icon}</View>
+                  {/* <View>{item.icon}</View> */}
+                  <Text>{item.icon}</Text>
                 </TouchableOpacity>
               )}
             />

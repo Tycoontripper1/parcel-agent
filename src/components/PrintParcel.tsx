@@ -156,29 +156,28 @@ const PrintParcel = ({ navigation }: Props) => {
   };
 
   const handlePrint = async () => {
-    const viewShot = viewShotRef.current; // Store reference
-
+    const viewShot = viewShotRef.current;
+  
     if (!viewShot) {
       Alert.alert("Error", "ViewShot reference is not available.");
       return;
     }
-
+  
     try {
-      const uri = await viewShot?.capture?.(); // No more possible null warning
+      const uri = await viewShot?.capture?.();
       console.log("Captured URI:", uri);
-
+  
       if (uri) {
         const isAvailable = await Sharing.isAvailableAsync();
         if (!isAvailable) {
           Alert.alert("Error", "Sharing is not available on this device.");
           return;
         }
-
+  
         await Sharing.shareAsync(uri);
-        navigation.navigate("ParcelCongratulation", {
-          message: "Parcel received successfully",
-          note: "SMS has been sent to notify the sender/receiver.",
-        });
+        
+        // Navigate after sharing
+        navigation.navigate("ComfirmationDriver");
       } else {
         Alert.alert("Error", "Failed to capture the image.");
       }
@@ -187,26 +186,24 @@ const PrintParcel = ({ navigation }: Props) => {
       console.error("Sharing Error:", error);
     }
   };
+  
 
   const handleExportPDF = async () => {
     try {
-      // Ensure viewShotRef is available
       const viewShot = viewShotRef.current;
       if (!viewShot || !viewShot.capture) {
         Alert.alert("Error", "ViewShot reference is not available.");
         return;
       }
-
-      // Capture screenshot
+  
       const uri = await viewShot.capture();
       if (!uri) {
         Alert.alert("Error", "Failed to capture the screenshot.");
         return;
       }
-
+  
       console.log("Captured URI:", uri);
-
-      // Fetch the image file
+  
       let response;
       try {
         response = await fetch(uri);
@@ -215,46 +212,44 @@ const PrintParcel = ({ navigation }: Props) => {
         Alert.alert("Error", "Failed to fetch the captured image.");
         return;
       }
-
-      // Convert to Blob
+  
       const blob = await response.blob();
-
-      // Convert to Base64
       const reader = new FileReader();
+  
       reader.readAsDataURL(blob);
-
       reader.onloadend = async () => {
         const result = reader.result;
         if (!result || typeof result !== "string") {
           Alert.alert("Error", "Failed to convert image to Base64.");
           return;
         }
-
-        // Ensure the result contains "base64,"
+  
         const base64Index = result.indexOf("base64,");
         if (base64Index === -1) {
           Alert.alert("Error", "Invalid Base64 format.");
           return;
         }
-
-        const base64data = result.substring(base64Index + 7); // Extract only the Base64 data
-
+  
+        const base64data = result.substring(base64Index + 7);
+  
         try {
-          // Generate PDF
           const { uri: pdfUri } = await Print.printToFileAsync({
             html: `<img src="data:image/png;base64,${base64data}" style="width:100%" />`,
             base64: true,
           });
-
+  
           console.log("PDF Saved at:", pdfUri);
-
-          // Share or Save the PDF
+  
           const canShare = await Sharing.isAvailableAsync();
           if (canShare) {
             await Sharing.shareAsync(pdfUri);
           } else {
             Alert.alert("PDF saved", `Saved at: ${pdfUri}`);
           }
+  
+          // Navigate after PDF is handled
+          navigation.navigate("ComfirmationDriver");
+  
         } catch (printError) {
           console.error("Print Error:", printError);
           Alert.alert("Error", "Failed to generate PDF.");
@@ -265,6 +260,7 @@ const PrintParcel = ({ navigation }: Props) => {
       Alert.alert("Error", "Something went wrong while exporting to PDF.");
     }
   };
+  
 
   return (
     <CustomView style={{ paddingVertical: RFValue(10) }}>
@@ -275,7 +271,8 @@ const PrintParcel = ({ navigation }: Props) => {
       {/* Body */}
       <KeyBoardView padded={false}>
         <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1 }}>
-          <View>
+          <View style={{ padding: RFValue(16) }}>
+            <Text style={{ textAlign: "center" }}>Parcel received successfully</Text>
             <Text style={{ textAlign: "center" }}>Parcel ID</Text>
           </View>
           <View
@@ -325,7 +322,7 @@ const PrintParcel = ({ navigation }: Props) => {
               marginTop: RFValue(8),
             }}
           >
-            <Text size={16}>{parcelDetails?.collectedOnArrivalBy.agentId}</Text>
+            <Text size={16}>Total Fee</Text>
             <Text size={14}>₦{parcelDetails?.parcel.totalFee}</Text>
           </View>
           <View

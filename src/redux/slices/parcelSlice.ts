@@ -107,6 +107,7 @@ interface FormState {
   driverNumber: string;
   driverName: string;
   departureState: string;
+  handlingFee: string;
   frequency: string;
 }
 
@@ -131,6 +132,7 @@ const initialState: FormState = {
   parcelImages: [''],
   driverNumber: '',
   departureState: '',
+  handlingFee: '',
   frequency: ''
 };
 

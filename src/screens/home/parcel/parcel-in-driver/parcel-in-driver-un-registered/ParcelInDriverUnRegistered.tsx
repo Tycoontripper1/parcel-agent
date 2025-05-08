@@ -263,6 +263,16 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             }
             keyboardType='number-pad'
           />
+          <Input
+            label='Handling Fee (₦)'
+            placeholder='Enter handling fee'
+            placeholderTextColor='#B8C2CC'
+            value={formData.handlingFee}
+            onChangeText={(value) =>
+              dispatch(updateField({key: 'handlingFee', value}))
+            }
+            keyboardType='number-pad'
+          />
 
           <Input
             label='Charges Payable (₦)'
@@ -283,10 +293,14 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
                 size={RFValue(20)}
                 color='#717680'
               />
-              <Text style={styles.label}>Handling Fee</Text>
+              <Text style={styles.label}>Total Fee</Text>
             </View>
             {/* Amount */}
-            <Text style={styles.amount}>₦1,000.00</Text>
+            <Text style={styles.amount}>   {formData.handlingFee && formData.chargesPayable
+              ? String(
+                  Number(formData.handlingFee) + Number(formData.chargesPayable)
+                )
+              : ""}</Text>
           </View>
           <SelectInput
             label='Charges to be paid by?'

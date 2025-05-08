@@ -230,10 +230,11 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons } from '@expo/vector-icons';
 import ShootButton from './svg/ShootButton';
 import { uploadBulkImages } from '../../services/upload';
-import { getUser } from '../../services/auth';
+import { getToken, getUser } from '../../services/auth';
 import Toast from 'react-native-toast-message';
 import { Helper } from '@/helper/helper';
 import Spinner from './Spinner';
+import * as FileSystem from 'expo-file-system';
 
 interface ParcelPhotoModalProps {
   visible: boolean;
@@ -256,7 +257,7 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: "images",
       allowsEditing: false, // No cropping
       quality: 1,
       base64:false,
@@ -275,37 +276,77 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
   const handleSave = async () => {
     console.log(photos, 'photos');
     setLoading(true);
+  
     try {
-      if (photos.filter((p) => p !== null).length < 2) return;
+      const validPhotos = photos.filter(p => p !== null);
+  
+      if (validPhotos.length < 2) {
+        Toast.show({
+          type: 'error',
+          text1: 'Upload Failed',
+          text2: 'Please select at least two images before uploading.',
+        });
+        return;
+      }
+      
   
       const userDetails = await getUser();
       const username = userDetails?.firstName || 'unknown_user';
-
-      // Upload to Cloudinary
-      const response = await uploadBulkImages(photos as string[], username);
+      const token = await getToken();
   
-      if (response?.data?.urls?.length === 2) {
-        onSave(response.data.urls);
-        onClose();
-      } 
+      const formData = new FormData();
+  
+      for (let index = 0; index < validPhotos.length; index++) {
+        const image = validPhotos[index];
+  
+        formData.append('files', {
+          uri: image,
+          name: `image_${index}.jpg`,
+          type: 'image/jpeg',
+        } as any);
+      }
+  
+      const response = await fetch(
+        `http://45.9.191.184:8001/parcel/v1.0/api/upload/bulk?folder=${username}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        }
+      );
+  
+      const result = await response.json();
+      
+
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'Upload failed');
+      }
+  
+      onSave(result.data.urls);
+      onClose();
+  
       Helper.vibrate();
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: 'Parcel Images uploaded successfully',
+        text2: 'Parcel images uploaded successfully.',
       });
-      setLoading(false);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-            Toast.show({
-              type: 'error',
-              text1: 'Upload Failed',
-              text2: error.message || 'Something went wrong',
-            });
-            setLoading(false);
-      // alert('Something went wrong during image upload.');
+      Toast.show({
+        type: 'error',
+        text1: 'Upload Failed',
+        text2: error.message || 'Something went wrong during image upload.',
+      });
+    } finally {
+      setLoading(false);
     }
   };
+  
   
 
   return (
@@ -454,4 +495,3 @@ const styles = StyleSheet.create({
 });
 
 export default ParcelPhotoModal;
-

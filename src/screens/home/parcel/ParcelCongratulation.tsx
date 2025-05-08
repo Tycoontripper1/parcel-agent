@@ -51,6 +51,8 @@ const ParcelCongratulation = ({navigation, route}: Props) => {
 
       <BackButton onClick={() => navigation.goBack()} />
 
+      <StepProgress step={3} totalSteps={3} />
+
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}

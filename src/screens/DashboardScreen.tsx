@@ -27,7 +27,7 @@ import {color} from '@/constants/Colors';
 import DownloadIconRed from '@/components/svg/DownloadIconRed';
 import HomeShipmentHistory from '@/components/HomeShipementHistory';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackList} from '@/navigation/navigationType';
+import {HomeStackList, RootStackParamList, WalletStackList} from '@/navigation/navigationType';
 import DownloadIconSender from '@/components/svg/DownloadIconSender';
 import FundWallet, {Wallet} from '@/components/FundWallet';
 import WalletIcon from '@/components/svg/WalletIcon';
@@ -38,7 +38,7 @@ import { UserDetails } from '@/utils/interface';
 
 const {width} = Dimensions.get('window');
 
-type Props = NativeStackScreenProps<HomeStackList>;
+type Props = NativeStackScreenProps<HomeStackList & WalletStackList & RootStackParamList>;
 const DashboardScreen = ({navigation}: Props) => {
   const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -68,12 +68,14 @@ const DashboardScreen = ({navigation}: Props) => {
       type: 'Out',
       icon: <DownloadIconUp color='#E6FFDB' />,
       url: 'SearchParcelOutReceiver',
+
     },
     {
       label: 'Sender',
       type: 'In',
       icon: <DownloadIconSender />,
-      url: 'ScreenOneParcelInSender',
+      // url: 'ScreenOneParcelInSender',
+      url: 'ScreenOneParcelInSenderTwo',
     },
     {
       label: 'Driver',
@@ -151,7 +153,7 @@ const DashboardScreen = ({navigation}: Props) => {
                   <Text style={styles.balanceLabel}>Available Balance</Text>
                   <Text style={styles.balance}>₦0.00</Text>
                 </View>
-                <TouchableOpacity style={styles.transactionButton}>
+                <TouchableOpacity style={styles.transactionButton} onPress={() => navigation.navigate('TransactionHistory')}>
                   <Text style={styles.transactionButtonText}>
                     Transaction History
                   </Text>
@@ -162,7 +164,7 @@ const DashboardScreen = ({navigation}: Props) => {
             <TouchableOpacity
               onPress={() => setIsWallet(true)}
               style={styles.fundButton}>
-              <EmptyWalletAdd color='#000' />
+              <EmptyWalletAdd size={18} color='#000' />
               <Text style={styles.fundButtonText}>Fund Wallet</Text>
             </TouchableOpacity>
           </ImageBackground>
@@ -185,7 +187,7 @@ const DashboardScreen = ({navigation}: Props) => {
           <SearchNormal1 color='#000' size={18} style={{flexBasis: '10%'}} />
           <TextInput
             style={{flexBasis: '88%', height: '100%'}}
-            placeholder='Parcel ID'
+            placeholder='Parcel ID/Phone No'
             placeholderTextColor='#aaa'
             value={searchQuery}
             onChangeText={handleSearchChange}

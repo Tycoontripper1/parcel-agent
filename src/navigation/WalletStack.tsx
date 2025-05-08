@@ -25,7 +25,7 @@ const WalletStack = ({navigation}: Props) => {
     if (state?.routes[1].state?.index && state.routes[1].state.index > 0) {
       navigation?.setOptions({
         tabBarStyle: {
-          display: 'none',
+      
           backgroundColor: theme.background,
         },
       });
