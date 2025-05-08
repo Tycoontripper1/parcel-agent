@@ -36,7 +36,7 @@ import HomeHeader from "@/components/share/HomeHeader";
 import * as Sharing from "expo-sharing";
 import { WebView } from "react-native-webview";
 import JsBarcode from "jsbarcode";
-import Barcode from "@kichiyaki/react-native-barcode-generator";
+
 import { singleParcelInterface } from "@/utils/interface";
 import { getParcelDetails } from "../../services/parcel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -496,7 +496,7 @@ const PrintParcel = ({ navigation }: Props) => {
 
           {/* Barcode */}
           <View style={styles.barcodeContainer}>
-            <Barcode
+            {/* <Barcode
               format="CODE128"
               value={parcelDetails?.parcelId || "2222"}
               text={parcelDetails?.parcelId ? parcelDetails?.parcelId : "lintangwisesa"}
@@ -506,7 +506,7 @@ const PrintParcel = ({ navigation }: Props) => {
               background="#fffff"
               lineColor="#000"
               width={2}
-            />
+            /> */}
           </View>
           <Image
             source={{ uri: `data:image/png;base64,${parcelDetails?.qrImage}` }}
