@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { AccountStackList } from "@/navigation/navigationType";
-import { Button, CustomView, Input, Text } from "@/components";
+import { Button, CustomView, Input, Spinner, Text } from "@/components";
 import { RFValue } from "react-native-responsive-fontsize";
 import BackButton from "@/components/share/BackButton";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -22,10 +22,12 @@ import { updateField } from "@/redux/slices/parcelSlice";
 import CloseModal from "@/components/CloseModal";
 import SelectInput from "@/components/SelectInput";
 import ButtonHome from "@/components/ButtonHome";
+import { overdueParcelRemindersUpdate } from "../../../../services/parcel";
+import { apiKey, getToken } from "../../../../services/auth";
 
 type Props = NativeStackScreenProps<AccountStackList>;
 const OverdueParcel = ({ navigation }: Props) => {
-  const formData = useSelector((state: RootState) => state.parcel);
+ 
   const dispatch = useDispatch();
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
@@ -33,35 +35,75 @@ const OverdueParcel = ({ navigation }: Props) => {
   const [selectedPaymentAnswer, setSelectedPaymentAnswer] = useState<
     string | null
   >(null);
+  const [formDataState, setFormDataState] = useState({
+    overdueDays: "",
+    reminder:"",
+  });
 
-  const handleSaveChanges = () => {
-    if (!formData.frequency) {
+
+  const handleSaveChanges = async() => {
+    if (!formDataState.reminder) {
       return;
     }
 
     setLoading(true);
+  try {
+    const payload = {
+      reminders: {
+        overdue_parcel_frequency: parseInt(
+          formDataState.reminder.replace(" Hours", ""),
+          10
+        ),
+      },
+      overdueDays: parseInt(formDataState.overdueDays.replace(" Days", ""), 10),
+    };
+    
 
-    setTimeout(() => {
-      setLoading(false);
-      setModalVisible(true);
-    }, 2000);
+  // const result = await overdueParcelRemindersUpdate(payload);
+   const token = await getToken()
+                  const response = await fetch(`${apiKey}/users/reminders`, {
+                    method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                  
+                  });
+              
+                  const result = await response.json();
+  console.log(result, "result");
+  if (result) {
+    setLoading(false);
+    setModalVisible(true);
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: result?.message || "Changes saved successfully",
+    });
+    
+    setModalVisible(true);
 
-    console.log({ formData });
-  };
-  const handleDaysChanges = () => {
-    if (!formData.frequency) {
-      return;
-    }
+  }
+} catch (error:any) {
+    console.log(error);
+    Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: error?.message || "Something went wrong",
+    }); 
+  } finally {
+    setLoading(false);
+    
+  }
 
-    setLoading(true);
+    // setTimeout(() => {
+    //   setLoading(false);
+    //   setModalVisible(true);
+    //   // navigation.navigate('OTPVerificationScreen');
+    // }, 2000);
 
-    setTimeout(() => {
-      setLoading(false);
-      setModalVisible(true);
-      // navigation.navigate('OTPVerificationScreen');
-    }, 2000);
-
-    console.log({ formData });
+    console.log({ formDataState });
   };
 
   // Styles
@@ -85,6 +127,7 @@ const OverdueParcel = ({ navigation }: Props) => {
   };
   return (
     <CustomView style={{ paddingVertical: RFValue(10) }}>
+      { loading  && ( <Spinner />)}
       {modalVisible && (
         <CloseModal
           visible={modalVisible}
@@ -128,20 +171,13 @@ const OverdueParcel = ({ navigation }: Props) => {
             label="Customize Days"
             data={["24 Hour", "2 Days", "3 Days", "4 Days", "5 Days"]}
             placeholder="Set overdue start days"
-            onSelect={(value) =>
-              dispatch(updateField({ key: "frequency", value }))
-            }
+           onSelect={(value) => setFormDataState ((prev) => ({
+              ...prev,
+              overdueDays: value,
+            }))}
           
           />
           {/* Confirm Button */}
-          <View style={$buttonsContainer}>
-            <ButtonHome
-              onPress={handleDaysChanges}
-              title='Save Changes'
-              style={{height: 40}}
-              disabled={!formData.frequency}
-            />
-          </View>
         </View>
         <View
           style={{
@@ -162,9 +198,10 @@ const OverdueParcel = ({ navigation }: Props) => {
             label='Set Frequency'
             data={['1 Hour', '2 Hours', "3 Hours", "6 Hours", "12 Hours"]}
             placeholder='Set frequency'
-            onSelect={(value) =>
-              dispatch(updateField({key: 'frequency', value}))
-            }
+           onSelect={(value) => setFormDataState ((prev) => ({
+              ...prev,
+              reminder: value,
+            }))}
           />
           {/* Confirm Button */}
           <View style={$buttonsContainer}>
@@ -172,7 +209,7 @@ const OverdueParcel = ({ navigation }: Props) => {
               onPress={handleSaveChanges}
               title='Save Changes'
               style={{height: 40}}
-              disabled={!formData.frequency}
+              disabled={!formDataState.reminder && !formDataState.overdueDays} 
             />
           </View>
         </View>

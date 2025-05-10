@@ -184,6 +184,28 @@ export const getShipmentsHistory = async () => {
       throw error;
     }
   };
+export const getLocations = async () => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/locations`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get locations failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
   export const verifyReceiverOtp = async ({code}: { code: string }) => {
     try {
        const token = await getToken()
@@ -211,6 +233,31 @@ export const getShipmentsHistory = async () => {
     try {
        const token = await getToken()
       const response = await fetch(`${apiKey}/shipment/${id}`, {
+        method: 'patch',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'parcel update failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+  
+  export const overdueParcelRemindersUpdate = async (payload:any) => {
+    try {
+       const token = await getToken()
+      const response = await fetch(`${apiKey}/users/reminders`, {
         method: 'patch',
           headers: {
             'Content-Type': 'application/json',

@@ -307,7 +307,7 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
               }}>
               <Text style={styles.descriptionText}>Handling Fee:</Text>
               <Text style={styles.infoText}>
-                {(Number(singleParcel?.parcel.value) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
+                {(Number(singleParcel?.parcel.handlingFee) || 0)}
               </Text>
             </View>
             <View
@@ -318,7 +318,7 @@ const ParcelDriverPreviewScreen = ({navigation}: Props) => {
               }}>
               <Text style={styles.descriptionText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-              {(Number(singleParcel?.parcel.value) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
+              {(Number(singleParcel?.parcel.handlingFee) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
               </Text>
             </View>
           </View>
