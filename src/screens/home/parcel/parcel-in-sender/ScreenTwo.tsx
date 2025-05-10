@@ -150,7 +150,11 @@ const ScreenTwo = ({ navigation }: Props) => {
             </View>
             {/* Amount */}
             <Text style={styles.amount}>
-              {formData.handlingFee + formData.chargesPayable}
+            {formData.handlingFee && formData.chargesPayable
+              ? String(
+                  Number(formData.handlingFee) + Number(formData.chargesPayable)
+                )
+              : ""}
             </Text>
           </View>
           <SelectInput

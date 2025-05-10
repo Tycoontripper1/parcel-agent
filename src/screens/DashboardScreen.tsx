@@ -196,7 +196,7 @@ const DashboardScreen = ({navigation}: Props) => {
       </View>
 
       {/* Shipment History */}
-      <HomeShipmentHistory searchQuery={searchQuery} onViewAll={handleViewAll} />
+      <HomeShipmentHistory searchQuery={searchQuery} onViewAll={handleViewAll} limit={10} />
         </ScrollView>
       </KeyboardAvoidingView>
     </CustomView>

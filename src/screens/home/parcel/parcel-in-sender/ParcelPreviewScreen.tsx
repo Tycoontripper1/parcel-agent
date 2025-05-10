@@ -18,7 +18,7 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
 import {useSelector,useDispatch} from 'react-redux';
 import { SendParcelData } from '../../../../../services/parcel';
-import { resetForm } from '@/redux/slices/formSlice';
+import { resetForm } from '@/redux/slices/parcelSlice';
 
 
 type Props = NativeStackScreenProps<HomeStackList>;

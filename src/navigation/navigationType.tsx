@@ -116,6 +116,7 @@ export type ReportStackList = {
   ReceivedParcelHistory: undefined;
   PrintParcel: undefined;
   PrintParcelItem: undefined;
+  ParcelCongratulation: {message: string, note: string};
 };
 export type DriverStackList = {
   Drivers: undefined;

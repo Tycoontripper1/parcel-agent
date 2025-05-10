@@ -179,6 +179,8 @@ const PrintParcelItem = ({ navigation }: Props) => {
     }
   };
 
+  
+
   const handleExportPDF = async () => {
     try {
       // Ensure viewShotRef is available
@@ -322,7 +324,7 @@ const PrintParcelItem = ({ navigation }: Props) => {
             }}
           >
             <Text size={16}>
-              {safe(parcelItem?.collectedOnArrivalBy?.agentId)}
+              Total Amount
             </Text>
             <Text size={14}>₦{parcelItem?.parcel.totalFee}</Text>
           </View>

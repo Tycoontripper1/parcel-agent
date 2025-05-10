@@ -21,8 +21,6 @@ import { Avatar } from "../../../../../assets/images";
 import PaymentOption from "@/components/PaymentOption";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-
 // Define the props correctly
 type Props = NativeStackScreenProps<ReportStackList, "UnAssignParcelDetails">;
 
@@ -31,9 +29,12 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
   // Extract date and time from createdAt
   const createdAt = item.createdAt;
   const date = new Date(createdAt);
-  const formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
-  const formattedTime = `${date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()} ${date.getHours() < 12 ? 'AM' : 'PM'}`;
-
+  const formattedDate = `${date.getDate()}-${
+    date.getMonth() + 1
+  }-${date.getFullYear()}`;
+  const formattedTime = `${date.getHours()}:${
+    date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
+  } ${date.getHours() < 12 ? "AM" : "PM"}`;
 
   const [selectedOption, setSelectedOption] = useState<string>("Online");
   const [selectedPaymentAnswer, setSelectedPaymentAnswer] = useState<
@@ -44,11 +45,11 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
   const HandleContinue = async () => {
     try {
       // Store the item in AsyncStorage as a JSON string
-      await AsyncStorage.setItem('parcelitem', JSON.stringify(item));
+      await AsyncStorage.setItem("parcelitem", JSON.stringify(item));
       console.log(item);
-      navigation.navigate('PrintParcelItem');
+      navigation.navigate("PrintParcelItem");
     } catch (error) {
-      console.error('Error storing item in AsyncStorage:', error);
+      console.error("Error storing item in AsyncStorage:", error);
     }
   };
 
@@ -100,8 +101,61 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
               gap: 6,
             }}
           >
-            <View style={{ backgroundColor: "#EBE9FE", padding: 4, borderRadius: 8 }}>
-              <Text color="#7A5AF8" size={10}>{item.status}</Text>
+            <View
+              style={{
+                backgroundColor:
+                  item.paymentStatus === "paid" ? "#D1FADF" : "#FEDEDC", // green for paid, red for unpaid
+                padding: 4,
+                borderRadius: 8,
+              }}
+            >
+              <Text
+                style={{
+                  color: item.paymentStatus === "paid" ? "#027A48" : "#F04438", // dark green or red text
+                  fontSize: 10,
+                }}
+              >
+                {item.paymentStatus}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                backgroundColor:
+                  item.status === "unassigned"
+                    ? "#FFEAD5"
+                    : item.status === "in-transit"
+                    ? "#E0F2FE"
+                    : item.status === "arrived"
+                    ? "#EBE9FE"
+                    : item.status === "overdue"
+                    ? "#FEE2E2"
+                    : item.status === "received"
+                    ? "#DFFCE9"
+                    : "#E5E7EB", // default fallback
+                padding: 4,
+                borderRadius: 8,
+              }}
+            >
+              <Text
+                style={{
+                  color:
+                    item.status === "unassigned"
+                      ? "#FB6514"
+                      : item.status === "in-transit"
+                      ? "#0284C7"
+                      : item.status === "arrived"
+                      ? "#7A5AF8"
+                      : item.status === "overdue"
+                      ? "#DC2626"
+                      : item.status === "received"
+                      ? "#12B76A"
+                      : "#374151", // default fallback
+                  fontSize: 10,
+                }}
+              >
+                {item.status}
+              </Text>
             </View>
           </View>
         </View>
@@ -128,7 +182,9 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
             }}
           >
             <View style={{ padding: 4, borderRadius: 8 }}>
-              <Text size={12}>Time: <Text color="#717680">{formattedTime}</Text></Text>
+              <Text size={12}>
+                Time: <Text color="#717680">{formattedTime}</Text>
+              </Text>
             </View>
           </View>
         </View>
@@ -138,20 +194,50 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
           <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Sender's Information
           </Text>
-          <View style={{ backgroundColor: "white", padding: RFValue(6), borderRadius: 8 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <View
+            style={{
+              backgroundColor: "white",
+              padding: RFValue(6),
+              borderRadius: 8,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Name: </Text>
               <Text style={styles.infoText}>{item.sender.fullName}</Text>
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Email: </Text>
               <Text style={styles.infoText}>{item.sender.email}</Text>
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Phone Number:</Text>
               <Text style={styles.infoText}>{item.sender.phone}</Text>
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Address: </Text>
               <Text style={styles.infoText}>{item.sender.address}</Text>
             </View>
@@ -163,51 +249,84 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
           <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Receiver's Information
           </Text>
-          <View style={{ backgroundColor: "white", padding: RFValue(6), borderRadius: 8 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <View
+            style={{
+              backgroundColor: "white",
+              padding: RFValue(6),
+              borderRadius: 8,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Name: </Text>
               <Text style={styles.infoText}>{item.receiver.fullName}</Text>
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Email: </Text>
               <Text style={styles.infoText}>{item.receiver.email}</Text>
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Phone Number:</Text>
               <Text style={styles.infoText}>{item.receiver.phone}</Text>
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Address:</Text>
               <Text style={styles.infoText}>{item.receiver.address}</Text>
             </View>
           </View>
         </View>
-   {/* Park Detail */}
-   <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+        {/* Park Detail */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Park Detail
           </Text>
           <View
             style={{
-              backgroundColor: 'white',
+              backgroundColor: "white",
               padding: RFValue(6),
               borderRadius: 8,
-            }}>
+            }}
+          >
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Dispatch Park:</Text>
               <Text style={styles.infoText}>{item.park.source}</Text>
             </View>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Delivery Park:</Text>
               <Text style={styles.infoText}>{item.park.destination}</Text>
             </View>
@@ -216,50 +335,55 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
 
         {/* Parcel Information */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Parcel Information
           </Text>
           <View
             style={{
-              backgroundColor: 'white',
+              backgroundColor: "white",
               padding: RFValue(6),
               borderRadius: 8,
-            }}>
+            }}
+          >
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Charges Paid By:</Text>
               <Text style={styles.infoText}>{item.parcel.chargesPaidBy}</Text>
             </View>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Parcel Type:</Text>
               <Text style={styles.infoText}>{item.parcel.type}</Text>
             </View>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text style={styles.infoText}>Parcel Worth:</Text>
               <Text style={styles.infoText}>{item.parcel.value}</Text>
             </View>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
                 borderBottomWidth: 1,
-                borderBottomColor: '#E9EAEB',
-              }}>
+                borderBottomColor: "#E9EAEB",
+              }}
+            >
               <Text style={styles.infoText}>Charges Payable:</Text>
               <Text style={styles.infoText}>{item.parcel.chargesPayable}</Text>
             </View>
@@ -270,7 +394,13 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
           <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Parcel Description
           </Text>
-          <View style={{ backgroundColor: "white", padding: RFValue(6), borderRadius: 8 }}>
+          <View
+            style={{
+              backgroundColor: "white",
+              padding: RFValue(6),
+              borderRadius: 8,
+            }}
+          >
             <Text style={styles.descriptionText}>
               {item.parcel.description}
             </Text>
@@ -283,11 +413,16 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
               {item.parcel.thumbnails.length} /2 photos
             </Text>
             <View style={styles.photoGrid}>
-                {item.parcel.thumbnails.map((photo: string, index: number) => (
+              {item.parcel.thumbnails.map((photo: string, index: number) => (
                 <TouchableOpacity key={index} style={styles.photoBox}>
-                  {photo ? <Image source={{ uri: photo }} style={styles.photoPreview} /> : null}
+                  {photo ? (
+                    <Image
+                      source={{ uri: photo }}
+                      style={styles.photoPreview}
+                    />
+                  ) : null}
                 </TouchableOpacity>
-                ))}
+              ))}
             </View>
           </View>
         )}
@@ -303,10 +438,6 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
     </CustomView>
   );
 };
-
-
-
-
 
 const styles = StyleSheet.create({
   header: {
@@ -332,7 +463,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FDFDFD",
     borderRadius: RFValue(8),
     paddingHorizontal: RFValue(16),
-    paddingVertical:RFValue(6)
+    paddingVertical: RFValue(6),
   },
   sectionHeader: {
     paddingVertical: RFValue(8),

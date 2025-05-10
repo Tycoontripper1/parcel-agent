@@ -156,7 +156,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
             >
               <Text style={styles.infoText}>Phone Number:</Text>
               <Text style={styles.infoText}>
-                {formData.senderPhoneNumber.replace(/-/g, "")}{" "}
+                {formData.senderPhoneNumber.replace(/-/g, "")}
               </Text>
             </View>
           </View>
@@ -183,7 +183,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
             >
               <Text style={styles.infoText}>Phone Number:</Text>
               <Text style={styles.infoText}>
-                {formData.receiverPhoneNumber}
+                {formData.receiverPhoneNumber.replace(/-/g, "")}
               </Text>
             </View>
           </View>
@@ -209,7 +209,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>{formData.driverNumber}</Text>
+              <Text style={styles.infoText}>{formData.driverNumber.replace(/-/g, "")}</Text>
             </View>
           </View>
         </View>

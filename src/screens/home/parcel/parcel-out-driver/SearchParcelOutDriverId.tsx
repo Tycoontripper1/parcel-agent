@@ -97,7 +97,7 @@ useEffect(() => {
         // parcelId,
         firstName: isRegistered ? setRegisteredDriverName : driverName,
         phone: isRegistered ? setRegisteredDriverPhone : driverPhone,
-        status: "In-Transit",
+        status: "in-transit",
       };
 
     try {

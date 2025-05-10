@@ -1,5 +1,5 @@
 import { View, ViewStyle } from "react-native";
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { RFValue } from "react-native-responsive-fontsize";
 import { CustomView, Input, Text } from "@/components";
 import StepProgress from "@/components/share/StepProgress";
@@ -12,15 +12,48 @@ import { HomeStackList } from "@/navigation/navigationType";
 import { updateField } from "@/redux/slices/parcelSlice";
 import ButtonHome from "@/components/ButtonHome";
 import BackButton from "@/components/share/BackButton";
+import SelectInput from "@/components/SelectInput";
+import { getLocations } from "../../../../../services/parcel";
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const ScreenOne = ({ navigation }: Props) => {
   // const [loading, setLoading] = useState(false);
   const formData = useSelector((state: RootState) => state.parcel);
   const dispatch = useDispatch();
-  const [driverPhoneError, setDriverPhoneError] = useState("");
-  const [receiverPhoneError, setReceiverPhoneError] = useState("");
-  const [senderPhoneError, setSenderPhoneError] = useState("");
+  type Location = {
+    id: string;
+    state_id: string;
+    location: string;
+    address: string;
+    park_type: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+
+  const [stateRows, setStateRows] = useState<any[]>([]);
+  // get all location and convert to array
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const result = await getLocations();
+        setStateRows(result?.data?.details.rows || []);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+  // Convert into { [stateName]: Location[] }
+  const statesWithLocations: Record<string, Location[]> = stateRows.reduce(
+    (acc, curr) => {
+      acc[curr.name] = curr.locations;
+      return acc;
+    },
+    {} as Record<string, Location[]>
+  );
 
   const formatPhoneNumber11 = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -38,14 +71,13 @@ const ScreenOne = ({ navigation }: Props) => {
     sendingFrom: "",
     deliveryMotorPark: "",
   });
-  
 
   const handleValidation = () => {
     let isValid = true;
-  
+
     const senderPhone = formData.senderPhoneNumber.replace(/\D/g, "");
     const receiverPhone = formData.receiverPhoneNumber.replace(/\D/g, "");
-  
+
     const newErrors = {
       senderPhoneNumber: "",
       receiverPhoneNumber: "",
@@ -56,58 +88,111 @@ const ScreenOne = ({ navigation }: Props) => {
       sendingFrom: "",
       deliveryMotorPark: "",
     };
-  
+
     if (!senderPhone) {
       newErrors.senderPhoneNumber = "Phone Number is required.";
       isValid = false;
     } else if (senderPhone.length !== 11) {
-      newErrors.senderPhoneNumber = "Please enter a valid 11-digit mobile number.";
+      newErrors.senderPhoneNumber =
+        "Please enter a valid 11-digit mobile number.";
       isValid = false;
     }
-  
+
     if (!receiverPhone) {
       newErrors.receiverPhoneNumber = "Phone Number is required.";
       isValid = false;
     } else if (receiverPhone.length !== 11) {
-      newErrors.receiverPhoneNumber = "Please enter a valid 11-digit mobile number.";
+      newErrors.receiverPhoneNumber =
+        "Please enter a valid 11-digit mobile number.";
       isValid = false;
     }
-  
+
     if (!formData.senderFullName.trim()) {
       newErrors.senderFullName = "Sender's full name is required.";
       isValid = false;
     }
-  
+
     if (!formData.senderAddress.trim()) {
       newErrors.senderAddress = "Sender's address is required.";
       isValid = false;
     }
-  
+
     if (!formData.receiverFullName.trim()) {
       newErrors.receiverFullName = "Receiver's full name is required.";
       isValid = false;
     }
-  
+
     if (!formData.receiverAddress.trim()) {
       newErrors.receiverAddress = "Receiver's address is required.";
       isValid = false;
     }
-  
-    if (!formData.sendingFrom.trim()) {
-      newErrors.sendingFrom = "Sending park is required.";
+
+    // Validate the sending state and location
+    if (!selectedFromState) {
+      newErrors.sendingFrom = "Sending state is required.";
       isValid = false;
     }
-  
-    if (!formData.deliveryMotorPark.trim()) {
-      newErrors.deliveryMotorPark = "Destination park is required.";
+
+    if (!selectedFromLocation) {
+      newErrors.sendingFrom = "Sending location is required.";
       isValid = false;
     }
-  
+
+    // Validate the destination park and location
+    if (!selectedToState) {
+      newErrors.deliveryMotorPark = "Arriving state is required.";
+      isValid = false;
+    }
+
+    if (!selectedToLocation) {
+      newErrors.deliveryMotorPark = "Arriving location is required.";
+      isValid = false;
+    }
+
     setFormErrors(newErrors);
     return isValid;
   };
-  
-  
+  // const statesWithLocations = {
+  //   Lagos: ["Ikeja", "Lekki", "Surulere"],
+  //   Abuja: ["Garki", "Maitama", "Wuse"],
+  //   Kano: ["Nassarawa", "Tarauni", "Gwale"],
+  // };
+
+  // Sending from state
+  const [selectedFromState, setSelectedFromState] = useState<
+    keyof typeof statesWithLocations | null
+  >(null);
+  const [fromLocations, setFromLocations] = useState<Location[]>([]);
+  const [selectedFromLocation, setSelectedFromLocation] = useState<
+    string | null
+  >(null);
+
+  // Sending to state
+  const [selectedToState, setSelectedToState] = useState<
+    keyof typeof statesWithLocations | null
+  >(null);
+  const [toLocations, setToLocations] = useState<Location[]>([]);
+  const [selectedToLocation, setSelectedToLocation] = useState<string | null>(
+    null
+  );
+
+  // useEffect for "sending from"
+  useEffect(() => {
+    if (selectedFromState && selectedFromLocation) {
+      const combined = `${selectedFromState}, ${selectedFromLocation}`;
+      dispatch(updateField({ key: "sendingFrom", value: combined }));
+      console.log("Sending From Combined:", combined);
+    }
+  }, [selectedFromState, selectedFromLocation, dispatch]);
+
+  // useEffect for "sending to"
+  useEffect(() => {
+    if (selectedToState && selectedToLocation) {
+      const combined = `${selectedToState}, ${selectedToLocation}`;
+      dispatch(updateField({ key: "deliveryMotorPark", value: combined }));
+      console.log("Sending To Combined:", combined);
+    }
+  }, [selectedToState, selectedToLocation, dispatch]);
 
   const handleNavigate = () => {
     if (!handleValidation()) {
@@ -257,28 +342,71 @@ const ScreenOne = ({ navigation }: Props) => {
           <Text size={18} style={{ paddingTop: 15, paddingBottom: 10 }}>
             Park Details
           </Text>
-          <Input
-            label="Sending from"
-            placeholder="Enter dispatch park"
-            placeholderTextColor="#B8C2CC"
-            value={formData.sendingFrom}
-            onChangeText={(value) =>
-              dispatch(updateField({ key: "sendingFrom", value }))
-            }
-            keyboardType="default"
-            errorMessage={formErrors.sendingFrom}
+
+          <SelectInput
+            label="Sending from State"
+            data={Object.keys(statesWithLocations)}
+            placeholder="Select a state"
+            onSelect={(state) => {
+              setSelectedFromState(state as keyof typeof statesWithLocations);
+              const locs =
+                statesWithLocations[
+                  state as keyof typeof statesWithLocations
+                ] || [];
+              setFromLocations(locs);
+              setSelectedFromLocation(null); // Reset location when state changes
+            }}
+            
           />
-          <Input
-            label="Destination Motor Park"
-            placeholder="Enter delivery park"
-            placeholderTextColor="#B8C2CC"
-            value={formData.deliveryMotorPark}
-            onChangeText={(value) =>
-              dispatch(updateField({ key: "deliveryMotorPark", value }))
-            }
-            keyboardType="default"
-            errorMessage={formErrors.deliveryMotorPark}
+
+          {/* Location Selector for Sending From */}
+          {selectedFromState && (
+            <SelectInput
+              label="Sending from Location"
+              data={fromLocations.map((loc) => loc.location)}
+              placeholder="Select a dispatch location"
+              onSelect={(locationName) => {
+                const found = fromLocations.find(
+                  (loc) => loc.location === locationName
+                );
+                setSelectedFromLocation(found ? found.location : null);
+              }}
+              errorMessage={formErrors.sendingFrom}
+            />
+          )}
+
+          {/* Destination Section (Sending To) */}
+          <SelectInput
+            label="Arriving to State"
+            data={Object.keys(statesWithLocations)}
+            placeholder="Select a state"
+            onSelect={(state) => {
+              setSelectedToState(state as keyof typeof statesWithLocations);
+              const locs =
+                statesWithLocations[
+                  state as keyof typeof statesWithLocations
+                ] || [];
+              setToLocations(locs);
+              setSelectedToLocation(null); // Reset location when state changes
+            }}
+           
           />
+
+          {/* Location Selector for Sending To */}
+          {selectedToState && (
+            <SelectInput
+              label="Arriving to Location"
+              data={toLocations.map((loc) => loc.location)}
+              placeholder="Select a delivery location"
+              onSelect={(locationName) => {
+                const found = toLocations.find(
+                  (loc) => loc.location === locationName
+                );
+                setSelectedToLocation(found ? found.location : null);
+              }}
+              errorMessage={formErrors.deliveryMotorPark}
+            />
+          )}
 
           <View style={$buttonsContainer}>
             <ButtonHome

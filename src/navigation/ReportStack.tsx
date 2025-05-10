@@ -22,7 +22,7 @@ import UnPaidParcelDetails from '@/screens/reports/store/unpaid-parcel/UnpaidPar
 import PrintParcel from '@/components/PrintParcel';
 import PrintParcelItem from '@/components/printParcelItem';
 
-
+import ParcelCongratulation from '@/screens/home/parcel/ParcelCongratulation';
 const Report = createStackNavigator<ReportStackList>();
 
 interface Props {
@@ -135,6 +135,11 @@ const ReportStack = ({navigation}: Props) => {
             <Report.Screen
               name='PrintParcelItem'
               component={PrintParcelItem}
+              options={{headerShown: false}}
+            />
+            <Report.Screen
+              name='ParcelCongratulation'
+              component={ParcelCongratulation}
               options={{headerShown: false}}
             />
     </Report.Navigator>

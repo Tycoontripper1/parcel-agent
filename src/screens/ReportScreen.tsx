@@ -76,8 +76,8 @@ const counts = {
   paid: filterShipments('payment', 'paid').length,
   unpaid: filterShipments('payment', 'unpaid').length,
   unassigned: filterShipments('status', 'unassigned').length,
-  assigned: filterShipments('status', 'assigned').length,
-  collected: filterShipments('status', 'collected').length,
+  assigned: filterShipments('status', 'in-transit').length,
+  collected: filterShipments('status', 'received').length,
   overdue: filterShipments('status', 'overdue').length,
 };
 
@@ -111,7 +111,7 @@ const storeButtonData: IStoreButton[] = [
     icon: <AssignedIcon />,
     onPress: () =>
       navigation.navigate('UnAssignParcelHistory', {
-        data: filterShipments('status', 'assigned'),
+        data: filterShipments('status', 'in-transit'),
         label: 'Assigned Parcel',
       }),
   },
@@ -122,7 +122,7 @@ const storeButtonData: IStoreButton[] = [
     icon: <CollectedIcon />,
     onPress: () =>
       navigation.navigate('UnAssignParcelHistory', {
-        data: filterShipments('status', 'collected'),
+        data: filterShipments('status', 'received'),
         label: 'Parcels Collected',
       }),
   },
@@ -197,7 +197,7 @@ const storeButtonData: IStoreButton[] = [
                           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
                             <View style={{ alignItems: "center", flexDirection: "column", justifyContent: "center", width: "100%" }}>
                               <Text style={styles.balanceLabel}>Total Earnings</Text>
-                              <Text style={styles.balance}>₦ 25,000.00</Text>
+                              <Text style={styles.balance}>₦0.00</Text>
                             </View>
                           </View>
                         </View>

@@ -5,7 +5,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {CustomView, Input, Text} from '@/components';
 import StepProgress from '@/components/share/StepProgress';
@@ -25,6 +25,7 @@ import ShootButton from '@/components/svg/ShootButton';
 import ConfirmPaymentModal from '@/components/ComfirmPaymentModal';
 import ParcelPhotoModal from '@/components/ParcelPhotoModal';
 import { FormatPhoneNumber11 } from '@/components/FormatNumber';
+import { getLocations } from '../../../../../../services/parcel';
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const ParcelInDriverUnRegistered = ({navigation}: Props) => {
@@ -40,7 +41,14 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
     const [driverPhoneError, setDriverPhoneError] = useState('');
     const [receiverPhoneError, setReceiverPhoneError] = useState('');
     const [senderPhoneError, setSenderPhoneError] = useState('');
-
+    const [driverNameError, setDriverNameError] = useState('');
+const [departureStateError, setDepartureStateError] = useState('');
+const [deliveryMotorParkError, setDeliveryMotorParkError] = useState('');
+const [parcelTypeError, setParcelTypeError] = useState('');
+const [parcelValueError, setParcelValueError] = useState('');
+const [handlingFeeError, setHandlingFeeError] = useState('');
+const [chargesPayableError, setChargesPayableError] = useState('');
+const [chargesPayByError, setChargesPayByError] = useState('');
 
     const formatPhoneNumber11 = (value: string) => {
       const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -48,55 +56,183 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
       if (digits.length <= 7) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
       return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
     };
-  const handleValidation = () => {
-    let isValid = true;
 
-    const cleanDriverNumber = formData.driverNumber.replace(/\D/g, '');
+      type Location = {
+        id: string;
+        state_id: string;
+        location: string;
+        address: string;
+        park_type: string;
+        status: string;
+        createdAt: string;
+        updatedAt: string;
+      };
+    
+    
+      const [stateRows, setStateRows] = useState<any[]>([]);
+      // get all location and convert to array
+      useEffect(() => {
+        const fetchLocations = async () => {
+          try {
+            const result = await getLocations();
+            setStateRows(result?.data?.details.rows || []);
+          } catch (error) {
+            console.error("Error fetching locations:", error);
+          }
+        };
+    
+        fetchLocations();
+      }, []);
+      const statesWithLocations: Record<string, Location[]> = stateRows.reduce(
+        (acc, curr) => {
+          acc[curr.name] = curr.locations;
+          return acc;
+        },
+        {} as Record<string, Location[]>
+      );
+        // Sending from state
+        const [selectedFromState, setSelectedFromState] = useState<
+          keyof typeof statesWithLocations | null
+        >(null);
+        const [fromLocations, setFromLocations] = useState<Location[]>([]);
+        const [selectedFromLocation, setSelectedFromLocation] = useState<
+          string | null
+        >(null);
+      
+        // Sending to state
+        const [selectedToState, setSelectedToState] = useState<
+          keyof typeof statesWithLocations | null
+        >(null);
+        const [toLocations, setToLocations] = useState<Location[]>([]);
+        const [selectedToLocation, setSelectedToLocation] = useState<string | null>(
+          null
+        );
 
-    if (!cleanDriverNumber) {
-      setDriverPhoneError('Phone Number is required.');
-      isValid = false;
-    } else if (cleanDriverNumber.length !== 11) {
-      setDriverPhoneError('Please enter a valid 11-digit mobile number.');
-      isValid = false;
-    } else {
-      setDriverPhoneError('');
-    }
+       // useEffect for "sending from"
+        useEffect(() => {
+          if (selectedFromState && selectedFromLocation) {
+            const combined = `${selectedFromState}, ${selectedFromLocation}`;
+            dispatch(updateField({ key: "departureState", value: combined }));
+            console.log("Sending From Combined:", combined);
+          }
+        }, [selectedFromState, selectedFromLocation, dispatch]);
+      
+        // useEffect for "sending to"
+        useEffect(() => {
+          if (selectedToState && selectedToLocation) {
+            const combined = `${selectedToState}, ${selectedToLocation}`;
+            dispatch(updateField({ key: "deliveryMotorPark", value: combined }));
+            console.log("Sending To Combined:", combined);
+          }
+        }, [selectedToState, selectedToLocation, dispatch]);
+    const handleValidation = () => {
+      let isValid = true;
+    
+      const cleanDriverNumber = formData.driverNumber.replace(/\D/g, '');
+      const cleanSenderPhone = formData.senderPhoneNumber.replace(/\D/g, '');
+      const cleanReceiverPhone = formData.receiverPhoneNumber.replace(/\D/g, '');
+    
+      // Driver Name
+      if (!formData.driverName.trim()) {
+        setDriverNameError('Driver name is required.');
+        isValid = false;
+      } else {
+        setDriverNameError('');
+      }
+    
+      // Driver Number
+      if (!cleanDriverNumber) {
+        setDriverPhoneError('Phone Number is required.');
+        isValid = false;
+      } else if (cleanDriverNumber.length !== 11) {
+        setDriverPhoneError('Please enter a valid 11-digit mobile number.');
+        isValid = false;
+      } else {
+        setDriverPhoneError('');
+      }
+    
+      // Sender Phone
+      if (!cleanSenderPhone) {
+        setSenderPhoneError('Phone Number is required.');
+        isValid = false;
+      } else if (cleanSenderPhone.length !== 11) {
+        setSenderPhoneError('Please enter a valid 11-digit mobile number.');
+        isValid = false;
+      } else {
+        setSenderPhoneError('');
+      }
+    
+      // Receiver Phone
+      if (!cleanReceiverPhone) {
+        setReceiverPhoneError('Phone Number is required.');
+        isValid = false;
+      } else if (cleanReceiverPhone.length !== 11) {
+        setReceiverPhoneError('Please enter a valid 11-digit mobile number.');
+        isValid = false;
+      } else {
+        setReceiverPhoneError('');
+      }
+    
+      // Departure State
+      if (!formData.departureState.trim()) {
+        setDepartureStateError('Departure state is required.');
+        isValid = false;
+      } else {
+        setDepartureStateError('');
+      }
+    
+      // Delivery Motor Park
+      if (!formData.deliveryMotorPark.trim()) {
+        setDeliveryMotorParkError('Motor park is required.');
+        isValid = false;
+      } else {
+        setDeliveryMotorParkError('');
+      }
+    
+      // Parcel Type
+      if (!formData.parcelType.trim()) {
+        setParcelTypeError('Parcel type is required.');
+        isValid = false;
+      } else {
+        setParcelTypeError('');
+      }
+    
+      // Parcel Value
+      if (!formData.parcelValue.trim()) {
+        setParcelValueError('Parcel value is required.');
+        isValid = false;
+      } else {
+        setParcelValueError('');
+      }
+    
+      // Handling Fee
+      if (!formData.handlingFee.trim()) {
+        setHandlingFeeError('Handling fee is required.');
+        isValid = false;
+      } else {
+        setHandlingFeeError('');
+      }
+    
+      // Charges Payable
+      if (!formData.chargesPayable.trim()) {
+        setChargesPayableError('Charges payable is required.');
+        isValid = false;
+      } else {
+        setChargesPayableError('');
+      }
+    
+      // Charges Pay By
+      if (!formData.chargesPayBy.trim()) {
+        setChargesPayByError('Please select who will pay.');
+        isValid = false;
+      } else {
+        setChargesPayByError('');
+      }
+    
+      return isValid;
+    };
 
-    const cleanSenderPhone = formData.senderPhoneNumber.replace(/\D/g, '');
 
-    if (!cleanSenderPhone) {
-      setSenderPhoneError('Phone Number is required.');
-      isValid = false;
-    } else if (cleanSenderPhone.length !== 11) {
-      setSenderPhoneError('Please enter a valid 11-digit mobile number.');
-      isValid = false;
-    } else {
-      setSenderPhoneError('');
-    }
-
-    // if (!formData.receiverPhoneNumber) {
-    //   setReceiverPhoneError('Phone Number is required.');
-    //   isValid = false;
-    // } else if (formData.receiverPhoneNumber.length < 11 || formData.receiverPhoneNumber.length > 11) {
-    //   setReceiverPhoneError('Please enter a valid mobile number.');
-    //   isValid = false;
-    // } else {
-    //   setReceiverPhoneError('');
-    // }
-    const cleanReceiverPhone = formData.receiverPhoneNumber.replace(/\D/g, '');
-
-    if (!cleanReceiverPhone) {
-      setReceiverPhoneError('Phone Number is required.');
-      isValid = false;
-    } else if (cleanReceiverPhone.length !== 11) {
-      setReceiverPhoneError('Please enter a valid 11-digit mobile number.');
-      isValid = false;
-    } else {
-      setReceiverPhoneError('');
-    }
-    return isValid;
-  };
 
   const HandleContinue = () => {
     if (!handleValidation()) {
@@ -163,9 +299,10 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
                             key: 'driverName',
                             value,
                           }));
+                          if (value.trim()) setDriverNameError('');
                         }}
             keyboardType='default'
-            errorMessage={driverPhoneError}
+            errorMessage={driverNameError}
           />
           <Input
             label='Driver Phone Number'
@@ -178,11 +315,12 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
                             key: 'driverNumber',
                             value: formatPhoneNumber11(cleaned),
                           }));
+                          if (cleaned.length === 11) setDriverPhoneError('');
                         }}
             keyboardType='number-pad'
             errorMessage={driverPhoneError}
           />
-          <SelectInput
+          {/* <SelectInput
             label='Arriving From?'
             data={[
               'Lagos State',
@@ -197,8 +335,41 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             onSelect={(value) =>
               dispatch(updateField({key: 'departureState', value}))
             }
-            // showSearch={true}
+             
+            showSearch={true}
+          /> */}
+          <SelectInput
+            label="Arriving From State"
+            data={Object.keys(statesWithLocations)}
+            placeholder="Select a state"
+            onSelect={(state) => {
+              setSelectedFromState(state as keyof typeof statesWithLocations);
+              const locs =
+                statesWithLocations[
+                  state as keyof typeof statesWithLocations
+                ] || [];
+              setFromLocations(locs);
+              setSelectedFromLocation(null); // Reset location when state changes
+            }}
+            
           />
+
+          {/* Location Selector for Sending From */}
+          {selectedFromState && (
+            <SelectInput
+              label="Arriving From Location"
+              data={fromLocations.map((loc) => loc.location)}
+              placeholder="Select a dispatch location"
+              onSelect={(locationName) => {
+                const found = fromLocations.find(
+                  (loc) => loc.location === locationName
+                );
+                setSelectedFromLocation(found ? found.location : null);
+              }}
+              showSearch={true}
+              // errorMessage={formErrors.sendingFrom}
+            />
+          )}
           <Input
             label='Sender Phone Number'
             placeholder='Enter phone number'
@@ -209,9 +380,10 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
               const formatted = FormatPhoneNumber11(cleaned);
               dispatch(updateField({ key: 'senderPhoneNumber', value: formatPhoneNumber11(cleaned) }));
               console.log('formatted:', formatPhoneNumber11(cleaned));
+              if (cleaned.length === 11) setSenderPhoneError('');
             }}
             keyboardType='number-pad'
-            
+            errorMessage={senderPhoneError}
           />
           <Input
             label=' Receiver Phone Number'
@@ -224,20 +396,57 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
                 key: 'receiverPhoneNumber',
                 value: formatPhoneNumber11(cleaned),
               }));
+              if (cleaned.length === 11) setReceiverPhoneError('');
             }}
             keyboardType='number-pad'
             errorMessage={receiverPhoneError}
           />
-          <Input
+          {/* <Input
             label='Destination Motor Park'
             placeholder='Enter delivery park'
             placeholderTextColor='#B8C2CC'
             value={formData.deliveryMotorPark}
-            onChangeText={(value) =>
+            onChangeText={(value) => {
               dispatch(updateField({key: 'deliveryMotorPark', value}))
-            }
+              if (value.trim()) setDeliveryMotorParkError('');
+
+            }}
             keyboardType='default'
+            errorMessage={deliveryMotorParkError}
+          /> */}
+           {/* Destination Section (Sending To) */}
+           <SelectInput
+            label="Arriving to State"
+            data={Object.keys(statesWithLocations)}
+            placeholder="Select a state"
+            onSelect={(state) => {
+              setSelectedToState(state as keyof typeof statesWithLocations);
+              const locs =
+                statesWithLocations[
+                  state as keyof typeof statesWithLocations
+                ] || [];
+              setToLocations(locs);
+              setSelectedToLocation(null); // Reset location when state changes
+            }}
+           
           />
+
+          {/* Location Selector for Sending To */}
+          {selectedToState && (
+            <SelectInput
+              label="Arriving to Location"
+              data={toLocations.map((loc) => loc.location)}
+              placeholder="Select a delivery location"
+              onSelect={(locationName) => {
+                const found = toLocations.find(
+                  (loc) => loc.location === locationName
+                );
+                setSelectedToLocation(found ? found.location : null);
+              }}
+              // errorMessage={formErrors.deliveryMotorPark}
+            />
+          )}
+
 
           <Text size={18} style={{paddingTop: 15, paddingBottom: 10}}>
             Parcel Information
@@ -248,30 +457,36 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             placeholder='Enter parcel type'
             placeholderTextColor='#B8C2CC'
             value={formData.parcelType}
-            onChangeText={(value) =>
+            onChangeText={(value) => {
               dispatch(updateField({key: 'parcelType', value}))
-            }
+              if (value.trim()) setParcelTypeError('');
+            }}
             keyboardType='default'
+            errorMessage={parcelTypeError}
           />
           <Input
             label='Parcel Value (₦)'
             placeholder='Enter parcel worth'
             placeholderTextColor='#B8C2CC'
             value={formData.parcelValue}
-            onChangeText={(value) =>
+            onChangeText={(value) => {
               dispatch(updateField({key: 'parcelValue', value}))
-            }
+              if (value.trim()) setParcelValueError('');
+            }}
             keyboardType='number-pad'
+            errorMessage={parcelValueError}
           />
           <Input
             label='Handling Fee (₦)'
             placeholder='Enter handling fee'
             placeholderTextColor='#B8C2CC'
             value={formData.handlingFee}
-            onChangeText={(value) =>
+            onChangeText={(value) => {
               dispatch(updateField({key: 'handlingFee', value}))
-            }
+              if (value.trim()) setHandlingFeeError('');
+            }}
             keyboardType='number-pad'
+            errorMessage={handlingFeeError}
           />
 
           <Input
@@ -279,10 +494,12 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             placeholder='Enter amount charged'
             placeholderTextColor='#B8C2CC'
             value={formData.chargesPayable}
-            onChangeText={(value) =>
+            onChangeText={(value) => {
               dispatch(updateField({key: 'chargesPayable', value}))
-            }
+              if (value.trim()) setChargesPayableError('');
+            }}
             keyboardType='number-pad'
+            errorMessage={chargesPayableError}
           />
 
           <View style={styles.container}>
@@ -309,6 +526,7 @@ const ParcelInDriverUnRegistered = ({navigation}: Props) => {
             onSelect={(value) =>
               dispatch(updateField({key: 'chargesPayBy', value}))
             }
+            
             // showSearch={true}
           />
           {formData.chargesPayBy === 'Sender' && (

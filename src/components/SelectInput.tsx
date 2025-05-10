@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   TextInput,
@@ -12,11 +12,11 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import {RFValue} from 'react-native-responsive-fontsize';
-import {color} from '@/constants/Colors';
-import {Entypo, Ionicons} from '@expo/vector-icons';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { color } from '@/constants/Colors';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import Text from './Text';
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type SelectInputProps = {
   label: string;
@@ -24,6 +24,7 @@ type SelectInputProps = {
   placeholder: string;
   onSelect: (value: string) => void;
   showSearch?: boolean; // Optional search input
+  errorMessage?: string; // New errorMessage prop
 };
 
 const SelectInput = ({
@@ -32,6 +33,7 @@ const SelectInput = ({
   placeholder,
   onSelect,
   showSearch = false,
+  errorMessage,
 }: SelectInputProps) => {
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -47,12 +49,12 @@ const SelectInput = ({
   const filteredData = data.filter((item) =>
     item.toLowerCase().includes(searchText.toLowerCase())
   );
-  const {theme} = useTheme();
+  const { theme } = useTheme();
 
   const inputContainer: ViewStyle = {
     height: RFValue(45),
     borderWidth: 1,
-    borderColor: color.allWhite,
+    borderColor: errorMessage ? color.errorColor : color.allWhite, // Show error color if there's an error
     borderRadius: RFValue(8),
     justifyContent: 'space-between',
     paddingHorizontal: RFValue(10),
@@ -83,7 +85,7 @@ const SelectInput = ({
     marginBottom: 30,
     overflow: 'hidden', // Ensures the rounded corners are visible
   };
-  
+
   const $searchInput: TextStyle = {
     marginLeft: RFValue(5),
     fontSize: RFValue(14),
@@ -102,6 +104,9 @@ const SelectInput = ({
         <Entypo name='chevron-small-down' size={24} color={color.inputColor} />
       </TouchableOpacity>
 
+      {/* Error Message */}
+      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+
       {/* Modal for Bottom Sheet */}
       <Modal
         transparent
@@ -116,7 +121,7 @@ const SelectInput = ({
           keyboardVerticalOffset={Platform.OS === 'ios' ? 30 : 0}
           style={[
             $bottomSheet,
-            isSearchFocused ? {maxHeight: '75%'} : {maxHeight: '60%'}, // Adjust height dynamically
+            isSearchFocused ? { maxHeight: '75%' } : { maxHeight: '60%' }, // Adjust height dynamically
           ]}>
           <View>
             {/* Line */}
@@ -152,7 +157,7 @@ const SelectInput = ({
             <FlatList
               data={filteredData}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.option}
                   onPress={() => handleSelect(item)}>
@@ -218,6 +223,11 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: RFValue(14),
-    color: color.gray,
+    color: color.gray, // Corrected this from 'Gray' to 'gray'
+  },
+  error: {
+    fontSize: RFValue(12),
+    marginTop: RFValue(5),
+    color: color.errorColor, // Error message color
   },
 });
