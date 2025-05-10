@@ -14,7 +14,6 @@ export default ({ config }) => ({
   ...config,
   plugins: [
     ...(config.plugins || []),
-    "expo-barcode-scanner",
     [
       "expo-build-properties",
       {
