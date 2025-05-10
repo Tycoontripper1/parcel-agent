@@ -48,10 +48,11 @@
       "expo-font"
     ],
     "extra": {
+      "apiKey": "http://45.9.191.184:8001/parcel/v1.0/api",
       "eas": {
-        "projectId": "9775e017-8903-4c0e-906d-a198a660aa0f"
+        "projectId": "15fea479-ff7a-4763-83ae-4ee5632940d4"
       }
     },
-    "owner": "bombhack"
+    "owner": "bombay_17"
   }
 }
