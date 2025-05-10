@@ -74,8 +74,8 @@ const DashboardScreen = ({navigation}: Props) => {
       label: 'Sender',
       type: 'In',
       icon: <DownloadIconSender />,
-      // url: 'ScreenOneParcelInSender',
-      url: 'ScreenOneParcelInSenderTwo',
+      url: 'ScreenOneParcelInSender',
+      // url: 'ScreenOneParcelInSenderTwo',
     },
     {
       label: 'Driver',

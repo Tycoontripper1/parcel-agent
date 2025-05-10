@@ -52,8 +52,8 @@ const dispatch = useDispatch();
           value: String(Number(formData.parcelValue)),
           chargesPayable: String(Number(formData.chargesPayable)),
           chargesPaidBy: formData.chargesPayBy,
-          handlingFee: '1000',
-          totalFee: String(Number(formData.parcelValue) + Number(formData.chargesPayable)),
+          handlingFee: String(Number(formData.handlingFee)),
+          totalFee: String(Number(formData.handlingFee) + Number(formData.chargesPayable)),
           description: formData.parcelDescription,
           thumbnails: formData.parcelImages,
         },
@@ -298,7 +298,7 @@ const dispatch = useDispatch();
               }}>
               <Text style={styles.infoText}>Handling Fee:</Text>
               <Text style={styles.infoText}>
-                  {parseFloat(formData.parcelValue) * 0.1}
+                  {formData.handlingFee}
               </Text>
             </View>
             <View

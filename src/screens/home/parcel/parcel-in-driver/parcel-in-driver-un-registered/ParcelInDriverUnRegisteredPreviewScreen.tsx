@@ -49,7 +49,9 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
             ? String(Number(formData.chargesPayable))
             : "",
           chargesPaidBy: formData.chargesPayBy,
-          handlingFee: "1000",
+          handlingFee: String(
+            formData.handlingFee ? Number(formData.handlingFee) : ""
+          ),
           totalFee:
             formData.parcelValue && formData.chargesPayable
               ? String(

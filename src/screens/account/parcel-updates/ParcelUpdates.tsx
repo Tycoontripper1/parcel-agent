@@ -7,7 +7,7 @@ import {
   } from "react-native";
   import React, { useState } from "react";
   import { AccountStackList } from "@/navigation/navigationType";
-  import { Button, CustomView, Input, Text } from "@/components";
+  import { Button, CustomView, Input, Spinner, Text } from "@/components";
   import { RFValue } from "react-native-responsive-fontsize";
   import BackButton from "@/components/share/BackButton";
   import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -22,10 +22,10 @@ import {
 import { updateField } from "@/redux/slices/parcelSlice";
   import CloseModal from "@/components/CloseModal";
 import SelectInput from "@/components/SelectInput";
+import { apiKey, getToken } from "../../../../services/auth";
   
   type Props = NativeStackScreenProps<AccountStackList>;
   const ParcelUpdates = ({ navigation }: Props) => {
-    const formData = useSelector((state: RootState) => state.parcel);
     const dispatch = useDispatch();
     const { theme } = useTheme()
     const [loading, setLoading] = useState(false);
@@ -34,22 +34,67 @@ import SelectInput from "@/components/SelectInput";
         string | null
       >(null);
 
+
+  const [formDataState, setFormDataState] = useState({
+      overdueDays: "",
+      reminder:"",
+    });
   
-  const handleSaveChanges = () => {
-    if (!formData.frequency) {
-      return;
-    }
   
-    setLoading(true);
+    const handleSaveChanges = async() => {
+      if (!formDataState.reminder) {
+        return;
+      }
   
-    setTimeout(() => {
+      setLoading(true);
+    try {
+      const payload = {
+        reminders: {
+          unassigned_parcel_frequency: parseInt(
+            formDataState.reminder.replace(" Hours", ""),
+            10
+          ),
+        },
+      };
+      
+  
+    // const result = await overdueParcelRemindersUpdate(payload);
+     const token = await getToken()
+                    const response = await fetch(`${apiKey}/users/reminders`, {
+                      method: 'PATCH',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify(payload),
+                    
+                    });
+                
+                    const result = await response.json();
+    console.log(result, "result");
+    if (result) {
       setLoading(false);
       setModalVisible(true);
-      // navigation.navigate('OTPVerificationScreen');
-    }, 2000); 
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: result?.message || "Changes saved successfully",
+      });
+      
+      setModalVisible(true);
   
-    console.log({ formData });
-  };
+    }
+  } catch (error:any) {
+      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error?.message || "Something went wrong",
+      }); 
+    } finally {
+      setLoading(false);
+      
+    }}
   
 
   
@@ -74,7 +119,7 @@ import SelectInput from "@/components/SelectInput";
     };
     return (
       <CustomView style={{ paddingVertical: RFValue(10) }}>
-
+  { loading  && ( <Spinner />)}
 {modalVisible && (
         <CloseModal
         visible={modalVisible}
@@ -112,12 +157,15 @@ import SelectInput from "@/components/SelectInput";
             data={['1 Hour', '2 Hours', "3 Hours", "6 Hours", "12 Hours"]}
             placeholder='Set frequency'
             onSelect={(value) =>
-              dispatch(updateField({key: 'frequency', value}))
+              setFormDataState((prev) => ({
+                ...prev,
+                reminder: value,
+              }))
             }
             // showSearch={true}
           />
         {/* Confirm Button */}
-        <TouchableOpacity onPress={handleSaveChanges} disabled={!formData.frequency}  style={styles.confirmButton}>
+        <TouchableOpacity onPress={handleSaveChanges} disabled={!formDataState.reminder}  style={styles.confirmButton}>
           <Text style={styles.confirmButtonText}>Save changes</Text>
         </TouchableOpacity>
           </View>

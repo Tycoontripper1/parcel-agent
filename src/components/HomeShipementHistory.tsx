@@ -70,7 +70,7 @@ const HomeShipmentHistory = ({searchQuery,onViewAll}: ShipmentHistoryProps) => {
   }, []);
   // Filter shipments based on the search query
   const filteredShipments = allShipments?.filter(item =>
-    (item?.parcelId || '').toLowerCase().includes((searchQuery || '').toLowerCase())
+    (item?.parcelId || item?.receiver.phone).toLowerCase().includes((searchQuery || '').toLowerCase())
   );
   
   
