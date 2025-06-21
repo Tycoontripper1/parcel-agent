@@ -71,7 +71,9 @@ const Input = ({
 }: InputProps) => {
   const {theme} = useTheme(); // Access the theme
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Password visibility state
-
+const [isFocused, setIsFocused] = useState(false);
+  const borderBackgroundColor = theme.primary;
+const [inputValue, setInputValue] = useState('');
   // Handle password eye icon toggle
   const handleTogglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
@@ -85,7 +87,15 @@ const Input = ({
       <View
         style={[
           styles.inputWrapper,
-          {borderColor: errorMessage ? color.errorColor : color.allWhite},
+            {
+      borderColor: errorMessage
+        ? color.errorColor
+        : inputValue
+        ? borderBackgroundColor // or color.successColor
+        : isFocused
+        ? borderBackgroundColor
+        : color.allWhite,
+    },
         ]}>
         {/* Left Icon */}
         {LeftIcon && <View style={styles.iconLeft}>{LeftIcon}</View>}
@@ -105,6 +115,8 @@ const Input = ({
           secureTextEntry={
             type === 'password' ? (isPasswordVisible ? false : true) : false
           } // Toggle password visibility
+           onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           {...props}
         />
 
@@ -174,6 +186,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
+    
   },
   input: {
     flex: 1,

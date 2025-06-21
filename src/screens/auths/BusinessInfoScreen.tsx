@@ -6,7 +6,7 @@ import {AuthStackParamList} from '@/navigation/navigationType';
 import {updateField} from '@/redux/slices/formSlice';
 import {RootState} from '@/redux/store';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -17,14 +17,62 @@ import {
 } from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useDispatch, useSelector} from 'react-redux';
+import { getLocations } from '../../../services/parcel';
 
 type Props = NativeStackScreenProps<AuthStackParamList>;
+  type Location = {
+    id: string;
+    state_id: string;
+    location: string;
+    address: string;
+    park_type: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  };
 
 const BusinessInfoScreen = ({navigation}: Props) => {
   const formData = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch();
   const [addressError, setAddressError] = useState('');
   const [businessNameError, setBusinessNameError] = useState('');
+    const [stateRows, setStateRows] = useState<any[]>([]);
+    // get all location and convert to array
+    useEffect(() => {
+      const fetchLocations = async () => {
+        try {
+          const result = await getLocations();
+          setStateRows(result?.data?.details.rows || []);
+        } catch (error) {
+          console.error("Error fetching locations:", error);
+        }
+      };
+  
+      fetchLocations();
+    }, []);
+    // Convert into { [stateName]: Location[] }
+    const statesWithLocations: Record<string, Location[]> = stateRows.reduce(
+      (acc, curr) => {
+        acc[curr.name] = curr.locations;
+        return acc;
+      },
+      {} as Record<string, Location[]>
+    );
+      const [selectedFromState, setSelectedFromState] = useState<
+        keyof typeof statesWithLocations | null
+      >(null);
+      const [fromLocations, setFromLocations] = useState<Location[]>([]);
+      const [selectedFromLocation, setSelectedFromLocation] = useState<
+        string | null
+      >(null);
+        useEffect(() => {
+          if (selectedFromState && selectedFromLocation) {
+            const combined = `${selectedFromState}, ${selectedFromLocation}`;
+            dispatch(updateField({ key: "location", value: combined }));
+            console.log("agent location:", combined);
+          }
+        }, [selectedFromState, selectedFromLocation, dispatch]);
+      
 
   const handleValidation = () => {
     let isValid = true;
@@ -120,16 +168,46 @@ const BusinessInfoScreen = ({navigation}: Props) => {
               errorMessage={addressError}
               keyboardType='default'
             />
+            
+          <SelectInput
+            label="Motor Park Location State"
+            data={Object.keys(statesWithLocations)}
+            placeholder="Select State"
+            onSelect={(state) => {
+              setSelectedFromState(state as keyof typeof statesWithLocations);
+              const locs =
+                statesWithLocations[
+                  state as keyof typeof statesWithLocations
+                ] || [];
+              setFromLocations(locs);
+              setSelectedFromLocation(null); // Reset location when state changes
+            }}
+            
+          />
 
+          {/* Location Selector for Sending From */}
+          {selectedFromState && (
             <SelectInput
-              label='Motor Park Location'
+              label="Motor Park Location Park"
+              data={fromLocations.map((loc) => loc.location)}
+              placeholder="Select Park"
+              onSelect={(locationName) => {
+                const found = fromLocations.find(
+                  (loc) => loc.location === locationName
+                );
+                setSelectedFromLocation(found ? found.location : null);
+              }}
+            />
+          )}
+            {/* <SelectInput
+              label='Motor Park Location State'
               data={['Oshodi Park', 'Agege Park', 'Ijaro Park', 'Ojota Park']}
               placeholder='Select motor park'
               onSelect={(value) =>
                 dispatch(updateField({key: 'location', value}))
               }
               showSearch={true}
-            />
+            /> */}
             <SelectInput
               label='Do you have a store?'
               data={['Yes', 'No']}

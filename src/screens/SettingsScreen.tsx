@@ -2,7 +2,7 @@ import { CustomView, Button, Text } from "@/components";
 import { RootStackParamList } from "@/navigation/navigationType";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, Modal, Animated, Easing, TouchableWithoutFeedback } from "react-native";
 import { AccountStackList } from "@/navigation/navigationType";
 import { AuthStackParamList } from "@/navigation/navigationType";
 import LogoutIcon from "@/components/svg/LogoutIcon";
@@ -15,13 +15,21 @@ import ScreenHeader from "@/components/share/ScreenHeader";
 import { getUser } from "../../services/auth";
 import { UserDetails } from "@/utils/interface";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "@/hooks/useTheme";
+import AnimatedModal from "@/components/AnimatedModal";
 
 type Props = NativeStackScreenProps<
   RootStackParamList & AccountStackList & AuthStackParamList
 >;
 
 const SettingsPage = ({ navigation }: Props) => {
-    const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
+  const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const modalScale = new Animated.Value(0);
+  const modalOpacity = new Animated.Value(0);
+  const backdropOpacity = new Animated.Value(0);
+  const theme = useTheme();
+
   const accountButtonData: IAccountButton[] = [
     {
       label: "Account Information",
@@ -44,33 +52,44 @@ const SettingsPage = ({ navigation }: Props) => {
       url: "HomeAndSupport",
     },
   ];
+  
   const $bodyHeader: ViewStyle = {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: RFValue(18),
   };
-      useEffect(() => {
-        const fetchUser = async () => {
-          const userDetails = await getUser();
-          console.log(userDetails, 'userDetails');
-          setUserDetails(userDetails)
-        };
-        fetchUser();
-      }
-      , []);
-      const handleLogout = async () => {
-        try {
-          await AsyncStorage.clear(); // clear all saved user data
-          navigation.replace("AuthStacks", { screen: "Login" }); // go to login
-        } catch (error) {
-          console.error('Failed to clear AsyncStorage.', error);
-        }
-      };
-      
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userDetails = await getUser();
+      console.log(userDetails, 'userDetails');
+      setUserDetails(userDetails)
+    };
+    fetchUser();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      navigation.replace("AuthStacks", { screen: "Login" });
+    } catch (error) {
+      console.error('Failed to clear AsyncStorage.', error);
+    }
+  };
+const toggleLogoutModal = () => {
+  setShowLogoutModal(!showLogoutModal);
+};
+
+
   return (
     <CustomView style={styles.container} padded>
-<ScreenHeader title="Account Settings" OnNotificationClick={() => navigation.navigate("NotificationsScreen")} type="Home" />
+      <ScreenHeader 
+        title="Account Settings" 
+        OnNotificationClick={() => navigation.navigate("NotificationsScreen")} 
+        type="Home" 
+      />
+      
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -85,7 +104,6 @@ const SettingsPage = ({ navigation }: Props) => {
             gap: RFValue(12),
           }}
         >
-          {/* Profile Image */}
           <Image
             source={{ uri: userDetail?.userImage }}
             style={{
@@ -97,7 +115,7 @@ const SettingsPage = ({ navigation }: Props) => {
             resizeMode="cover"
           />
         </View>
-        {/* settings button */}
+        
         <View style={styles.buttonContainer}>
           <View style={$bodyHeader}>
             <Text font="SemiBold" size={18}>
@@ -111,9 +129,8 @@ const SettingsPage = ({ navigation }: Props) => {
           <AccountButton buttons={accountButtonData} />
         </View>
 
-        {/* logout button */}
         <TouchableOpacity
-          onPress={handleLogout}
+          onPress={toggleLogoutModal}
           style={{
             width: "100%",
             padding: RFValue(8),
@@ -140,10 +157,45 @@ const SettingsPage = ({ navigation }: Props) => {
               Log Out
             </Text>
           </View>
-          {/* <Ionicons name="arrow-forward" size={20} /> */}
           <ArrowRight color="" />
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Logout Confirmation Modal */}
+  <AnimatedModal
+      visible={showLogoutModal}
+      onClose={toggleLogoutModal}
+      animationType="scale" 
+       animationDuration={600} 
+      backdropOpacity={0.7}
+    >
+      <Text font="Bold" size={18} style={styles.modalTitle}>
+        Are you sure?
+      </Text>
+      <Text size={14} font="Regular" style={styles.modalText}>
+        You'll need to log in again to access your account.
+      </Text>
+      
+      <View style={styles.modalButtons}>
+        <TouchableOpacity 
+          onPress={toggleLogoutModal}
+          style={[styles.modalButton, styles.cancelButton]}
+        >
+          <Text font="SemiBold" size={14} style={styles.cancelButtonText}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          onPress={handleLogout}
+          style={[styles.modalButton, styles.logoutButton]}
+        >
+          <Text font="SemiBold" size={14} style={styles.logoutButtonText}>
+            Log Out
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </AnimatedModal>
     </CustomView>
   );
 };
@@ -173,6 +225,65 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
+  },
+
+
+  // Modal styles
+
+ modalBackdrop: {
+    ...StyleSheet.absoluteFillObject, // This replaces the manual positioning
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex:1
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+   
+    zIndex: 10, // Ensure it appears above the backdrop
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
+  
+
+    // zIndex: 20, // Higher than container
+  },
+  modalTitle: {
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  modalText: {
+    textAlign: 'center',
+    marginBottom: 24,
+    color: '#666',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#F5F5F5',
+    marginRight: 8,
+  },
+  logoutButton: {
+    backgroundColor: '#AEFF8C',
+    marginLeft: 8,
+  },
+  cancelButtonText: {
+    color: '#333',
+  },
+  logoutButtonText: {
+    color: 'white',
   },
 });
 
