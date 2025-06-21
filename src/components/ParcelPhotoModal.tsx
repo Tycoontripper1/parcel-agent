@@ -235,6 +235,7 @@ import Toast from 'react-native-toast-message';
 import { Helper } from '@/helper/helper';
 import Spinner from './Spinner';
 import * as FileSystem from 'expo-file-system';
+import { set } from 'date-fns';
 
 interface ParcelPhotoModalProps {
   visible: boolean;
@@ -273,81 +274,106 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
   };
 
 
-  const handleSave = async () => {
-    console.log(photos, 'photos');
-    setLoading(true);
+  // const handleSave = async () => {
+  //   console.log(photos, 'photos');
+  //   setLoading(true);
   
-    try {
-      const validPhotos = photos.filter(p => p !== null);
+  //   try {
+  //     const validPhotos = photos.filter(p => p !== null);
   
-      if (validPhotos.length < 2) {
-        Toast.show({
-          type: 'error',
-          text1: 'Upload Failed',
-          text2: 'Please select at least two images before uploading.',
-        });
-        return;
-      }
+  //     if (validPhotos.length < 2) {
+  //       Toast.show({
+  //         type: 'error',
+  //         text1: 'Upload Failed',
+  //         text2: 'Please select at least two images before uploading.',
+  //       });
+  //       return;
+  //     }
       
   
-      const userDetails = await getUser();
-      const username = userDetails?.firstName || 'unknown_user';
-      const token = await getToken();
+  //     const userDetails = await getUser();
+  //     const username = userDetails?.firstName || 'unknown_user';
+  //     const token = await getToken();
   
-      const formData = new FormData();
+  //     const formData = new FormData();
   
-      for (let index = 0; index < validPhotos.length; index++) {
-        const image = validPhotos[index];
+  //     for (let index = 0; index < validPhotos.length; index++) {
+  //       const image = validPhotos[index];
   
-        formData.append('files', {
-          uri: image,
-          name: `image_${index}.jpg`,
-          type: 'image/jpeg',
-        } as any);
-      }
+  //       formData.append('files', {
+  //         uri: image,
+  //         name: `image_${index}.jpg`,
+  //         type: 'image/jpeg',
+  //       } as any);
+  //     }
   
-      const response = await fetch(
-        `http://45.9.191.184:8001/parcel/v1.0/api/upload/bulk?folder=${username}`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-          body: formData,
-        }
-      );
+  //     const response = await fetch(
+  //       `http://45.9.191.184:8001/parcel/v1.0/api/upload/bulk?folder=${username}`,
+  //       {
+  //         method: 'POST',
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //         body: formData,
+  //       }
+  //     );
   
-      const result = await response.json();
+  //     const result = await response.json();
       
 
   
-      if (!response.ok) {
-        throw new Error(result.message || 'Upload failed');
-      }
+  //     if (!response.ok) {
+  //       throw new Error(result.message || 'Upload failed');
+  //     }
   
-      onSave(result.data.urls);
-      onClose();
+  //     onSave(result.data.urls);
+  //     onClose();
   
-      Helper.vibrate();
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Parcel images uploaded successfully.',
-      });
-    } catch (error: any) {
-      console.error('Upload error:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Upload Failed',
-        text2: error.message || 'Something went wrong during image upload.',
-      });
-    } finally {
+  //     Helper.vibrate();
+  //     Toast.show({
+  //       type: 'success',
+  //       text1: 'Success',
+  //       text2: 'Parcel images uploaded successfully.',
+  //     });
+  //   } catch (error: any) {
+  //     console.error('Upload error:', error);
+  //     Toast.show({
+  //       type: 'error',
+  //       text1: 'Upload Failed',
+  //       text2: error.message || 'Something went wrong during image upload.',
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  
+const handleSave = () => {
+  console.log(photos, 'photos');
+  setLoading(true);
+  const validPhotos = photos.filter(p => p !== null);
+  if (validPhotos.length < 1) {
+    Toast.show({
+      type: 'error',
+      text1: 'Upload Failed',
+      text2: 'Please select at least one image before saving.',
+    });
+    return;
+  }
+
+    // ✅ Pass already selected image URIs
+    onSave(validPhotos);
+    Helper.vibrate();
+
+      setTimeout(() => {
       setLoading(false);
-    }
-  };
-  
-  
+     onClose(); // ✅ Close modal/screen after 3 sec
+      // });
+    }, 2000);
+
+};
+
+
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
@@ -405,12 +431,12 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
           <TouchableOpacity
             style={[
               styles.saveButton,
-              photos.filter((photo) => photo !== null).length < 2
+              photos.filter((photo) => photo !== null).length < 1
                 ? styles.disabledButton
                 : {},
             ]}
             onPress={handleSave}
-            disabled={photos.filter((photo) => photo !== null).length < 2}
+            disabled={photos.filter((photo) => photo !== null).length < 1}
           >
             <Text style={styles.saveText}>Save and Continue</Text>
           </TouchableOpacity>

@@ -49,6 +49,7 @@ export const openImagePicker = async (
     // Check if the user canceled the action
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setImage(result.assets[0].uri); // Set the image URI
+      // setImage(result.assets[0].uri); // Set the image URI
     }
   } catch (error) {
     console.error('Error selecting an image:', error);

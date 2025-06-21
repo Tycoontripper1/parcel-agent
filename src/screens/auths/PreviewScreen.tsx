@@ -10,7 +10,6 @@ import {View, Image, StyleSheet, ScrollView} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Toast from 'react-native-toast-message';
 import {useDispatch, useSelector} from 'react-redux';
-import { uploadBulkImages } from '../../../services/upload';
 import { getUser } from '../../../services/auth';
 import { updateField } from '@/redux/slices/formSlice';
 
@@ -22,38 +21,55 @@ const PreviewScreen = ({navigation}: Props) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    console.log(idFrontImage, idBackImage, 'images');
-    try {
-      setLoading(true);
+  // const handleSubmit = async () => {
+  //   console.log(idFrontImage, idBackImage, 'images');
+  //   try {
+  //     setLoading(true);
   
-      const userDetails = await getUser();
-      const username = userDetails?.firstName;
+  //     const userDetails = await getUser();
+  //     const username = userDetails?.firstName;
       
-      // Upload ID images
-      const idImageUrls = await uploadBulkImages([idFrontImage, idBackImage], username);
+  //     // Upload ID images
+  //     const idImageUrls = await upload([idFrontImage, idBackImage]);
+  //     // const idImageUrls = await uploadBulkImages([idFrontImage, idBackImage], username);
   
-      if (idImageUrls?.data.urls.length === 2) {
-        // Update Redux with the URLs
-        dispatch(updateField({ key: 'idFrontImage', value: idImageUrls?.data.urls[0] }));
-        dispatch(updateField({ key: 'idBackImage', value: idImageUrls?.data.urls[1] }));
-      }
+  //     if (idImageUrls?.data.images.length === 2) {
+  //       // Update Redux with the URLs
+  //       dispatch(updateField({ key: 'idFrontImage', value: idImageUrls?.data.images[0] }));
+  //       dispatch(updateField({ key: 'idBackImage', value: idImageUrls?.data.images[1] }));
+  //     }
   
+  //     Helper.vibrate();
+  //     Toast.show({
+  //       type: 'success',
+  //       text1: 'Success',
+  //       text2: 'ID Images uploaded successfully',
+  //     });
+  
+  //     // Navigate next
+  //     navigation.navigate('FacialVerification');
+  //   } catch (error: any) {
+  //     // console.error('Image upload failed:', error);
+  //     Toast.show({
+  //       type: 'error',
+  //       text1: 'Upload Failed',
+  //       text2: error.message || 'Something went wrong',
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
       Helper.vibrate();
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'ID Images uploaded successfully',
-      });
-  
-      // Navigate next
       navigation.navigate('FacialVerification');
     } catch (error: any) {
-      // console.error('Image upload failed:', error);
+      console.error('Navigation error:', error);
       Toast.show({
-        type: 'error',
-        text1: 'Upload Failed',
-        text2: error.message || 'Something went wrong',
+        type: "error",
+        text1: "Navigation Failed",
+        text2: error.message || "Something went wrong",
       });
     } finally {
       setLoading(false);

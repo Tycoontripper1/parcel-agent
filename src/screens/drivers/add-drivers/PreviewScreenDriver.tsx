@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Image, StyleSheet, ScrollView } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +15,7 @@ import { RootState } from "@/redux/store";
 import { updateField } from "@/redux/slices/formSlice";
 import * as FileSystem from 'expo-file-system';
 import { getDriver, getToken, getUser, updateDriverKyc } from "../../../../services/auth";
-import { uploadBulkImages } from "../../../../services/upload";
+import { getImage, upload, uploadBulkImages } from "../../../../services/upload";
 import axios, { Axios, AxiosError } from "axios";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -25,6 +25,7 @@ type UploadResponse = {
   status: string;
   urls: string[];
 };
+
 const PreviewScreenDriver = ({ navigation }: Props) => {
   const { idFrontImage, idBackImage, facialVerificationImage } = useSelector(
     (state: RootState) => state.form
@@ -33,6 +34,10 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imagesUploaded, setImagesUploaded] = useState(false);
+  type IdImage = { mimetype: string; uri: string };
+  const [idImages, setIdImages] = useState<IdImage[]>([]);
+
+
  
   const handleImageUpload = async () => {
     setLoading(true);
@@ -55,51 +60,21 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
       
           const userDetails = await getUser();
           const username = userDetails?.firstName || 'unknown_user';
-          const token = await getToken();
-          const formData = new FormData();
-      
-          for (let index = 0; index < validPhotos.length; index++) {
-            const image = validPhotos[index];
-      
-            formData.append('files', {
-              uri: image,
-              name: `image_${index}.jpg`,
-              type: 'image/jpeg',
-            } as any);
 
-          }
-      
-          const response = await fetch(
-            `http://45.9.191.184:8001/parcel/v1.0/api/upload/bulk?folder=${username}`,
-            {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data',
-              },
-              body: formData,
-            }
-          );
-      
-          const result = await response.json();
-          
-     
-      
-          if (!response.ok) {
-            throw new Error( 'Upload failed');
-          }else {
-            if (result?.data.urls.length === 2) {
-              dispatch(updateField({ key: "idFrontImage", value: result?.data.urls[0] }));
-              dispatch(updateField({ key: "idBackImage", value: result.data.urls[1] }));
+          const result = await upload(validPhotos);
+         console.log(result, "result")
+         console.log(result?.data?.details, "result.data.details")
+            if (result?.data?.details?.length === 2) {
+              dispatch(updateField({ key: "idFrontImage", value: result?.data?.details[0] }));
+              dispatch(updateField({ key: "idBackImage", value: result.data?.details[1] }));
               setImagesUploaded(true);
             }
-            console.log(result, "result")
-          }
-
+            
+          
           // onSave(result.data.urls);
           // onClose();
       
-          Helper.vibrate();
+          
           Toast.show({
             type: 'success',
             text1: 'Success',
@@ -155,12 +130,15 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
   //     return null;
   //   }
   // };
+  console.log(idBackImage, "idBackImage")
+  console.log(idFrontImage, "idFrontImage")
   const handleCompleteRegistration = async () => {
     setLoading(true);
     const driver = await getDriver();
     const driverId = driver.id
     try {
       const payload = {
+        // identificationImages: [idFrontImage, idBackImage],
         identificationImages: [idFrontImage, idBackImage],
         userImage: facialVerificationImage,
       };
@@ -220,12 +198,25 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
           </Text>
 
           <Text style={styles.title}>Front Image</Text>
-          <Image source={{ uri: idFrontImage }} style={styles.image} />
-          <Text style={styles.title}>Back Image</Text>
-          <Image source={{ uri: idBackImage }} style={styles.image} />
+        {
+          imagesUploaded ? (
+            <View>
+              <Image source={{ uri: `https://bc65-196-1-179-86.ngrok-free.app/parcel/v1.0/api/files?slugs=${idFrontImage}`}} style={styles.image} />
+              <Text style={styles.title}>Back Image</Text>
+              <Image source={{ uri: `https://bc65-196-1-179-86.ngrok-free.app/parcel/v1.0/api/files?slugs=${idBackImage}`}}style={styles.image} />
+            </View>
+          ) : ( 
+            <View>
+              <Image source={{ uri: idFrontImage }} style={styles.image} />
+              <Text style={styles.title}>Back Image</Text>
+              <Image source={{ uri: idBackImage }} style={styles.image} />
+            </View>
+          )
+        }
 
           <Button
             onPress={handleButtonClick}
+            // title={"Complete Registration" }
             title={imagesUploaded ? "Complete Registration" : "Upload Images"}
             style={{ height: 55, marginVertical: RFValue(16) }}
           />

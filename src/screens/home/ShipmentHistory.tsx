@@ -59,10 +59,12 @@ const ShipmentHistory = () => {
       const rows = result?.data?.details?.rows || [];
       setShipments(rows);
       setFilteredShipments(mapShipments(rows));
+    
     } catch (error) {
       console.error('Failed to fetch shipments:', error);
     }
-  };
+  };  
+  console.log(shipments.length, 'rows');
 
   const mapShipments = (data: ParcelDetails[]) => {
     return data.map((shipment) => ({
@@ -214,7 +216,10 @@ const ShipmentHistory = () => {
                                 : '#FB6514'
                           }
                         >
-                          {item.status}
+                         {item.status === "received"
+                    ? "Collected"
+                    : item.status.charAt(0).toUpperCase() +
+                      item.status.slice(1)}
                         </Text>
                       </View>
                     </View>

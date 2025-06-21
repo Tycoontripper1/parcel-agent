@@ -60,6 +60,7 @@ export interface UserDetails {
     status: string;
     parcelId: string;
     qrImage: string;
+    createdAt: string;
   }
   
   

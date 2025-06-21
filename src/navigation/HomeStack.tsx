@@ -33,6 +33,7 @@ import BarcodeScannerScreen from "@/components/BarcodeScannerScreen";
 import ComfirmationDriver from "@/components/confirmationDriver";
 import TransactionHistory from "@/components/TransactionHistory";
 import DriversScreen from "@/screens/DriversScreen";
+import UnAssignParcelDetails from "@/screens/reports/store/unassigned-parcel/UnAssignParcelDetails";
 const Home = createStackNavigator<HomeStackList>();
 
 interface Props {
@@ -205,6 +206,11 @@ const HomeStack = ({ navigation }: Props) => {
       <Home.Screen
         name="DriversScreen"
         component={DriversScreen}
+        options={{ headerShown: false }}
+      />
+      <Home.Screen
+        name="UnAssignParcelDetails"
+        component={UnAssignParcelDetails}
         options={{ headerShown: false }}
       />
     </Home.Navigator>

@@ -1,7 +1,9 @@
 // api/auth.ts
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const apiKey = Constants.expoConfig?.extra?.apiKey;
+// const apiKey = Constants.expoConfig?.extra?.apiKey;
+// const apiKey = "https://bc65-196-1-179-86.ngrok-free.app/parcel/v1.0/api"
+export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
 
 export const getToken = async (): Promise<string | null> => {
   try {
@@ -34,14 +36,14 @@ export const getParcelDetails = async (): Promise<any | null> => {
 export const SendParcelData = async (data: {
     sender: {
       phone: string;
-      fullName: string;
+      fullName?: string;
       email: string;
       address: string;
     };
     receiver: {
       phone: string;
       fullName: string;
-      email: string;
+      email?: string;
       address: string;
     };
     park: {
@@ -110,12 +112,12 @@ export const ParcelInDriver = async (data: {
     description: string;
     thumbnails: string[];
   };
-  driver: {
-    phone: string;
-    // name: string;
-    // driverId: string;
-    // upfrontPayment: boolean;
-  };
+  // driver: {
+  //   phone: string;
+  //   // name: string;
+  //   // driverId: string;
+  //   // upfrontPayment: boolean;
+  // };
   paymentOption: string;
   }) => {
     try {
@@ -165,7 +167,29 @@ export const getSingleParcelData = async (parcelId:any) => {
 export const getShipmentsHistory = async () => {
     try {
         const token = await getToken()
-      const response = await fetch(`${apiKey}/shipment?startDate=2025-01-15&endDate=2025-12-03`, {
+      const response = await fetch(`${apiKey}/shipment?startDate=2025-01-15&endDate=2025-12-03&agent=true`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get parcel failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+export const getAllParcel = async (phone:string) => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/shipment?startDate=2025-01-15&endDate=2025-12-03&phoneNumber=${phone}&agent=true`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

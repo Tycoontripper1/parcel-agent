@@ -7,25 +7,45 @@ import { HomeStackList } from "@/navigation/navigationType";
 import { RootState } from "@/redux/store";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import {
   View,
   StyleSheet,
   Image,
   TouchableOpacity,
+  TextInput,
   ViewStyle,
 } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 import { ParcelInDriver } from "../../../../../../services/parcel";
-import { resetForm } from "@/redux/slices/parcelSlice";
+import { resetForm, updateField } from "@/redux/slices/parcelSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Icon } from "iconsax-react-native";
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
   const formData = useSelector((state: RootState) => state.parcel);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  // Sender Phone Edit States
+  const [editingSenderPhone, setEditingSenderPhone] = useState(false);
+  const [editedSenderPhone, setEditedSenderPhone] = useState(
+    formData.senderPhoneNumber
+  );
+  // Receiver Phone Edit States
+  const [editingReceiverPhone, setEditingReceiverPhone] = useState(false);
+  const [editedReceiverPhone, setEditedReceiverPhone] = useState(
+    formData.receiverPhoneNumber
+  );
+
+  // Driver Phone Edit States
+  const [editingDriverPhone, setEditingDriverPhone] = useState(false);
+  const [editedDriverPhone, setEditedDriverPhone] = useState(
+    formData.driverNumber
+  );
+
   const HandleContinue = async () => {
     setLoading(true);
     try {
@@ -61,12 +81,12 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
           description: formData.parcelDescription,
           thumbnails: formData.parcelImages || [],
         },
-        driver: {
-          phone: formData.driverNumber?.replace(/-/g, ""),
-          name: formData.driverName,
-        },
+        // driver: {
+        //   phone: formData.driverNumber?.replace(/-/g, ""),
+        //   name: formData.driverName,
+        // },
         paymentOption: "bank",
-        status: "arrived" 
+        status: "arrived",
       };
 
       const result = await ParcelInDriver(payload);
@@ -140,24 +160,52 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
           <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Sender's Information
           </Text>
-          <View
-            style={{
-              backgroundColor: "white",
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
+          <View style={styles.infoContainer}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>
-                {formData.senderPhoneNumber.replace(/-/g, "")}
-              </Text>
+              {editingSenderPhone ? (
+                <TextInput
+                  style={styles.input}
+                  value={editedSenderPhone}
+                  onChangeText={setEditedSenderPhone}
+                  autoFocus
+                  onBlur={() => {
+                    dispatch(
+                      updateField({
+                        key: "senderPhoneNumber",
+                        value: editedSenderPhone,
+                      })
+                    );
+                    setEditingSenderPhone(false);
+                  }}
+                  onSubmitEditing={() => {
+                    dispatch(
+                      updateField({
+                        key: "senderPhoneNumber",
+                        value: editedSenderPhone,
+                      })
+                    );
+                    setEditingSenderPhone(false);
+                  }}
+                  keyboardType="phone-pad"
+                />
+              ) : (
+                <View style={styles.editableRow}>
+                  <Text style={styles.infoText}>
+                    {formData.senderPhoneNumber.replace(/-/g, "")}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEditedSenderPhone(formData.senderPhoneNumber);
+                      setEditingSenderPhone(true);
+                    }}
+                    style={styles.editButton}
+                  >
+              
+                    <AntDesign name="edit" size={20} color="#4A90E2" />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -167,52 +215,108 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
           <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Receiver's Information
           </Text>
-          <View
-            style={{
-              backgroundColor: "white",
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
+          <View style={styles.infoContainer}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>
-                {formData.receiverPhoneNumber.replace(/-/g, "")}
-              </Text>
+              {editingReceiverPhone ? (
+                <TextInput
+                  style={styles.input}
+                  value={editedReceiverPhone}
+                  onChangeText={setEditedReceiverPhone}
+                  autoFocus
+                  onBlur={() => {
+                    dispatch(
+                      updateField({
+                        key: "receiverPhoneNumber",
+                        value: editedReceiverPhone,
+                      })
+                    );
+                    setEditingReceiverPhone(false);
+                  }}
+                  onSubmitEditing={() => {
+                    dispatch(
+                      updateField({
+                        key: "receiverPhoneNumber",
+                        value: editedReceiverPhone,
+                      })
+                    );
+                    setEditingReceiverPhone(false);
+                  }}
+                  keyboardType="phone-pad"
+                />
+              ) : (
+                <View style={styles.editableRow}>
+                  <Text style={styles.infoText}>
+                    {formData.receiverPhoneNumber.replace(/-/g, "")}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEditedReceiverPhone(formData.receiverPhoneNumber);
+                      setEditingReceiverPhone(true);
+                    }}
+                    style={styles.editButton}
+                  >
+                   <AntDesign name="edit" size={20} color="#4A90E2" />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </View>
         </View>
 
         {/* Driver's Detail */}
-        <View style={styles.sectionContainer}>
+        {/* <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Driver's Information
           </Text>
-          <View
-            style={{
-              backgroundColor: "white",
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
+          <View style={styles.infoContainer}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>{formData.driverNumber.replace(/-/g, "")}</Text>
+              {editingDriverPhone ? (
+                <TextInput
+                  style={styles.input}
+                  value={editedDriverPhone}
+                  onChangeText={setEditedDriverPhone}
+                  autoFocus
+                  onBlur={() => {
+                    dispatch(
+                      updateField({
+                        key: "driverNumber",
+                        value: editedDriverPhone,
+                      })
+                    );
+                    setEditingDriverPhone(false);
+                  }}
+                  onSubmitEditing={() => {
+                    dispatch(
+                      updateField({
+                        key: "driverNumber",
+                        value: editedDriverPhone,
+                      })
+                    );
+                    setEditingDriverPhone(false);
+                  }}
+                  keyboardType="phone-pad"
+                />
+              ) : (
+                <View style={styles.editableRow}>
+                  <Text style={styles.infoText}>
+                    {formData.driverNumber.replace(/-/g, "")}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEditedDriverPhone(formData.driverNumber);
+                      setEditingDriverPhone(true);
+                    }}
+                    style={styles.editButton}
+                  >
+                    <AntDesign name="edit" size={20} color="#4A90E2" />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </View>
-        </View>
+        </View> */}
         {/* Park Detail */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader} font="SemiBold" size={14}>
@@ -288,7 +392,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Parcel Worth:</Text>
-              <Text style={styles.infoText}>{formData.parcelValue}</Text>
+              <Text style={styles.infoText}>₦{formData.parcelValue}</Text>
             </View>
             <View
               style={{
@@ -300,7 +404,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Charges Payable:</Text>
-              <Text style={styles.infoText}>{formData.chargesPayable}</Text>
+              <Text style={styles.infoText}>₦{formData.chargesPayable}</Text>
             </View>
             <View
               style={{
@@ -310,9 +414,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Handling Fee:</Text>
-              <Text style={styles.infoText}>
-                {formData.handlingFee}
-              </Text>
+              <Text style={styles.infoText}>₦{formData.handlingFee}</Text>
             </View>
             <View
               style={{
@@ -323,11 +425,12 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
             >
               <Text style={styles.infoText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-              {formData.handlingFee && formData.chargesPayable
-              ? String(
-                  Number(formData.handlingFee) + Number(formData.chargesPayable)
-                )
-              : ""}
+              ₦{formData.handlingFee && formData.chargesPayable
+                  ? String(
+                      Number(formData.handlingFee) +
+                        Number(formData.chargesPayable)
+                    )
+                  : ""}
               </Text>
             </View>
           </View>
@@ -465,6 +568,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "gray",
     marginBottom: 20,
+  },
+  // editing styles
+  infoContainer: {
+    backgroundColor: "white",
+    padding: RFValue(6),
+    borderRadius: 8,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  editableRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  editButton: {
+    marginLeft: RFValue(8),
+  },
+  input: {
+    fontSize: RFValue(12),
+    color: "#717680",
+    padding: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E9EAEB",
+    textAlign: "right",
+    flex: 1,
   },
 });
 

@@ -347,28 +347,46 @@ const transactions: Transaction[] = [
                         Charges
                       </Text>
                       <Text size={12}>₦{item.amount}</Text>
-                      <View
+ <View
                         style={{
                           backgroundColor:
-                            item.status === 'Arrived'
-                              ? '#F7F9FC'
-                              : item.status === 'Delivered'
-                              ? '#ECFDF3'
-                              : '#FFF6ED',
-                          justifyContent: 'center',
-                          flexDirection: 'row',
+                            item.status === "unassigned"
+                              ? "#FFEAD5"
+                              : item.status === "assigned"
+                              ? "#E0F2FE"
+                              : item.status === "arrived"
+                              ? "#EBE9FE"
+                              : item.status === "overdue"
+                              ? "#FEE2E2"
+                              : item.status === "received"
+                              ? "#DFFCE9"
+                              : "#E5E7EB", // default fallback
+                          justifyContent: "center",
+                          flexDirection: "row",
                           borderRadius: 8,
-                        }}>
+                           padding: 4,
+                        }}
+                      >
                         <Text
                           size={10}
                           color={
-                            item.status === 'Arrived'
-                              ? '#213264'
-                              : item.status === 'Delivered'
-                              ? '#12B76A'
-                              : '#FB6514'
-                          }>
-                          {item.status}{' '}
+                            item.status === "unassigned"
+                              ? "#FB6514"
+                              : item.status === "assigned"
+                              ? "#0284C7"
+                              : item.status === "arrived"
+                              ? "#7A5AF8"
+                              : item.status === "overdue"
+                              ? "#DC2626"
+                              : item.status === "received"
+                              ? "#12B76A"
+                              : "#374151" // default fallback
+                          }
+                        >
+                          {item.status === "received"
+                            ? "Collected"
+                            : item.status.charAt(0).toUpperCase() +
+                              item.status.slice(1)}
                         </Text>
                       </View>
                     </View>

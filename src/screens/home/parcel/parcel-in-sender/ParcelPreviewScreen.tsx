@@ -33,14 +33,14 @@ const dispatch = useDispatch();
       const payload = {
         sender: {
           phone: formData.senderPhoneNumber.replace(/-/g, ''),
-          fullName: formData.senderFullName,
+          // fullName: formData.senderFullName,
           email: formData.senderEmail,
           address: formData.senderAddress,
         },
         receiver: {
           phone: formData.receiverPhoneNumber.replace(/-/g, ''),
           fullName: formData.receiverFullName,
-          email: formData.receiverEmail,
+          // email: formData.receiverEmail,
           address: formData.receiverAddress,
         },
         park: {
@@ -118,7 +118,7 @@ const dispatch = useDispatch();
               padding: RFValue(6),
               borderRadius: 8,
             }}>
-            <View
+            {/* <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -126,7 +126,7 @@ const dispatch = useDispatch();
               }}>
               <Text style={styles.infoText}>Name: </Text>
               <Text style={styles.infoText}>{formData.senderFullName} </Text>
-            </View>
+            </View> */}
             <View
               style={{
                 flexDirection: 'row',
@@ -177,7 +177,7 @@ const dispatch = useDispatch();
               <Text style={styles.infoText}>Name: </Text>
               <Text style={styles.infoText}>{formData.receiverFullName} </Text>
             </View>
-            <View
+            {/* <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -185,7 +185,7 @@ const dispatch = useDispatch();
               }}>
               <Text style={styles.infoText}>Email: </Text>
               <Text style={styles.infoText}>{formData.receiverEmail} </Text>
-            </View>
+            </View> */}
             <View
               style={{
                 flexDirection: 'row',
@@ -277,7 +277,7 @@ const dispatch = useDispatch();
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.infoText}>Parcel Worth:</Text>
-              <Text style={styles.infoText}>{formData.parcelValue}</Text>
+              <Text style={styles.infoText}>₦{formData.parcelValue}</Text>
             </View>
             <View
               style={{
@@ -288,7 +288,7 @@ const dispatch = useDispatch();
                 borderBottomColor: '#E9EAEB',
               }}>
               <Text style={styles.infoText}>Charges Payable:</Text>
-              <Text style={styles.infoText}>{formData.chargesPayable}</Text>
+              <Text style={styles.infoText}>₦{formData.chargesPayable}</Text>
             </View>
             <View
               style={{
@@ -298,7 +298,7 @@ const dispatch = useDispatch();
               }}>
               <Text style={styles.infoText}>Handling Fee:</Text>
               <Text style={styles.infoText}>
-                  {formData.handlingFee}
+              ₦{formData.handlingFee}
               </Text>
             </View>
             <View
@@ -309,7 +309,7 @@ const dispatch = useDispatch();
               }}>
               <Text style={styles.infoText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-                {parseFloat(formData.parcelValue) + parseFloat(formData.chargesPayable)}
+              ₦{parseFloat(formData.handlingFee) + parseFloat(formData.chargesPayable)}
               </Text>
             </View>
           </View>
@@ -359,7 +359,7 @@ const dispatch = useDispatch();
             onPress={HandleParcelInSender}
             title='Receive Parcel'
             style={{height: 55}}
-            disabled={!formData.parcelDescription}
+            disabled={!formData.handlingFee}
           />
         </View>
       </KeyBoardView>

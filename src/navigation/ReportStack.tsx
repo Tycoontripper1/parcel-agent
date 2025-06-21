@@ -21,6 +21,8 @@ import UnpaidParcelHistory from '@/screens/reports/store/unpaid-parcel/UnpaidPar
 import UnPaidParcelDetails from '@/screens/reports/store/unpaid-parcel/UnpaidParcelDetails';
 import PrintParcel from '@/components/PrintParcel';
 import PrintParcelItem from '@/components/printParcelItem';
+import { HomeShipmentHistoryScreen } from '@/components/HomeShipmentHistoryScreen';
+import ReceiverType from '@/screens/home/parcel/parcel-out-receiver/ReceiverType';
 
 import ParcelCongratulation from '@/screens/home/parcel/ParcelCongratulation';
 const Report = createStackNavigator<ReportStackList>();
@@ -140,6 +142,16 @@ const ReportStack = ({navigation}: Props) => {
             <Report.Screen
               name='ParcelCongratulation'
               component={ParcelCongratulation}
+              options={{headerShown: false}}
+            />
+            <Report.Screen
+              name='HomeShipmentHistory'
+              component={HomeShipmentHistoryScreen}
+              options={{headerShown: false}}
+            />
+            <Report.Screen
+              name='ReceiverType'
+              component={ReceiverType}
               options={{headerShown: false}}
             />
     </Report.Navigator>

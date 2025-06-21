@@ -4,6 +4,7 @@ import { CustomView, Spinner, Text } from "@/components";
 import ButtonHome from "@/components/ButtonHome";
 import KeyBoardView from "@/components/KeyBoardView";
 import { RootState } from "@/redux/store";
+import Barcode from "@kichiyaki/react-native-barcode-generator";
 import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
@@ -496,7 +497,7 @@ const PrintParcel = ({ navigation }: Props) => {
 
           {/* Barcode */}
           <View style={styles.barcodeContainer}>
-            {/* <Barcode
+            <Barcode
               format="CODE128"
               value={parcelDetails?.parcelId || "2222"}
               text={parcelDetails?.parcelId ? parcelDetails?.parcelId : "lintangwisesa"}
@@ -506,26 +507,40 @@ const PrintParcel = ({ navigation }: Props) => {
               background="#fffff"
               lineColor="#000"
               width={2}
-            /> */}
+            />
           </View>
-          <Image
+          {/* <Image
             source={{ uri: `data:image/png;base64,${parcelDetails?.qrImage}` }}
             style={{ width: Dimensions.get("window").width / 1.5, height: 100 }}
             resizeMode="contain"
-          />
+          /> */}
         </ViewShot>
         <View style={$buttonsContainer}>
           <ButtonHome
             onPress={handlePrint}
             title="Print Parcel Slip"
-            style={{ height: 55 }}
+            style={{ height: 50 }}
           />
         </View>
         <View style={$buttonsContainer}>
           <ButtonHome
+            onPress={() => navigation.navigate("ParcelInDriverUnRegistered")}
+            title="Register New Parcel"
+            style={{ height: 50 }}
+          />
+        </View>
+        {/* <View style={$buttonsContainer}>
+          <ButtonHome
             onPress={handleExportPDF}
             title="Save as PDF"
             style={{ height: 55 }}
+          />
+        </View> */}
+        <View style={$buttonsContainer}>
+          <ButtonHome
+            onPress={() => navigation.navigate("Dashboard")}
+            title="Go Back to Home"
+            style={{ height: 50 }}
           />
         </View>
       </KeyBoardView>

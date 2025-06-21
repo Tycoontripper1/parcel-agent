@@ -32,7 +32,7 @@ export type AuthStackParamList = {
   ResetMethod: undefined;
   ResetPasswordWithEmail: undefined;
   ResetPasswordWithPhone: undefined;
-  ResetPasswordWithEmailConfirm: undefined;
+  ResetPasswordWithEmailConfirm: {email: string};
   ResetPasswordWithPhoneConfirm: {phone: string};
   ResetPasswordComplete: {otp: string};
   CreateAccountScreen: undefined;
@@ -73,9 +73,10 @@ export type HomeStackList = {
   ReceiverType: undefined;
   ParcelReceiverOutPreviewScreen: undefined;
   ParcelOutReceiver: {readOnly:boolean};
-  ParcelOtpVerificationReceiver: undefined;
+  ParcelOtpVerificationReceiver: {readonly:boolean};
   ParcelCongratulation: {message: string, note: string};
   BarcodeScannerScreen: undefined;
+  UnAssignParcelDetails: {item: any};
 };
 export type WalletStackList = {
   Wallet: undefined;
@@ -116,7 +117,14 @@ export type ReportStackList = {
   ReceivedParcelHistory: undefined;
   PrintParcel: undefined;
   PrintParcelItem: undefined;
+  ReceiverType: undefined;
+
   ParcelCongratulation: {message: string, note: string};
+    HomeShipmentHistory: {
+    searchQuery: string;
+    onViewAll: () => void;
+    limit?: number;
+  };
 };
 export type DriverStackList = {
   Drivers: undefined;

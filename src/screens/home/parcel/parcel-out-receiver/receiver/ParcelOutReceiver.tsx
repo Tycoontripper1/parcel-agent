@@ -34,53 +34,54 @@ const ParcelOutReceiver = ({ navigation, route }: Props) => {
     };
     fetchUser();
   }, []);
-  const parcelId = singleParcel?.id
+  const parcelId = singleParcel?.id;
 
-    const handleSubmit = async () => {
-      setLoading(true);
-      try {
-            const payload = {
-              collector:{
-                fullName:   singleParcel && readOnly
-                ? singleParcel.receiver.fullName
-                : formData.receiverFullName,
-                phone:  singleParcel && readOnly
-                ? singleParcel.receiver.phone
-                : formData.receiverPhoneNumber,
-              }
-            };
-             const token = await getToken()
-                  const response = await fetch(`${apiKey}/shipment/${parcelId}`, {
-                    method: 'PATCH',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(payload),
-                  
-                  });
-              
-                  const result = await response.json();
-            setLoading(false)
-            Helper.vibrate();
-            Toast.show({
-              type: "success",
-              text1: "Success",
-              text2: result?.message || " Parcel Updated!",
-            });
-            navigation.navigate("ParcelOtpVerificationReceiver");
-        }catch (error: any) {
-            console.error("Save Error:", error);
-            Toast.show({
-              type: "error",
-              text1: "Error",
-              text2: error?.message || "Something went wrong!",
-            });
-          } finally {
-            setLoading(false);
-          }
-  
-    };
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        collector: {
+          fullName:
+            singleParcel && readOnly
+              ? singleParcel.receiver.fullName
+              : formData.receiverFullName,
+          phone:
+            singleParcel && readOnly
+              ? singleParcel.receiver.phone
+              : formData.receiverPhoneNumber,
+          dateCollected: new Date().toISOString(),
+        },
+      };
+      const token = await getToken();
+      const response = await fetch(`${apiKey}/shipment/${parcelId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      setLoading(false);
+      Helper.vibrate();
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: result?.message || " Parcel Updated!",
+      });
+      // navigation.navigate("ParcelOtpVerificationReceiver");
+    } catch (error: any) {
+      console.error("Save Error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error?.message || "Something went wrong!",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const $bodyHeader: ViewStyle = {
     flexDirection: "column",
@@ -145,7 +146,11 @@ const ParcelOutReceiver = ({ navigation, route }: Props) => {
 
         <View style={$buttonsContainer}>
           <ButtonHome
-            onPress={handleSubmit}
+            onPress={() =>
+              navigation.navigate("ParcelOtpVerificationReceiver", {
+                readonly: readOnly,
+              })
+            }
             title="Continue"
             style={{ height: 55 }}
             // disabled={

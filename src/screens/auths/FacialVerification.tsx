@@ -23,7 +23,6 @@ import Toast from 'react-native-toast-message';
 import {useDispatch} from 'react-redux';
 import { useSelector } from 'react-redux';
 import { updateUserKyc } from '../../../services/auth';
-import { uploadSingleImage } from '../../../services/upload';
 import { getUser } from '../../../services/auth';
 
 const {width, height} = Dimensions.get('window');
@@ -78,6 +77,32 @@ const FacialVerification = ({navigation}: Props) => {
       }
     }
   };
+//   const capturePhoto = async () => {
+//   if (cameraRef.current) {
+//     try {
+//       const photo = await cameraRef.current.takePictureAsync({
+//         quality: 0.5,
+//         base64: true, // ✅ Return base64 instead of file URI
+//       });
+
+//       if (photo?.base64) {
+//         const base64Image = `data:image/jpeg;base64,${photo.base64}`;
+//         setCapturedImage(base64Image); // Store base64 string for preview
+//         dispatch(
+//           updateField({
+//             key: 'facialVerificationImage',
+//             value: photo.base64, // ✅ Store base64 string
+//           })
+//         );
+//       } else {
+//         console.error('Failed to capture photo or base64 missing');
+//       }
+//     } catch (error:any) {
+//       console.error('Error capturing photo:', error.message || error);
+//     }
+//   }
+// };
+
   console.log(facialVerificationImage, 'facialVerificationImage');
   console.log("hello")
 
@@ -91,18 +116,20 @@ const FacialVerification = ({navigation}: Props) => {
     try {
       console.log(facialVerificationImage, 'facialVerificationImage');
       
-    const userImageUrl = await uploadSingleImage(facialVerificationImage, username);
-      console.log(userImageUrl, 'userImageUrl');
+    // const userImageUrl = await upload([facialVerificationImage]);
+    //   console.log(userImageUrl, 'userImageUrl');
       const payload = {
         businessName: businessName,
         state: state,
         address: address,
-        location: location,
+        parkLocation: location,
         store: store === "Yes" ? true : false,
         identificationType: idType,
         identificationNumber: idNumber,
         identificationImages: [idFrontImage, idBackImage],
-        userImage: userImageUrl?.data.url
+        userImage: facialVerificationImage, // ✅ Use the first image URL from the array
+        // userImage: userImageUrl?.data?.images[0], // ✅ Use the first image URL from the array
+        // userImage: userImageUrl?.data.url
       };
       console.log(payload, 'payload');
   

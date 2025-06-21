@@ -528,6 +528,13 @@ const PrintParcelItem = ({ navigation }: Props) => {
             style={{ height: 55 }}
           />
         </View>
+        <View style={$buttonsContainer}>
+          <ButtonHome
+            onPress={() => navigation.navigate("Dashboard")}
+            title="Go Back to Home"
+            style={{ height: 55 }}
+          />
+        </View>
       </KeyBoardView>
     </CustomView>
   );

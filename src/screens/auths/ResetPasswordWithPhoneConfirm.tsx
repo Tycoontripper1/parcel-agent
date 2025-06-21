@@ -12,6 +12,8 @@ import Toast from 'react-native-toast-message';
 import ResendOTP from './ResendOTP';
 import {RouteProp} from '@react-navigation/native';
 import {AuthStackParamList} from '@/navigation/navigationType';
+import { verifyOtpAccount, verifyOtpAccountReset } from '../../../services/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Props {
   navigation: NativeStackNavigationProp<AuthStackParamList>;
@@ -39,20 +41,80 @@ const ResetPasswordWithPhoneConfirm = ({navigation, route}: Props) => {
     }, 2000);
   };
 
-  const handleConfirm = () => {
+  // const handleConfirm = () => {
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //     Toast.show({
+  //       type: 'success',
+  //       text1: 'Success',
+  //       text2: `OTP confirm successfully, ${otp}`,
+  //     });
+  //     navigation.replace('ResetPasswordComplete', {
+  //       otp: otp,
+  //     });
+  //   }, 2000);
+  // };
+
+  const handleConfirm = async () => {
+    if (!otp || otp.length < 4) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid OTP',
+        text2: 'Please enter a valid 4-digit code.',
+      });
+      return;
+    }
+  
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+  
+    try {
+      const payload = {
+        otp,
+        emailPhone: route.params?.phone, // Use the phone number from route params, 
+        
+        
+        
+      };
+      console.log(payload, 'payload');
+  
+      const result = await verifyOtpAccountReset(payload);
+      console.log('OTP verification result:', result);
+  
+      // Extract and store token and user details
+      const token = result?.data?.token;
+  
+      if (token) {
+        await AsyncStorage.setItem('token', token);
+      }
+  
       Toast.show({
         type: 'success',
-        text1: 'Success',
-        text2: `OTP confirm successfully, ${otp}`,
+        text1: 'Verified',
+        text2: result?.data?.message || 'OTP verified successfully',
       });
-      navigation.replace('ResetPasswordComplete', {
+  
+       navigation.replace('ResetPasswordComplete', {
         otp: otp,
       });
-    }, 2000);
+    } catch (error: any) {
+      console.error('OTP verify error:', error);
+  
+      Toast.show({
+        type: 'error',
+        text1: 'Verification Failed',
+        text2: error.message || 'Invalid or expired OTP',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+
+
+
+
+
   const {theme} = useTheme();
   // Styles
   const $container: ViewStyle = {

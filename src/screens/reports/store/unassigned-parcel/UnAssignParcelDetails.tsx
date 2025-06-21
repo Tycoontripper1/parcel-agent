@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from "react-native";
-import { ReportStackList } from "@/navigation/navigationType";
+import { HomeStackList, ReportStackList } from "@/navigation/navigationType";
 import { RouteProp } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useSelector } from "react-redux";
@@ -20,9 +20,13 @@ import HomeHeader from "@/components/share/HomeHeader";
 import { Avatar } from "../../../../../assets/images";
 import PaymentOption from "@/components/PaymentOption";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { format } from 'date-fns';
 
 // Define the props correctly
-type Props = NativeStackScreenProps<ReportStackList, "UnAssignParcelDetails">;
+type Props = NativeStackScreenProps<
+  HomeStackList & ReportStackList,
+  "UnAssignParcelDetails"
+>;
 
 const UnAssignParcelDetails = ({ route, navigation }: Props) => {
   const { item } = route.params; // Get item from route params
@@ -32,9 +36,24 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
   const formattedDate = `${date.getDate()}-${
     date.getMonth() + 1
   }-${date.getFullYear()}`;
-  const formattedTime = `${date.getHours()}:${
+  const collectedDate = item?.collector?.dateCollected;
+  const dates = new Date(collectedDate);
+  const formattedCollectedDate = `${dates.getDate()}-${
+    date.getMonth() + 1
+  }-${date.getFullYear()}`;
+
+
+
+
+
+  
+  const formattedTime = `${date?.getHours()}:${
     date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
   } ${date.getHours() < 12 ? "AM" : "PM"}`;
+  
+  const collectedTime = `${dates?.getHours()}:${
+    dates?.getMinutes() < 10 ? "0" + dates?.getMinutes() : dates?.getMinutes()
+  } ${dates?.getHours() < 12 ? "AM" : "PM"}`;
 
   const [selectedOption, setSelectedOption] = useState<string>("Online");
   const [selectedPaymentAnswer, setSelectedPaymentAnswer] = useState<
@@ -52,6 +71,29 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
       console.error("Error storing item in AsyncStorage:", error);
     }
   };
+
+
+  const handleNext = async () => {
+    try {
+      // Store the item in AsyncStorage as a JSON string
+      await AsyncStorage.setItem("singleParcelData", JSON.stringify(item));
+      console.log(item);
+      if (item.status === "unassigned") {
+        navigation.navigate("SearchParcelOutDriverId");
+      } else if (item.status === "arrived") {
+        navigation.navigate("ReceiverType");
+      }
+    } catch (error) {
+      console.error("Error storing item in AsyncStorage:", error);
+    }
+  };
+
+  const title =
+    item.status === "unassigned"
+      ? "Assign Parcel"
+      : item.status === "arrived"
+      ? "Release Parcel"
+      : "";
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -152,9 +194,12 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                       ? "#12B76A"
                       : "#374151", // default fallback
                   fontSize: 10,
+                  textAlign: "center",
                 }}
               >
-                {item.status}
+                {item.status === "received"
+                  ? "Collected"
+                  : item.status.charAt(0).toUpperCase() + item.status.slice(1)}
               </Text>
             </View>
           </View>
@@ -184,6 +229,33 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
             <View style={{ padding: 4, borderRadius: 8 }}>
               <Text size={12}>
                 Time: <Text color="#717680">{formattedTime}</Text>
+              </Text>
+            </View>
+          </View>
+        </View>
+ <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingVertical: 6,
+            padding: RFValue(16),
+          }}
+        >
+          <Text size={12}>
+           Collected Date: <Text color="#717680">{""}</Text>
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <View style={{ padding: 4, borderRadius: 8 }}>
+              <Text size={12}>
+                Time: <Text color="#717680">{'' }</Text>
               </Text>
             </View>
           </View>
@@ -373,7 +445,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Parcel Worth:</Text>
-              <Text style={styles.infoText}>{item.parcel.value}</Text>
+              <Text style={styles.infoText}>₦{item.parcel.value}</Text>
             </View>
             <View
               style={{
@@ -385,7 +457,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
               }}
             >
               <Text style={styles.infoText}>Charges Payable:</Text>
-              <Text style={styles.infoText}>{item.parcel.chargesPayable}</Text>
+              <Text style={styles.infoText}>₦{item.parcel.chargesPayable}</Text>
             </View>
           </View>
         </View>
@@ -434,6 +506,14 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
             style={{ height: 55 }}
           />
         </View>
+      {(item.status === "unassigned" || item.status === "arrived") && (
+             <View style={$buttonsContainer}>
+          <ButtonHome
+            onPress={handleNext}
+            title={title}
+            style={{ height: 55 }}
+          />
+        </View>)}
       </KeyBoardView>
     </CustomView>
   );

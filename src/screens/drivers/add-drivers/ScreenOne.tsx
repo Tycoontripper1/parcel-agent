@@ -152,8 +152,9 @@ const ScreenOne = ({ navigation }: Props) => {
 
       const result = await onboardingDriver(DriverOnboardingPayload);
       console.log(result, "✅ Driver Onooarded");
+
       await AsyncStorage.setItem("driver", JSON.stringify(result?.data?.details));
-      await AsyncStorage.setItem("driverId", result?.data?.id);
+      await AsyncStorage.setItem("driverId", result?.data?.details?.id);
 
       Helper.vibrate(); 
       Toast.show({

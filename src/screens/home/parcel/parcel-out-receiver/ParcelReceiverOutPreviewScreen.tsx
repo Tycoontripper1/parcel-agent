@@ -261,7 +261,7 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.descriptionText}>Parcel Worth:</Text>
-              <Text style={styles.infoText}>{singleParcel?.parcel.value}</Text>
+              <Text style={styles.infoText}>₦{singleParcel?.parcel.value}</Text>
             </View>
             <View
               style={{
@@ -272,7 +272,7 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
                 borderBottomColor: '#E9EAEB',
               }}>
               <Text style={styles.descriptionText}>Charges Payable:</Text>
-              <Text style={styles.infoText}>{singleParcel?.parcel.chargesPayable}</Text>
+              <Text style={styles.infoText}>₦{singleParcel?.parcel.chargesPayable}</Text>
             </View>
             <View
               style={{
@@ -282,7 +282,7 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
               }}>
               <Text style={styles.descriptionText}>Handling Fee:</Text>
               <Text style={styles.infoText}>
-                {(Number(singleParcel?.parcel.handlingFee)  || 0)}
+              ₦{(Number(singleParcel?.parcel.handlingFee)  || 0)}
               </Text>
             </View>
             <View
@@ -293,7 +293,7 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
               }}>
               <Text style={styles.descriptionText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-              {(Number(singleParcel?.parcel.handlingFee) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
+              ₦{(Number(singleParcel?.parcel.handlingFee) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
               </Text>
             </View>
           </View>
@@ -369,7 +369,7 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
         <View style={$buttonsContainer}>
           <ButtonHome
             onPress={HandleContinue}
-            title='Accept Parcel'
+            title='Release Parcel'
             style={{height: 55}}
           />
         </View>

@@ -2,8 +2,9 @@
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
- export const BASE_URL = ' http://45.9.191.184:8001/parcel/v1.0/api'; // change this
- const apiKey = Constants.expoConfig?.extra?.apiKey;
+ export const BASE_URL = 'https://1746-41-173-243-171.ngrok-free.app/parcel/v1.0/api'; // change this
+//  const apiKey = Constants.expoConfig?.extra?.apiKey;
+export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
 
  export const getToken = async (): Promise<string | null> => {
   try {
@@ -96,7 +97,65 @@ export const uploadBulkImages = async (images: string[], username: string) => {
   
     return result;
   };
+
+
   
+export const upload = async (uris: string[]) => {
+  console.log('Received uris:', JSON.stringify(uris, null, 2));
+  const token = await getToken();
+  console.log(token,"token")
+  const formData = new FormData();
+
+  uris.forEach((imageUri, index) => {
+    formData.append('files', {
+      uri: imageUri,
+      name: `image_${index}.jpg`,
+      type: 'image/jpeg',
+      
+    } as any, `image_${index}.jpg`);
+  });
+
+  console.log(formData, 'formData upload');
+
+  const response = await fetch(`${apiKey}/files`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+    body: formData,
+    // body: JSON.stringify({ files: formData }), // Use JSON.stringify if your API expects a JSON body
+  });
+
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to upload file(s)');
+  }
+
+  return result;
+};
+  
+export const getImage = async (imageSlug: string[]) => {
+  const token = await getToken();
+
+
+  const response = await fetch(`${apiKey}/files?slugs=${imageSlug}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+ 
+  });
+
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to upload file(s)');
+  }
+
+  return result;
+};
+
+
   
   // export const uploadSingleImage = async (base64: string, username: string) => {
   //   const token = await getToken();

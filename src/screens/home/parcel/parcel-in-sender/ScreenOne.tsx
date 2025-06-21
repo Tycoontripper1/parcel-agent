@@ -107,10 +107,10 @@ const ScreenOne = ({ navigation }: Props) => {
       isValid = false;
     }
 
-    if (!formData.senderFullName.trim()) {
-      newErrors.senderFullName = "Sender's full name is required.";
-      isValid = false;
-    }
+    // if (!formData.senderFullName.trim()) {
+    //   newErrors.senderFullName = "Sender's full name is required.";
+    //   isValid = false;
+    // }
 
     if (!formData.senderAddress.trim()) {
       newErrors.senderAddress = "Sender's address is required.";
@@ -251,7 +251,7 @@ const ScreenOne = ({ navigation }: Props) => {
             errorMessage={formErrors.senderPhoneNumber}
           />
 
-          <Input
+          {/* <Input
             label="Full Name"
             placeholder="Enter full name"
             placeholderTextColor="#B8C2CC"
@@ -261,6 +261,17 @@ const ScreenOne = ({ navigation }: Props) => {
             }
             keyboardType="default"
             errorMessage={formErrors.senderFullName}
+          /> */}
+                    <Input
+            label="Address"
+            placeholder="Enter address"
+            placeholderTextColor="#B8C2CC"
+            value={formData.senderAddress}
+            onChangeText={(value) =>
+              dispatch(updateField({ key: "senderAddress", value }))
+            }
+            keyboardType="default"
+            errorMessage={formErrors.senderAddress}
           />
           <Input
             label="Email Address (Optional)"
@@ -272,17 +283,7 @@ const ScreenOne = ({ navigation }: Props) => {
             }
             keyboardType="email-address"
           />
-          <Input
-            label="Address"
-            placeholder="Enter address"
-            placeholderTextColor="#B8C2CC"
-            value={formData.senderAddress}
-            onChangeText={(value) =>
-              dispatch(updateField({ key: "senderAddress", value }))
-            }
-            keyboardType="default"
-            errorMessage={formErrors.senderAddress}
-          />
+
 
           <Text size={18} style={{ paddingTop: 15, paddingBottom: 10 }}>
             Receiver’s Information
@@ -317,7 +318,7 @@ const ScreenOne = ({ navigation }: Props) => {
             keyboardType="default"
             errorMessage={formErrors.receiverFullName}
           />
-          <Input
+          {/* <Input
             label="Email Address (Optional)"
             placeholder="Enter email"
             placeholderTextColor="#B8C2CC"
@@ -326,7 +327,7 @@ const ScreenOne = ({ navigation }: Props) => {
               dispatch(updateField({ key: "receiverEmail", value }))
             }
             keyboardType="email-address"
-          />
+          /> */}
           <Input
             label="Address"
             placeholder="Enter address"

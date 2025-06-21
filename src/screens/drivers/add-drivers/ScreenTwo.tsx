@@ -5,6 +5,7 @@ import StepProgress from "@/components/share/StepProgress";
 import ShootButton from "@/components/svg/ShootButton";
 import { color } from "@/constants/Colors";
 import { Helper } from "@/helper/helper";
+import { Buffer } from "buffer";
 import {
   AuthStackParamList,
   DriverStackList,
@@ -29,8 +30,9 @@ import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 import SwapCameraIcon from "@/components/svg/SwapCameraIcon";
 import GalleryIcon from "@/components/svg/Gallery";
-import { uploadSingleImage } from "../../../../services/upload";
+import { upload, uploadSingleImage } from "../../../../services/upload";
 import { getUser } from "../../../../services/auth";
+import { buffer } from "stream/consumers";
 
 const { width } = Dimensions.get("window");
 
@@ -80,7 +82,7 @@ const FacialVerification = ({ navigation }: Props) => {
         if (photo) {
           setCapturedImage(photo.uri);
           dispatch(
-            updateField({ key: "facialVerificationImage", value: photo.uri })
+            updateField({ key: "facialVerificationImage", value: photo.uri }) //change to
           );
         }
       } catch (error) {
@@ -125,17 +127,16 @@ const FacialVerification = ({ navigation }: Props) => {
     const username = userDetails?.firstName;
 
     try {
-      const userImageUrl = await uploadSingleImage(
-        facialVerificationImage,
-        username
+      const userImageUrl = await upload(
+        [facialVerificationImage],
       );
       console.log(userImageUrl, "userImageUrl");
-      if (userImageUrl?.data.url) {
+      if (userImageUrl?.data.details) {
         // Update Redux with the URLs
         dispatch(
           updateField({
             key: "facialVerificationImage",
-            value: userImageUrl?.data.url,
+            value: userImageUrl?.data.details[0],
           })
         );
       }
@@ -150,7 +151,7 @@ const FacialVerification = ({ navigation }: Props) => {
 
       navigation.navigate("FrontImageScreenDriver");
     } catch (error: any) {
-      console.log(error, "❌Driver KYC submission error");
+      console.log(error, "❌upload submission error");
       Toast.show({
         type: "error",
         text1: "uoad Failed",
@@ -160,6 +161,27 @@ const FacialVerification = ({ navigation }: Props) => {
       setLoading(false);
     }
   };
+// const handleSubmit = async () => {
+//   setLoading(true);
+//   try {
+//     // Optionally, you can log or use the image here if needed
+
+//     console.log(facialVerificationImage, 'Already uploaded image');
+//     console.log(Buffer.from(facialVerificationImage), 'Buffer of the image');
+
+//     Helper.vibrate();
+//     navigation.navigate("FrontImageScreenDriver");
+//   } catch (error: any) {
+//     console.error('Navigation error:', error);
+//     Toast.show({
+//       type: "error",
+//       text1: "Navigation Failed",
+//       text2: error.message || "Something went wrong",
+//     });
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
   return (
     <CustomView style={{ paddingVertical: RFValue(10) }}>

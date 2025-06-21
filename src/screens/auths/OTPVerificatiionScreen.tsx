@@ -65,13 +65,18 @@ const OTPVerificationScreen = ({navigation}: Props) => {
     setLoading(true);
         const userDetails =  await getUser();
         const email = userDetails?.email;
+        const phone = userDetails?.phone;
         console.log(email, 'email');
   
     try {
       const payload = {
         otp,
-        email: email, 
+        emailPhone: phone || email, 
+        
+        
+        
       };
+      console.log(payload, 'payload');
   
       const result = await verifyOtpAccount(payload);
       console.log('OTP verification result:', result);
@@ -108,10 +113,11 @@ const OTPVerificationScreen = ({navigation}: Props) => {
     setLoading(true);
     const userDetails =  await getUser();
     const email = userDetails?.email;
-    console.log(email, 'email');
+    const phone = userDetails?.phone;
+ 
     try {
       const payload = {
-        email: email
+        emailPhone: phone || email, // Use phone or email based on your requirement
       };
   
       const result = await resendOtp(payload);

@@ -1,8 +1,8 @@
 // api/auth.ts
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-export const apiKey = Constants.expoConfig?.extra?.apiKey;
-
+// export const apiKey = Constants.expoConfig?.extra?.apiKey;
+export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
 export const getToken = async (): Promise<string | null> => {
   try {
     const token = await AsyncStorage.getItem('token');
@@ -130,7 +130,7 @@ export const changePassword = async (data: {
   }
 };
 export const verifyOtpAccount = async (data: {
-  email: string;
+  emailPhone: string;
   otp: string;
 }) => {
   try {
@@ -154,8 +154,33 @@ export const verifyOtpAccount = async (data: {
     throw error;
   }
 };
+export const verifyOtpAccountReset = async (data: {
+  emailPhone: string;
+  otp: string;
+}) => {
+  try {
+    const response = await fetch(`${apiKey}/auth/otp/verify?type=password_reset&userType=agent`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Otp Verification failed');
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
 export const resendOtp = async (data: {
-  email: string;
+  emailPhone: string;
 }) => {
   try {
     const response = await fetch(`${apiKey}/auth/otp/send?userType=agent`, {
@@ -183,7 +208,7 @@ export const updateUserKyc = async (
     businessName: string;
     state: string;
     address: string;
-    location: string;
+    parkLocation: string;
     store: boolean;
     identificationType: string;
     identificationNumber: string;
@@ -195,7 +220,7 @@ export const updateUserKyc = async (
   try {
     const token = await getToken()
     // console.log(token, 'token')
-    const response = await fetch(`${apiKey}/users/update?type=kyc&userType=agent`, {
+    const response = await fetch(`${apiKey}/users/update?type=profile&userType=agent`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -297,7 +322,7 @@ export const onboardingDriver = async (
 
 ) => {
   const token = await getToken()
-  console.log(token, 'token')
+
   try {
     const response = await fetch(
       `${apiKey}/auth/onboarding`,

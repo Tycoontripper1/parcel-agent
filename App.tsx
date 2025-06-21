@@ -6,7 +6,7 @@ import {ThemeProvider} from '@/hooks/useTheme';
 import NavigationStack from '@/navigation/NavigationStack';
 import Toast from 'react-native-toast-message';
 import {toastConfig} from '@/helper/toastConfig';
-
+import { Buffer } from 'buffer';
 export default function App() {
   const [loaded, error] = useFonts({
     Outfit: require('./assets/fonts/PublicSans-Regular.ttf'),
@@ -15,7 +15,7 @@ export default function App() {
     OutfitBold: require('./assets/fonts/PublicSans-Bold.ttf'),
     ...FontAwesome.font,
   });
-
+global.Buffer = Buffer;
   useEffect(() => {
     if (error) throw error;
   }, [error]);

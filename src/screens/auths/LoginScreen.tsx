@@ -32,8 +32,8 @@ const LoginScreen = ({navigation}: Props) => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const {theme} = useTheme();
-   const apiKey = Constants.expoConfig?.extra?.apiKey;
-   console.log(apiKey, 'API KEY');
+  //  const apiKey = Constants.expoConfig?.extra?.apiKey;
+  //  console.log(apiKey, 'API KEY');
   const handleValidation = () => {
     let isValid = true;
     const emailRegex = /\S+@\S+\.\S+/;
@@ -93,22 +93,23 @@ const LoginScreen = ({navigation}: Props) => {
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('user', JSON.stringify(userDetails));
 
-      if (!userDetails.isEmailVerified) {
+      if (!userDetails.isAccountVerified) {
         navigation.navigate('OTPVerificationScreen', {phone: userDetails.phone});
       }
       //  else if (!userDetails.isKycComplete) {
-      //   navigation.navigate('BusinessInfoScreen');
-      // }
+      // navigation.navigate('BusinessInfoScreen');
+      //  }
       else {
         navigation.navigate('RootTabStack');
       }
     } catch (error: any) {
       setLoading(false);
       Toast.show({
-        type: 'error',
+        type: 'error', 
         text1: 'Error',
         text2: error.message || 'Something went wrong',
       });
+      console.log(error, 'Login Error');
     }
   };
 

@@ -11,10 +11,13 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
 import {Helper} from '@/helper/helper';
 import {AuthStackParamList} from '@/navigation/navigationType';
+import { verifyOtpAccount, verifyOtpAccountReset } from '../../../services/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type Props = NativeStackScreenProps<AuthStackParamList>;
+type Props = NativeStackScreenProps<AuthStackParamList, 'ResetPasswordWithEmailConfirm'>;
 
-const ResetPasswordWithEmailConfirm = ({navigation}: Props) => {
+
+const ResetPasswordWithEmailConfirm = ({navigation, route}: Props) => {
   const [loading, setLoading] = useState(false);
 
   const {theme} = useTheme();
@@ -39,25 +42,82 @@ const ResetPasswordWithEmailConfirm = ({navigation}: Props) => {
     return isValid;
   };
 
-  const handleSentOTP = () => {
-    if (!handleValidation()) {
+  // const handleSentOTP = () => {
+  //   if (!handleValidation()) {
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //     Helper.vibrate();
+  //     Toast.show({
+  //       type: 'success',
+  //       text1: 'Success',
+  //       text2: 'OTP Successfully',
+  //     });
+  //     navigation.replace('ResetPasswordComplete', {
+  //       otp: otp,
+  //     });
+  //   }, 2000);
+  // };
+  const handleConfirm = async () => {
+    if (!otp || otp.length < 4) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid OTP',
+        text2: 'Please enter a valid 4-digit code.',
+      });
       return;
     }
-
+  
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      Helper.vibrate();
+  
+    try {
+      const payload = {
+        otp,
+        emailPhone: route.params?.email, // Use the phone number from route params, 
+        
+        
+        
+      };
+      console.log(payload, 'payload');
+  
+      const result = await verifyOtpAccountReset(payload);
+      console.log('OTP verification result:', result);
+  
+      // Extract and store token and user details
+      const token = result?.data?.token;
+  
+      if (token) {
+        await AsyncStorage.setItem('token', token);
+      }
+  
       Toast.show({
         type: 'success',
-        text1: 'Success',
-        text2: 'OTP Successfully',
+        text1: 'Verified',
+        text2: result?.data?.message || 'OTP verified successfully',
       });
-      navigation.replace('ResetPasswordComplete', {
+  
+       navigation.replace('ResetPasswordComplete', {
         otp: otp,
       });
-    }, 2000);
+    } catch (error: any) {
+      console.error('OTP verify error:', error);
+  
+      Toast.show({
+        type: 'error',
+        text1: 'Verification Failed',
+        text2: error.message || 'Invalid or expired OTP',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+
+
+  
   // Styles
   const $container: ViewStyle = {
     flex: 1,
@@ -130,7 +190,7 @@ const ResetPasswordWithEmailConfirm = ({navigation}: Props) => {
         <View style={$buttonsContainer}>
           <Button
             title='Confirm'
-            onPress={handleSentOTP}
+            onPress={handleConfirm}
             style={{height: 50}}
           />
         </View>

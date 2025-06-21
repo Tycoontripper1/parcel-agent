@@ -11,6 +11,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Helper} from '@/helper/helper';
 import Toast from 'react-native-toast-message';
 import {AuthStackParamList} from '@/navigation/navigationType';
+import { resendOtp } from '../../../services/auth';
 
 type Props = NativeStackScreenProps<AuthStackParamList>;
 
@@ -38,25 +39,42 @@ const ResetPasswordWithPhone = ({navigation}: Props) => {
     return isValid;
   };
 
-  const handleSentOTP = () => {
-    if (!handleValidation()) {
+  // Function to handle OTP sending
+    const handleSentOTP = async () => {
+          if (!handleValidation()) {
       return;
     }
-
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      Helper.vibrate();
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Successfully sent OTP',
-      });
-      navigation.replace('ResetPasswordWithPhoneConfirm', {
+      setLoading(true);
+      
+   
+      try {
+        const payload = {
+          emailPhone: phone, 
+        };
+    
+        const result = await resendOtp(payload);
+        console.log('OTP sent result:', result);
+    
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: result?.message || 'OTP sent successfully',
+        });
+        navigation.replace('ResetPasswordWithPhoneConfirm', {
         phone: phone,
       });
-    }, 2000);
-  };
+      } catch (error: any) {
+        console.error('Error sending OTP:', error);
+    
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to Send OTP',
+          text2: error.message || 'Something went wrong while sending OTP',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
   // Styles
   const $container: ViewStyle = {
     flex: 1,

@@ -123,7 +123,6 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
              </View>
            </View>
          </View>
-
         {/* Receiver's Information */}
              <View style={styles.sectionContainer}>
                <Text style={styles.sectionHeader} font='SemiBold' size={14}>
@@ -175,7 +174,6 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
                  </View>
                </View>
              </View>
-
         {/* Park Detail */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader} font='SemiBold' size={14}>
@@ -207,7 +205,6 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
             </View>
           </View>
         </View>
-
         {/* Parcel Information */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader} font='SemiBold' size={14}>
@@ -244,7 +241,7 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={styles.descriptionText}>Parcel Worth:</Text>
-              <Text style={styles.infoText}>{singleParcel?.parcel.value}</Text>
+              <Text style={styles.infoText}>₦{singleParcel?.parcel.value}</Text>
             </View>
             <View
               style={{
@@ -255,7 +252,7 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
                 borderBottomColor: '#E9EAEB',
               }}>
               <Text style={styles.descriptionText}>Charges Payable:</Text>
-              <Text style={styles.infoText}>{singleParcel?.parcel.chargesPayable}</Text>
+              <Text style={styles.infoText}>₦{singleParcel?.parcel.chargesPayable}</Text>
             </View>
             <View
               style={{
@@ -265,7 +262,7 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
               }}>
               <Text style={styles.descriptionText}>Handling Fee:</Text>
               <Text style={styles.infoText}>
-              {(Number(singleParcel?.parcel.handlingFee) || 0)}
+              ₦{(Number(singleParcel?.parcel.handlingFee) || 0)}
               </Text>
             </View>
             <View
@@ -276,12 +273,11 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
               }}>
               <Text style={styles.descriptionText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-              {(Number(singleParcel?.parcel.handlingFee) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
+              ₦{(Number(singleParcel?.parcel.handlingFee) || 0) + (Number(singleParcel?.parcel.chargesPayable) || 0)}
               </Text>
             </View>
           </View>
         </View>
-
         {/* Parcel Description */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader} font='SemiBold' size={14}>
@@ -298,7 +294,6 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
             </Text>
           </View>
         </View>
-
      {singleParcel?.parcel.thumbnails &&
            singleParcel?.parcel.thumbnails.filter((photo) => photo).length > 0 ? (
              <View style={{paddingVertical: RFValue(10), padding: RFValue(16)}}>

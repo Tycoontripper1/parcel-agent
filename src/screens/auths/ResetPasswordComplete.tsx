@@ -11,6 +11,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Helper} from '@/helper/helper';
 import Toast from 'react-native-toast-message';
 import {AuthStackParamList} from '@/navigation/navigationType';
+import { changePassword } from '../../../services/auth';
 
 type Props = NativeStackScreenProps<AuthStackParamList>;
 
@@ -53,23 +54,52 @@ const ResetPasswordComplete = ({navigation}: Props) => {
     return isValid;
   };
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (!handleValidation()) {
       return;
     }
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      Helper.vibrate();
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Reset Password Successfully',
-      });
-      navigation.navigate('Login');
-    }, 2000);
+    // setLoading(true);
+    // setTimeout(() => {
+    //   setLoading(false);
+    //   Helper.vibrate();
+    //   Toast.show({
+    //     type: 'success',
+    //     text1: 'Success',
+    //     text2: 'Reset Password Successfully',
+    //   });
+    //   navigation.navigate('Login');
+    // }, 2000);
+      setLoading(true);
+        try {
+          const payload = {
+             password: password,
+             confirm: confirmPassword,
+          };
+    
+          const result = await changePassword(payload);
+    
+          Helper.vibrate();
+          Toast.show({
+            type: "success",
+            text1: "Success",
+            text2: result?.message || " Reset Password Successfully",
+          });
+          navigation.navigate('Login');
+        } catch (error: any) {
+          console.error("Save Error:", error);
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: error?.message || "Something went wrong!",
+          });
+        } finally {
+          setLoading(false);
+        }
   };
+
+
+
   // Styles
   const $container: ViewStyle = {
     flex: 1,

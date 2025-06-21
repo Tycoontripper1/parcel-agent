@@ -1,44 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  ScrollView,
+  ViewStyle,
   StyleSheet,
   Dimensions,
-  Platform,
-  ImageBackground,
-  ViewStyle,
 } from "react-native";
 import { color } from "@/constants/Colors";
-
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import { CustomView } from "@/components";
 import ScreenHeader from "@/components/share/ScreenHeader";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { HomeStackList } from "@/navigation/navigationType";
-import { WalletStackList } from "@/navigation/navigationType";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { DriverStackList } from "@/navigation/navigationType";
+import { Feather } from "@expo/vector-icons";
 import EmptyWallet from "@/components/svg/EmptyEarning";
 import UserIcon from "@/components/svg/userIcon";
-import { DriverStackList } from "@/navigation/navigationType";
-import { apiKey, getAllDrivers, getToken } from "../../services/auth";
-
-
-
-
+import { apiKey, getToken } from "../../services/auth";
 
 const { width } = Dimensions.get("window");
 type Props = NativeStackScreenProps<DriverStackList, "DriversScreen">;
 
-
-export interface Wallet {
-  title: string;
-  icon: React.ReactNode;
-}
 export interface Driver {
   id: string;
   firstName: string;
@@ -46,74 +30,64 @@ export interface Driver {
   phone: string;
   createdAt: string;
   driverId: string;
-  name?: string; // Optional property for transformed drivers
-  date?: string; // Optional property for transformed drivers
+  name?: string;
+  date?: string;
 }
 
-
 const DriversScreen = ({ navigation }: Props) => {
-  const [isWallet, setIsWallet] = useState(false);
-    const [allDrivers, setAllDrivers] = useState<Driver[]>([]);
-    console.log(allDrivers, 'allDrivers')
+  const [allDrivers, setAllDrivers] = useState<Driver[]>([]);
 
-    useEffect(() => {
-      const fetchDrivers = async () => {
-        try {
-          const token = await getToken();
-          const response = await fetch(`${apiKey}/users?userType=driver`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          });
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        const token = await getToken();
+        const response = await fetch(`${apiKey}/users?userType=driver`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Failed to fetch drivers');
+        
+        setAllDrivers(result?.data?.details?.rows || []);
+      } catch (error) {
+        console.error('Driver fetch error:', error);
+      }
+    };
     
-          const result = await response.json();
-    
-          if (!response.ok) {
-            throw new Error(result.message || 'Failed to fetch drivers');
-          }
-    
-          console.log(result, 'result');
-          setAllDrivers(result?.data?.details?.rows);
-        } catch (error) {
-          console.error('Failed to fetch drivers:', error);
-        }
-      };
-    
-      fetchDrivers();
-    }, []);
-    
-const registeredDriversCount = allDrivers?.length || 0;
-// const parcelsAssignedCount = allDrivers.reduce((acc, driver) => {
-//   if (driver.parcelsAssigned) {
-//     return acc + driver.parcelsAssigned.length;
-//   }
-//   return acc;
-// }
+    fetchDrivers();
+  }, []);
 
+  // Memoize expensive calculations
+  const registeredDriversCount = allDrivers.length;
+  
+  const groupedDrivers = useMemo(() => {
+    return allDrivers.reduce<Record<string, Driver[]>>((acc, driver) => {
+      const date = typeof driver.createdAt === "string" 
+        ? driver.createdAt.split('T')[0] 
+        : 'Unknown';
+      
+      if (!acc[date]) acc[date] = [];
+      
+      acc[date].push({
+        ...driver,
+        name: `${driver.firstName} ${driver.lastName}`,
+        date,
+      });
+      
+      return acc;
+    }, {});
+  }, [allDrivers]);
 
-
-
-const groupedDrivers = allDrivers.reduce<
-  Record<string, (typeof allDrivers)[number][]>
->((acc, driver) => {
-  const date = typeof driver.createdAt === "string" ? driver.createdAt.split('T')[0] : 'Unknown';
-
-  if (!acc[date]) acc[date] = [];
-  acc[date].push({
-    id: driver.id,
-    firstName: driver.firstName,
-    lastName: driver.lastName,
-    phone: driver.phone,
-    createdAt: driver.createdAt,
-    name: `${driver.firstName} ${driver.lastName}`,
-    date: date,
-    driverId: driver.driverId,
-  });
-  return acc;
-}, {});
-
+  const sections = useMemo(() => {
+    return Object.entries(groupedDrivers).map(([date, drivers]) => ({
+      date,
+      drivers,
+    }));
+  }, [groupedDrivers]);
 
   const $bodyHeader: ViewStyle = {
     flexDirection: "row",
@@ -121,6 +95,34 @@ const groupedDrivers = allDrivers.reduce<
     alignItems: "center",
     paddingVertical: RFValue(18),
   };
+
+  // Render item optimized with memoization
+  const renderDriverItem = ({ item }: { item: Driver }) => (
+    <View style={styles.transactionRow}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={styles.transactionIconContainer}>
+          <View style={styles.userIcon}>
+            <Feather name='user' size={18} color={color.successColor} />
+          </View>
+        </View>
+        <View style={{ flexDirection: "column", gap: 12 }}>
+          <Text style={styles.transactionTitle}>Name</Text>
+          <Text style={styles.transaction}>{item.name}</Text>
+        </View>
+      </View>
+
+      <View style={{ flexDirection: "column", gap: 12 }}>
+        <Text style={styles.transactionTitle}>Phone No.</Text>
+        <Text style={styles.transaction}>{item.phone}</Text>
+      </View>
+
+      <View style={{ flexDirection: "column", gap: 12 }}>
+        <Text style={styles.transactionTitle}>Driver ID</Text>
+        <Text style={styles.transaction}>{item.driverId}</Text>
+      </View>
+    </View>
+  );
+
   return (
     <CustomView style={styles.container}>
       <ScreenHeader
@@ -128,169 +130,70 @@ const groupedDrivers = allDrivers.reduce<
         OnNotificationClick={() => navigation.navigate("NotificationsScreen")}
         type="Home"
       />
-      {/* <KeyboardAvoidingView
-        style={{ paddingTop: 10 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      > */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            width: "100%",
-            gap: RFValue(6),
-          }}
-        >
-          {/* Balance Card */}
+
+      <View style={{ flex: 1 , paddingVertical: RFValue(16) }}>
+        {/* Balance Cards */}
+        <View style={{ flexDirection: "row", width: "100%", gap: RFValue(6) }}>
           <View style={styles.balanceCard}>
-            <View>
-              <View
-                style={{
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                }}
-              >
-                <Text style={styles.balanceLabel}>{registeredDriversCount}</Text>
-                <Text style={styles.balance}>Registered Drivers</Text>
-              </View>
+            <View style={{ flexDirection: "column", alignItems: "flex-start" }}>
+              <Text style={styles.balanceLabel}>{registeredDriversCount}</Text>
+              <Text style={styles.balance}>Registered Drivers</Text>
             </View>
           </View>
-          {/* Balance Card */}
           <View style={styles.balanceCard}>
-            <View>
-              <View
-                style={{
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                }}
-              >
-                <Text style={styles.balanceLabel}>0</Text>
-                <Text style={styles.balance}>Parcels Assigned</Text>
-              </View>
+            <View style={{ flexDirection: "column", alignItems: "flex-start" }}>
+              <Text style={styles.balanceLabel}>0</Text>
+              <Text style={styles.balance}>Parcels Assigned</Text>
             </View>
           </View>
         </View>
 
-        <TouchableOpacity style={styles.downloadButton} onPress={() => navigation.navigate('ScreenOne')}>
-          <Text style={styles.downloadText}>
-            Register Driver 
-          </Text>
+        {/* Register Button */}
+        <TouchableOpacity 
+          style={styles.downloadButton} 
+          onPress={() => navigation.navigate('ScreenOne')}
+        >
+          <Text style={styles.downloadText}>Register Driver</Text>
           <UserIcon />
         </TouchableOpacity>
-        {/* <FlatList
-            data={Object.keys(groupedTransactions)}
-            keyExtractor={(date) => date}
-            renderItem={({ item: date }) => (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{date}</Text>
-                {groupedTransactions[date].map((tx) => (
-                  <View key={tx.id} style={styles.transactionRow}>
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <View style={styles.transactionIconContainer}>
-                        {tx.type === "credit" ? <CreditIcon /> : <DebitIcon />}
-                      </View>
-                      <View style={{ flexDirection: "column", gap: 12 }}>
-                        <Text style={styles.transactionTitle}>{tx.title}</Text>
-                        <Text style={styles.transactionDate}>{tx.date}</Text>
-                      </View>
-                    </View>
 
-                    <View style={{ flexDirection: "column", gap: 8 }}>
-                      <Text style={[styles.transactionAmount]}>
-                        ₦{Math.abs(tx.amount)}
-                      </Text>
-                      <Text
-                        style={[
-                          styles.transactionType,
-                          tx.type === "credit" ? styles.credit : styles.debit,
-                        ]}
-                      >
-                        {tx.type === "credit" ? "Credit" : "Debit"}
-                      </Text>
-                    </View>
-                  </View>
-                ))}
+        {/* Drivers Header */}
+        <View style={$bodyHeader}>
+          <Text style={styles.driversHeader}>Drivers</Text>
+        </View>
+
+        {/* Drivers List */}
+        {sections.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <EmptyWallet />
+            <Text style={styles.emptyText}>No driver yet</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={sections}
+            keyExtractor={(item) => item.date}
+            renderItem={({ item }) => (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>{item.date}</Text>
+                <FlatList
+                  data={item.drivers}
+                  keyExtractor={(driver) => driver.id}
+                  renderItem={renderDriverItem}
+                  scrollEnabled={false}
+                />
               </View>
             )}
-              
-          /> */}
-
-        <View style={$bodyHeader}>
-          <Text
-            style={{
-              color: "#414651",
-              fontSize: RFValue(18),
-              fontWeight: "500",
-            }}
-          >
-            Drivers
-          </Text>
-        </View>
-        <View style={''}>
-          {Object.keys(groupedDrivers).length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <EmptyWallet />
-              <Text style={styles.emptyText}>No driver yet</Text>
-            </View>
-          ) : (
-            <>
-              {Object?.keys(groupedDrivers).map((date) => (
-                <View key={date} style={styles.section}>
-                  <Text style={styles.sectionTitle}>{date}</Text>
-                  {groupedDrivers[date].map((driver) => (
-                    <View key={driver.id} style={styles.transactionRow}>
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
-                      >
-                        <View style={styles.transactionIconContainer}>
-                        <View style={{width:RFValue(24), height:RFValue(24),borderRadius:RFValue(48), display:"flex", justifyContent:"center",alignItems:'center',backgroundColor:"#E6FFDB"}}><Feather name='user' size={18} color={color.successColor} /></View>
-                        </View>
-                        <View style={{ flexDirection: "column", gap: 12 }}>
-                          <Text style={styles.transactionTitle}>Name</Text>
-                          <Text style={styles.transaction}>{driver.name}</Text>
-                        </View>
-                      </View>
-
-                      <View style={{ flexDirection: "column", gap: 12 }}>
-                        <Text style={styles.transactionTitle}>Phone No.</Text>
-                        <Text style={styles.transaction}>{driver.phone}</Text>
-                      </View>
-
-                      <View style={{ flexDirection: "column", gap: 12 }}>
-                        <Text style={styles.transactionTitle}>Driver ID</Text>
-                        <Text style={styles.transaction}>
-                          {driver.driverId}
-                        </Text>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              ))}
-            </>
-          )}
-        </View>
-
-        {Object.keys(groupedDrivers).length > 0 && (
-          <TouchableOpacity
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => navigation.navigate("DriversHistory")}
-          >
-            <Text style={styles.viewAllText}>View All</Text>
-          </TouchableOpacity>
+            ListFooterComponent={
+              <TouchableOpacity
+                style={styles.viewAllButton}
+                onPress={() => navigation.navigate("DriversHistory")}
+              >
+                <Text style={styles.viewAllText}>View All</Text>
+              </TouchableOpacity>
+            }
+          />
         )}
-      </ScrollView>
-      {/* </KeyboardAvoidingView> */}
+      </View>
     </CustomView>
   );
 };
@@ -304,37 +207,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: RFValue(16),
     flexDirection: "row",
-    gap:RFValue(6), 
-    justifyContent:"center" ,
-     display:"flex"
-  },
-  downloadText: { color: "#213264", fontSize: RFValue(14), fontWeight: "bold",  },
-  filterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: RFValue(10),
-    borderWidth: 1,
-    borderColor: "#F5F5F5",
-    borderRadius: 8,
-    padding: RFValue(10),
-  },
-  filterButton: {
-    padding: RFValue(10),
-    width: RFValue(101),
-    borderRadius: RFValue(8),
-    backgroundColor: "#ffff",
-    display: "flex",
+    gap: RFValue(6), 
     justifyContent: "center",
-    alignItems: "center",
+    marginTop: RFValue(16),
   },
-  activeFilter: { backgroundColor: "#E6FFDB" },
-  filterText: { fontSize: RFValue(14), color: "#64748B" },
-  activeText: { color: "#213264" },
+  downloadText: { 
+    color: "#213264", 
+    fontSize: RFValue(14), 
+    fontWeight: "bold",
+  },
   section: { marginBottom: RFValue(16) },
   sectionTitle: {
     fontSize: RFValue(14),
-    fontWeight: "semibold",
+    fontWeight: '500',
     marginBottom: RFValue(8),
+    color: '#414651',
   },
   transactionRow: {
     flexDirection: "row",
@@ -346,121 +233,56 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#EFEFF0",
   },
-
   transactionIconContainer: {
     alignItems: "center",
     marginRight: RFValue(10),
   },
-  transactionType: {
-    fontSize: RFValue(8),
-    color: "#64748B",
-    marginTop: RFValue(4),
+  userIcon: {
+    width: RFValue(24), 
+    height: RFValue(24),
+    borderRadius: RFValue(48),
+    justifyContent: "center",
+    alignItems: 'center',
+    backgroundColor: "#E6FFDB"
   },
   transactionTitle: {
     fontSize: RFValue(10),
     fontWeight: "400",
     color: "#717680",
   },
-  transaction: { fontSize: RFValue(10), color: "#252B37", fontWeight: "500" },
-  transactionAmount: { fontSize: RFValue(10), fontWeight: "bold" },
-  credit: {
-    color: "#12B76A",
-    backgroundColor: "#DFFCE9",
-    paddingHorizontal: RFValue(8),
-    paddingVertical: RFValue(1),
-    borderRadius: RFValue(24),
+  transaction: { 
+    fontSize: RFValue(10), 
+    color: "#252B37", 
+    fontWeight: "500" 
   },
-  debit: {
-    color: "#F04438",
-    backgroundColor: "#FEDEDC",
-    paddingHorizontal: RFValue(8),
-    paddingVertical: RFValue(1),
-    borderRadius: RFValue(24),
+  viewAllText: { 
+    color: "#213264", 
+    fontSize: RFValue(14), 
+    fontWeight: "bold" 
   },
-
-  viewAllText: { color: "#213264", fontSize: RFValue(14), fontWeight: "bold" },
+  viewAllButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: RFValue(10),
+  },
   balanceCard: {
-    marginVertical: RFValue(16),
-    width: "48%",
+    flex: 1,
     padding: RFValue(16),
     backgroundColor: "#fff",
     borderRadius: RFValue(8),
-    borderWidth: RFValue(1),
-    borderColor:"#ccc"
+    borderWidth: 1,
+    borderColor: "#ccc"
   },
   balanceLabel: {
-    marginTop: RFValue(6),
     color: "#252B37",
     fontSize: RFValue(24),
+    fontWeight: '600',
   },
   balance: {
     color: "#A4A7AE",
     fontSize: RFValue(10),
     fontWeight: "400",
-    marginVertical: RFValue(8),
-  },
-  quickSearchContainer: {
-    marginVertical: RFValue(16),
-    paddingHorizontal: RFValue(16),
-    paddingTop: RFValue(16),
-    paddingBottom: RFValue(5),
-    backgroundColor: "#FAFAFA",
-    borderRadius: RFValue(10),
-  },
-  quickSearchLabel: {
-    fontSize: RFValue(14),
-    marginBottom: RFValue(8),
-    alignSelf: "center",
-  },
-  searchInput: {
-    backgroundColor: "#fff",
-    borderRadius: RFValue(8),
-    padding: RFValue(12),
-    borderWidth: 1,
-    borderColor: "#E9EAEB",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  transactionButton: {
-    backgroundColor: "#e0e0e0",
-    paddingVertical: RFValue(4),
-    paddingHorizontal: RFValue(4),
-    borderRadius: RFValue(16),
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-  },
-  transactionButtonText: {
-    fontSize: RFValue(12),
-  },
-  fundButton: {
-    marginTop: RFValue(16),
-    backgroundColor: "#aaffaa",
-    paddingVertical: RFValue(12),
-    borderRadius: RFValue(16),
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 6,
-  },
-  fundButtonText: {
-    color: "#003399",
-    fontWeight: "bold",
-  },
-  parcelButtonsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginHorizontal: RFValue(16),
-  },
-  parcelButton: {
-    width: width / 2 - RFValue(24),
-    backgroundColor: "#f0f0f0",
-    padding: RFValue(16),
-    borderRadius: RFValue(10),
-    marginVertical: RFValue(8),
-    alignItems: "center",
+    marginTop: RFValue(4),
   },
   emptyContainer: {
     justifyContent: "center",
@@ -469,18 +291,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 10,
-    fontSize: 16,
+    fontSize: RFValue(14),
     color: "gray",
   },
-  viewAllButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: "#007BFF",
-    borderRadius: 8,
+  driversHeader: {
+    color: "#414651",
+    fontSize: RFValue(18),
+    fontWeight: "500",
   },
 });
 
