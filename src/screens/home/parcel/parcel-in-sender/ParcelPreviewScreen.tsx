@@ -62,7 +62,7 @@ const dispatch = useDispatch();
       
   
       const result = await SendParcelData(payload); 
-      console.log(result, 'result');
+    
       Toast.show({
         type: 'success',
         text1: 'Success',
@@ -343,7 +343,7 @@ const dispatch = useDispatch();
               {formData.parcelImages.map((photo, index) => (
                 <TouchableOpacity key={index} style={styles.photoBox}>
                   {photo ? (
-                    <Image source={{uri: photo}} style={styles.photoPreview} />
+                    <Image source={{uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}`}} style={styles.photoPreview} />
                   ) : (
                     <View></View>
                   )}

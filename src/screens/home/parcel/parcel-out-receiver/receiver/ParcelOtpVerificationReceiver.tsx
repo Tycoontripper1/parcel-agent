@@ -140,9 +140,7 @@ const { readOnly } =
               body: JSON.stringify(payload),
             
             });
-        
             const result = await response.json();
-        
       setLoading(false);
       Helper.vibrate();
       Toast.show({

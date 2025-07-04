@@ -102,15 +102,15 @@ const DashboardScreen = ({ navigation }: any) => {
         OnNotificationClick={() => navigation.navigate('NotificationScreen')}
       >
         <View style={{ flexDirection: 'column', gap: 2, paddingBottom:4 }}>
-          <Text size={18} font='Medium'>
+          <Text size={14} font='Medium'>
             Hello, {userDetail?.firstName || ''}
           </Text>
-          <Text size={14} font='Medium' color='#717680'>
+          <Text size={12} font='Medium' color='#717680'>
             Agent ID: {userDetail?.agentId || ''}
           </Text>
           <View style={styles.locationContainer}>
             <Location color='#000' size={16} />
-            <Text size={12} font='Medium'>
+            <Text size={10} font='Medium'>
               {userDetail?.state || ''}
             </Text>
           </View>

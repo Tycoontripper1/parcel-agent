@@ -62,8 +62,6 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
           const username = userDetails?.firstName || 'unknown_user';
 
           const result = await upload(validPhotos);
-         console.log(result, "result")
-         console.log(result?.data?.details, "result.data.details")
             if (result?.data?.details?.length === 2) {
               dispatch(updateField({ key: "idFrontImage", value: result?.data?.details[0] }));
               dispatch(updateField({ key: "idBackImage", value: result.data?.details[1] }));
@@ -201,9 +199,9 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
         {
           imagesUploaded ? (
             <View>
-              <Image source={{ uri: `https://bc65-196-1-179-86.ngrok-free.app/parcel/v1.0/api/files?slugs=${idFrontImage}`}} style={styles.image} />
+              <Image source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${idFrontImage}`}} style={styles.image} />
               <Text style={styles.title}>Back Image</Text>
-              <Image source={{ uri: `https://bc65-196-1-179-86.ngrok-free.app/parcel/v1.0/api/files?slugs=${idBackImage}`}}style={styles.image} />
+              <Image source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${idBackImage}`}}style={styles.image} />
             </View>
           ) : ( 
             <View>

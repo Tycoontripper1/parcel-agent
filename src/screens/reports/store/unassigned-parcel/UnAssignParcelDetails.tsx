@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from "react-native";
-import { HomeStackList, ReportStackList } from "@/navigation/navigationType";
+import { HomeStackList, ReportStackList, RootStackParamList } from "@/navigation/navigationType";
 import { RouteProp } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useSelector } from "react-redux";
@@ -24,7 +24,7 @@ import { format } from 'date-fns';
 
 // Define the props correctly
 type Props = NativeStackScreenProps<
-  HomeStackList & ReportStackList,
+  HomeStackList & ReportStackList & RootStackParamList,
   "UnAssignParcelDetails"
 >;
 
@@ -44,9 +44,6 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
 
 
 
-
-
-  
   const formattedTime = `${date?.getHours()}:${
     date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
   } ${date.getHours() < 12 ? "AM" : "PM"}`;
@@ -82,6 +79,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
         navigation.navigate("SearchParcelOutDriverId");
       } else if (item.status === "arrived") {
         navigation.navigate("ReceiverType");
+        
       }
     } catch (error) {
       console.error("Error storing item in AsyncStorage:", error);
@@ -489,7 +487,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                 <TouchableOpacity key={index} style={styles.photoBox}>
                   {photo ? (
                     <Image
-                      source={{ uri: photo }}
+                      source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}` }}
                       style={styles.photoPreview}
                     />
                   ) : null}

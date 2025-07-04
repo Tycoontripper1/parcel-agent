@@ -31,6 +31,7 @@ import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../../services/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import BottomSheetDatePicker from "@/components/BottomSheetDatePicker";
 type Props = NativeStackScreenProps<AuthStackParamList>;
 
 const CreateAccountScreen = ({ navigation }: Props) => {
@@ -169,7 +170,7 @@ const CreateAccountScreen = ({ navigation }: Props) => {
 
   // Styles
   const handleCreateAccount = async () => {
-    if (!handleValidation()) return;
+    // if (!handleValidation()) return;
 
     setLoading(true);
     console.log(formData.phone, "formData");
@@ -183,7 +184,15 @@ const CreateAccountScreen = ({ navigation }: Props) => {
         email: formData.email,
         password: formData.password,
         confirm: formData.confirm,
+        //   firstName: "oladeji",
+        // lastName: "yinka",
+        // dateOfBirth: "1995-11-06",
+        // phone: "08168289167",
+        // email: "oayodeji29@gmail.com",
+        // password: "Password@1",
+        // confirm: "Password@1"
       };
+      console.log(payload)
 
       const result = await registerUser(payload);
       console.log(result, "result");
@@ -259,7 +268,7 @@ const CreateAccountScreen = ({ navigation }: Props) => {
             errorMessage={lastNameError}
           />
 
-          <Input
+          {/* <Input
             label="Date of Birth"
             placeholder="YYYY-MM-DD"
             value={formData.dateOfBirth}
@@ -269,33 +278,27 @@ const CreateAccountScreen = ({ navigation }: Props) => {
             }}
             LeftIcon={<Fontisto name="date" size={18} color={color.gray} />}
             errorMessage={dobError}
-          />
-          {/* <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-  <Input
-    label="Date of Birth"
-    placeholder="YYYY-MM-DD"
-    value={formData.dateOfBirth}
-    editable={false} // prevent keyboard
-    LeftIcon={<Fontisto name="date" size={18} color={color.gray} />}
-    errorMessage={dobError}
-  />
-</TouchableOpacity>
+          /> */}
+          
+   <BottomSheetDatePicker
+  label="Date of Birth"
+  placeholder="Select your date"
+  onSelect={(date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+  updateFormField("dateOfBirth", formattedDate);
+}}
+  errorMessage=""
+  formatDate={(date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }}
+/>
 
-{showDatePicker && (
-  <DateTimePicker
-    value={formData.dateOfBirth ? new Date(formData.dateOfBirth) : new Date()}
-    mode="date"
-    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-    maximumDate={new Date()}
-    onChange={(event, selectedDate) => {
-      setShowDatePicker(false);
-      if (selectedDate) {
-        const formatted = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD
-        updateFormField('dateOfBirth', formatted);
-      }
-    }}
-  />
-)} */}
 
           <Input
             label="Phone Number"

@@ -77,6 +77,7 @@ mimetype: response.data.details[0].mimetype
                 height: 38,
                 width: 38,
                 backgroundColor: '#F5F5F5',
+                
                 borderRadius: 8,
               }}
               onPress={() => navigation.goBack()}>
@@ -117,8 +118,7 @@ mimetype: response.data.details[0].mimetype
               
               {userDetail?.userImage ? (
                 <Image
-                  // source={{ uri: "http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=1748597450257-635253387-my-pic.png"}}
-                  source={{ uri: userDetail?.userImage}}
+                 source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}`}}
                   style={{
                     width: '100%',
                     height: '100%',

@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // export const apiKey = Constants.expoConfig?.extra?.apiKey;
 export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
+
 export const getToken = async (): Promise<string | null> => {
   try {
     const token = await AsyncStorage.getItem('token');
@@ -70,6 +71,33 @@ export const registerUser = async (data: {
 
     if (!response.ok) {
       throw new Error(result.message || 'Registration failed');
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+export const pushNotification = async (data: {
+  userType: string;
+  token: string;
+}) => {
+  try {
+      const token = await getToken()
+      console.log(token,"userToken")
+    const response = await fetch(`${apiKey}/notifications/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'notification failed');
     }
 
     return result;

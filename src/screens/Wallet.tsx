@@ -11,7 +11,9 @@ import {
   Platform,
   ImageBackground,
   ViewStyle,
+  Alert,
 } from "react-native";
+import * as Clipboard from 'expo-clipboard';
 import { color } from "@/constants/Colors";
 
 import { RFValue } from "react-native-responsive-fontsize";
@@ -21,7 +23,7 @@ import ScreenHeader from "@/components/share/ScreenHeader";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackList } from "@/navigation/navigationType";
 import { WalletStackList } from "@/navigation/navigationType";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import CreditIcon from "@/components/svg/CreditIcon";
 import DebitIcon from "@/components/svg/DebitIcon";
 import WalletIconBlue from "@/components/svg/WalletIconBlue";
@@ -31,6 +33,7 @@ import WalletIcon from "@/components/svg/WalletIcon";
 import TransferIcon from "@/components/svg/TransferIcon";
 import USSDIcon from "@/components/svg/USSDIcon";
 import EmptyWallet from "@/components/svg/EmptyEarning";
+import BottomSheetModal from "@/components/BottomSheetModal";
 
 const transactions:any = [
   // {
@@ -76,16 +79,22 @@ const WalletScreen = ({ navigation }: Props) => {
   const filteredTransactions = transactions?.filter((tx:any) =>
     filter === "all" ? true : tx.type === filter
   );
+  const [showModal, setShowModal] = useState(false);
   const groupedTransactions = filteredTransactions.reduce((acc:any, tx:any) => {
     if (!acc[tx.date]) acc[tx.date] = [];
     acc[tx.date].push(tx);
     return acc;
   }, {} as Record<string, typeof transactions>);
 
-  const $bodyHeader: ViewStyle = {
-    paddingTop: RFValue(18),
-    paddingBottom:RFValue(12)
-  };
+const $bodyHeader: ViewStyle = {
+  paddingTop: RFValue(18),
+  paddingBottom: RFValue(12),
+};
+
+const copyToClipboard = async (text: string) => {
+  await Clipboard.setStringAsync(text);
+  Alert.alert("Copied", "Account number copied to clipboard");
+};
   const WalletData: Wallet[] = [
     {
       title: 'Bank Name',
@@ -99,7 +108,7 @@ const WalletScreen = ({ navigation }: Props) => {
       // title: 'Fund with Bank Transfer',
       // icon: <TransferIcon />,
     },
-    {title: 'Fund with USSD', icon: <USSDIcon />},
+  
   ];
   return (
     <CustomView style={styles.container}>
@@ -144,19 +153,19 @@ const WalletScreen = ({ navigation }: Props) => {
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => setIsWallet(true)}
+                onPress={() => setShowModal(true)}
                 style={styles.fundButton}
               >
                 <Text style={styles.fundButtonText}>Fund Wallet</Text>
               </TouchableOpacity>
             </View>
-            <FundWallet
+            {/* <FundWallet
             isModalVisible={isWallet}
             setIsModalVisible={setIsWallet}
             data={WalletData}
             placeholder='Fund Wallet'
             onSelect={() => ''}
-          />
+          /> */}
             {/* Balance Card */}
             <View
               style={styles.balanceCard}
@@ -300,6 +309,31 @@ const WalletScreen = ({ navigation }: Props) => {
     <Text style={styles.viewAllText}>View All</Text>
   </TouchableOpacity>
 )}
+<BottomSheetModal
+  isVisible={showModal}
+  onClose={() => setShowModal(false)}
+  title="Fund Wallet"
+>
+  <View style={{ gap: 12 , paddingVertical: RFValue(20) }}>
+    {/* Bank Name */}
+    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <Text style={{ color: "#888", fontSize: RFValue(16) }}>Bank</Text>
+      <Text>{"Providus Virtual Account"}</Text>
+    </View>
+
+    {/* Account Number with Copy Icon */}
+    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+      <Text style={{ color: "#888", fontSize: RFValue(16) }}>Account Number</Text>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Text style={{ marginRight: 8 }}>{"284885756563"}</Text>
+        <TouchableOpacity onPress={() => Clipboard.setString("284885756563")}>
+          <Feather name="copy" size={16} color="#47104C" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</BottomSheetModal>
+
 
         </ScrollView>
       {/* </KeyboardAvoidingView> */}

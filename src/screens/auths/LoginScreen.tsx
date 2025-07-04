@@ -17,7 +17,7 @@ import Header from '@/components/share/Header';
 import {Helper} from '@/helper/helper';
 import Toast from 'react-native-toast-message';
 import {RootStackParamList, AuthStackParamList} from '@/navigation/navigationType';
-import {loginUser} from '../../../services/auth';
+import {loginUser, pushNotification} from '../../../services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // api/auth.ts
 import Constants from 'expo-constants';
@@ -72,7 +72,7 @@ const LoginScreen = ({navigation}: Props) => {
   const handleClick = async () => {
     if (!handleValidation()) return;
     setLoading(true);
-
+ const notificationToken = await AsyncStorage.getItem('notificationToken');
     try {
       const cleanedInput = /^\d{4}-\d{3}-\d{4}$/.test(email) ? email.replace(/-/g, '') : email;
 
@@ -88,10 +88,17 @@ const LoginScreen = ({navigation}: Props) => {
       Helper.vibrate();
 
       const token = result?.data?.token;
+      console.log(token)
       const userDetails = result?.data?.details;
 
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('user', JSON.stringify(userDetails));
+  
+ 
+    //      if (notificationToken) {
+    //   const pushResult = await pushNotification({ token: notificationToken });
+    //   console.log(pushResult, 'Push Notification Result');
+    // }
 
       if (!userDetails.isAccountVerified) {
         navigation.navigate('OTPVerificationScreen', {phone: userDetails.phone});
@@ -99,8 +106,15 @@ const LoginScreen = ({navigation}: Props) => {
       //  else if (!userDetails.isKycComplete) {
       // navigation.navigate('BusinessInfoScreen');
       //  }
+      else if (notificationToken) {
+        const pushResult = await pushNotification({ token: notificationToken, userType: "agent" });
+        console.log(pushResult, 'Push Notification Result');
+
+      navigation.navigate('RootTabStack');
+    }
       else {
-        navigation.navigate('RootTabStack');
+ 
+      navigation.navigate('RootTabStack');
       }
     } catch (error: any) {
       setLoading(false);
@@ -126,7 +140,6 @@ const LoginScreen = ({navigation}: Props) => {
         <View style={styles.form}>
           <Text style={styles.loginText} bold>Log in</Text>
           <Text style={styles.subText}>Enter your login details to proceed</Text>
-
           <Input
             label="Phone/Email Address"
             placeholder="Enter email or phone (0904-856-987)"
@@ -146,7 +159,6 @@ const LoginScreen = ({navigation}: Props) => {
             errorMessage={emailError}
             keyboardType="default"
           />
-
           <Input
             label="Password"
             placeholder="Enter password"
@@ -158,7 +170,6 @@ const LoginScreen = ({navigation}: Props) => {
             errorMessage={passwordError}
             keyboardType="default"
           />
-
           <TouchableOpacity
             onPress={() => navigation.navigate('AuthStacks', {screen: 'ResetMethod'})}
             style={$forgotPassword}>

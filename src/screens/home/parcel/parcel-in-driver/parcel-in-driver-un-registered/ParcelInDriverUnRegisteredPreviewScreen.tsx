@@ -466,7 +466,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
                 <TouchableOpacity key={index} style={styles.photoBox}>
                   {photo ? (
                     <Image
-                      source={{ uri: photo }}
+                      source={{ uri:  `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}`  }}
                       style={styles.photoPreview}
                     />
                   ) : (
@@ -484,7 +484,7 @@ const ParcelInDriverUnRegisteredPreviewScreen = ({ navigation }: Props) => {
             onPress={HandleContinue}
             title="Receive Parcel"
             style={{ height: 55 }}
-            disabled={!formData.parcelDescription}
+            disabled={!formData.handlingFee}
           />
         </View>
       </KeyBoardView>

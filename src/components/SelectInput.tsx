@@ -144,7 +144,7 @@ const SelectInput = ({
                 <Ionicons name='search' size={18} color={color.inputColor} />
                 <TextInput
                   style={$searchInput}
-                  placeholder='Search state'
+                  placeholder='Search options...'
                   value={searchText}
                   onChangeText={setSearchText}
                   onFocus={() => setIsSearchFocused(true)} // Set focus state

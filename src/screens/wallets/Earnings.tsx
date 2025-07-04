@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     View,
     Text,
@@ -21,12 +21,18 @@ import CreditIcon from "@/components/svg/CreditIcon";
 import DebitIcon from "@/components/svg/DebitIcon";
 import BackButton from "@/components/share/BackButton";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { HomeStackList } from "@/navigation/navigationType";
+import { HomeStackList, RootStackParamList } from "@/navigation/navigationType";
 import { SearchNormal1 } from "iconsax-react-native";
 import ButtonHome from "@/components/ButtonHome";
 import { color } from "@/constants/Colors";
 import HomeHeader from "@/components/share/HomeHeader";
 import { MaterialIcons } from "@expo/vector-icons";
+import FundWallet from "@/components/FundWallet";
+import { Wallet } from "../Wallet";
+import WalletIcon from "@/components/svg/WalletIcon";
+import TransferIcon from "@/components/svg/TransferIcon";
+import USSDIcon from "@/components/svg/USSDIcon";
+import WithdrawFunds from "@/components/WithdrawFunds";
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const { width } = Dimensions.get("window");
@@ -152,8 +158,16 @@ const transactions: Transaction[] = [
       title: "Coffee",
     },
   ];
-  
+  interface Wallet {
+  title: string;
+  icon: React.ReactNode;
+  route: string;
+}
 
+  const WalletData = useMemo<Wallet[]>(() => [
+    { title: 'Wallet To Wallet', icon: <WalletIcon />, route:"WithdrawToBankScreen" },
+    { title: 'Wallet to Bank', icon: <TransferIcon />, route:"WithdrawToBankScreen" },
+  ], []);
     // Filter transactions based on type and search query
     const filteredTransactions = transactions.filter((tx) => {
         const matchesType = filter === "all" ? true : tx.type === filter;
@@ -218,8 +232,15 @@ const transactions: Transaction[] = [
               </View>
             </View>
             <TouchableOpacity onPress={() => setIsWallet(true)} style={styles.fundButton}>
-              <Text style={styles.fundButtonText}>Fund Wallet</Text>
+              <Text style={styles.fundButtonText}>Withdrawal</Text>
             </TouchableOpacity>
+                    <WithdrawFunds
+            isModalVisible={isWallet}
+            setIsModalVisible={setIsWallet}
+            data={WalletData}
+            placeholder='Select Withdrawal Method'
+            onSelect={() => ''}
+          />
           </View>
       
           {/* Section Header */}

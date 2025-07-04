@@ -17,6 +17,10 @@ import { UserDetails } from "@/utils/interface";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "@/hooks/useTheme";
 import AnimatedModal from "@/components/AnimatedModal";
+import QuestionIcon from "@/components/svg/QuestionIcon";
+import FeedbackIcon from "@/components/svg/FeedbackIcon";
+import ContactIcon from "@/components/svg/ContactIcon";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<
   RootStackParamList & AccountStackList & AuthStackParamList
@@ -30,28 +34,110 @@ const SettingsPage = ({ navigation }: Props) => {
   const backdropOpacity = new Animated.Value(0);
   const theme = useTheme();
 
-  const accountButtonData: IAccountButton[] = [
-    {
-      label: "Account Information",
-      desc: "Update your account information",
-      url: "AccountInformation",
-    },
-    {
-      label: "Parcel Updates",
-      desc: "Parcel notification settings",
-      url: "ParcelUpdates",
-    },
-    {
-      label: "Overdue Parcel",
-      desc: "Overdue parcel notification settings",
-      url: "OverdueParcel",
-    },
-    {
-      label: "Help and Support",
-      desc: "Get support or send feedback",
-      url: "HomeAndSupport",
-    },
-  ];
+  // const accountButtonData: IAccountButton[] = [
+  //   {
+  //     label: "Account Information",
+  //     desc: "Update your account information",
+  //     url: "AccountInformation",
+  //   },
+  //   {
+  //     label: "Parcel Updates",
+  //     desc: "Parcel notification settings",
+  //     url: "ParcelUpdates",
+  //   },
+  //   {
+  //     label: "Overdue Parcel",
+  //     desc: "Overdue parcel notification settings",
+  //     url: "OverdueParcel",
+  //   },
+  //   {
+  //     label: "Help and Support",
+  //     desc: "Get support or send feedback",
+  //     url: "HomeAndSupport",
+  //   },
+  // ];
+  interface IAccountButton {
+  label: string;
+  desc: string;
+  url?: string;
+icon?: React.ReactNode;
+}
+
+interface IAccountButtonSection {
+  heading: string;
+  buttons: IAccountButton[];
+}
+
+const accountSections: IAccountButtonSection[] = [
+  {
+    heading: "Account",
+    buttons: [
+      {
+        label: "Account Information",
+        desc: "Update your account information",
+        url: "AccountInformation",
+      },
+    ],
+  },
+   {
+    heading: "Parcels",
+    buttons: [
+      {
+        label: "Parcel Updates",
+        desc: "Parcel notification settings",
+        url: "ParcelUpdates",
+      },
+      {
+        label: "Overdue Parcel",
+        desc: "Overdue parcel notification settings",
+        url: "OverdueParcel",
+      },
+    ],
+  },
+   {
+    heading: "Disputes",
+    buttons: [
+      {
+        label: "Raise Dispute",
+        desc: "Raise a dispute for a parcel",
+        url: "RaiseDispute",
+      },
+      {
+        label: "Dispute History",
+        desc: "Access all your dispute history here",
+        url: "DisputeHistory",
+      },
+    ],
+  },
+  {
+    heading: "Support",
+    buttons: [
+      // {
+      //   label: "Help and Support",
+      //   desc: "Get support or send feedback",
+      //   url: "HomeAndSupport",
+      // },
+              {
+          label: "Support",
+          desc: "Get support for your issues and complaints",
+          url: "Support",
+        },
+             {
+          label: "FAQs and Feedback",
+          desc: "Get a quick answers to all your questions",
+          url: "HomeAndSupport",
+          icon: <QuestionIcon />
+        },
+        {
+          label: "Contact Us",
+          desc: "Get in touch with us",
+          url: "OverdueParcel",
+          icon: <ContactIcon />
+        },
+    ],
+  },
+];
+
   
   const $bodyHeader: ViewStyle = {
     flexDirection: "row",
@@ -105,7 +191,7 @@ const toggleLogoutModal = () => {
           }}
         >
           <Image
-            source={{ uri: userDetail?.userImage }}
+               source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}`}}
             style={{
               width: 84,
               height: 84,
@@ -118,15 +204,16 @@ const toggleLogoutModal = () => {
         
         <View style={styles.buttonContainer}>
           <View style={$bodyHeader}>
-            <Text font="SemiBold" size={18}>
+            <Text font="SemiBold" size={16}>
               {userDetail?.firstName} {userDetail?.lastName}
             </Text>
-            <Text size={14} font="Medium" color="#717680">
+            <Text size={12} font="Medium" color="#717680">
               Agent ID: {userDetail?.agentId}
             </Text>
           </View>
 
-          <AccountButton buttons={accountButtonData} />
+          <AccountButton sections={accountSections} />
+
         </View>
 
         <TouchableOpacity
@@ -134,25 +221,28 @@ const toggleLogoutModal = () => {
           style={{
             width: "100%",
             padding: RFValue(8),
+            display:"flex",
             flexDirection: "row",
-            marginVertical: RFValue(12),
+            marginVertical: RFValue(10),
             alignItems: "center",
             justifyContent: "space-between",
             backgroundColor: "#FDFDFD",
             borderWidth: 1,
-            borderColor: "#D5D7DA",
+            borderColor: "#F5F5F5",
             borderRadius: 8,
           }}
         >
           <View
             style={{
               flexDirection: "row",
+              display:"flex",
               alignItems: "center",
               justifyContent:"center",
               gap: RFValue(10),
             }}
           >
-            <LogoutIcon color="#F5F5F5" />
+            {/* <LogoutIcon color="#F5F 5F5" /> */}
+            <MaterialIcons name="logout" size={24} color="black" />
             <Text size={14} font="Medium">
               Log Out
             </Text>
@@ -206,7 +296,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingVertical: RFValue(24),
-    paddingHorizontal: RFValue(12),
+    paddingHorizontal: RFValue(4),
     backgroundColor: "#FAFAFA",
     marginTop: RFValue(16),
     borderRadius: RFValue(16),

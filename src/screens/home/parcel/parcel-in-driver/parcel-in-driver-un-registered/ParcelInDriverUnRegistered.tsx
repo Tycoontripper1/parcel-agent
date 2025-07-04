@@ -255,6 +255,7 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
     navigation.navigate("ParcelInDriverUnRegisteredPreview");
     console.log({ formData });
   };
+  
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -394,7 +395,7 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
           {/* Location Selector for Sending From */}
           {selectedFromState && (
             <SelectInput
-              label="Arriving From Location"
+              label="Arriving From Location/Motor park"
               data={fromLocations.map((loc) => loc.location)}
               placeholder="Select a dispatch location"
               onSelect={(locationName) => {
@@ -409,12 +410,12 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
           )}
           {agentParkLocation ? (
             <Input
-              label="Departure Motor Park"
+              label="Destination Motor Park"
               placeholder="Enter departure park"
               placeholderTextColor="#B8C2CC"
               value={agentParkLocation}
               onChangeText={(value) => {
-                dispatch(updateField({ key: "departureState", value }));
+                dispatch(updateField({ key: "deliveryMotorPark", value }));
                 if (value.trim()) {
                   setDepartureStateError("");
                 }
@@ -461,7 +462,7 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
           </Text>
 
           <Input
-            label="Parcel Type"
+            label="Parcel Type (Optional)"
             placeholder="Enter parcel type"
             placeholderTextColor="#B8C2CC"
             value={formData.parcelType}
@@ -550,7 +551,7 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
             </View>
             {/* Amount */}
             <Text style={styles.amount}>
-              {" "}
+              
               {formData.handlingFee && formData.chargesPayable
                 ? String(
                     Number(formData.handlingFee) +
@@ -597,7 +598,7 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
                   <TouchableOpacity key={index} style={styles.photoBox}>
                     {photo ? (
                       <Image
-                        source={{ uri: photo }}
+                        source={{ uri:  `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}`  }}
                         style={styles.photoPreview}
                       />
                     ) : (

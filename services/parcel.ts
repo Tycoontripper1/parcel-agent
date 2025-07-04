@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // const apiKey = "https://bc65-196-1-179-86.ngrok-free.app/parcel/v1.0/api"
 export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
 
+
 export const getToken = async (): Promise<string | null> => {
   try {
     const token = await AsyncStorage.getItem('token');

@@ -46,20 +46,14 @@ import HomeHeader from "@/components/share/HomeHeader";
         {
           label: "Feedback",
           desc: "Share your feedback and help us serve you better",
-          url: "ParcelUpdates",
+          url: "Feedback",
           icon: <FeedbackIcon />
-        },
-        {
-          label: "Contact Us",
-          desc: "Get in touch with us",
-          url: "OverdueParcel",
-          icon: <ContactIcon />
         },
       ];
   
     // Styles
     const $buttonsContainer: ViewStyle = {
-      paddingVertical: RFValue(16),
+      paddingHorizontal: RFValue(16),
     };
     const $signUpText: TextStyle = {
       fontSize: 16,
@@ -76,8 +70,10 @@ import HomeHeader from "@/components/share/HomeHeader";
           />
         )}
 
-          <HomeHeader type='Stack' title='Help and Support' />
-  
+       <View style={$buttonsContainer}>
+           <HomeHeader type='Stack' title='FAQs and Feedbacks' />
+       </View>
+
         <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}

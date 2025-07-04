@@ -14,7 +14,13 @@ import AccountChangePassword from '@/screens/account/account-information/account
 import ParcelUpdates from '@/screens/account/parcel-updates/ParcelUpdates';
 import OverdueParcel from '@/screens/account/overdue-parcel/OverdueParcel';
 import HomeAndSupport from '@/screens/account/home-support/HomeSupport';
+import RaiseDispute from '@/screens/account/raise-dispute/RaiseDispute';
+import Support from '@/screens/account/support/Support';
+import Feedback from '@/screens/account/feedback/Feedback';
+
+
 const Account = createStackNavigator<AccountStackList>();
+
 
 interface Props {
   navigation: any;
@@ -91,6 +97,21 @@ const AccountStack = ({navigation}: Props) => {
       <Account.Screen
         name='HomeAndSupport'
         component={HomeAndSupport}
+        options={{headerShown: false}}
+      />
+      <Account.Screen
+        name='RaiseDispute'
+        component={RaiseDispute}
+        options={{headerShown: false}}
+      />
+      <Account.Screen
+        name='Support'
+        component={Support}
+        options={{headerShown: false}}
+      />
+      <Account.Screen
+        name='Feedback'
+        component={Feedback}
         options={{headerShown: false}}
       />
     </Account.Navigator>

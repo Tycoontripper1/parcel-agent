@@ -16,9 +16,10 @@ interface ModalProps {
   onClose: () => void;
   
   message: string;
+  description?: string;
 }
 
-const CloseModal = ({ visible, onClose, message }: ModalProps) => {
+const CloseModal = ({ visible, onClose, message, description }: ModalProps) => {
   const { theme } = useTheme(); // Access the theme
 
   return (
@@ -34,6 +35,7 @@ const CloseModal = ({ visible, onClose, message }: ModalProps) => {
           <View style={styles.content}>
             <View style={{left:-8}}><CheckIcon  /></View>
             <Text style={styles.message}>{message}</Text>
+            <Text style={styles.description}>{description}</Text>
           </View>
 
           {/* Full-width Close Button */}
@@ -80,9 +82,16 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: RFValue(16),
-    textAlign: "center",
+    fontWeight: "bold",
+    // textAlign: "center",
     marginTop: RFValue(10),
     color: "#181D27",
+  },
+  description: {
+    fontSize: RFValue(14),
+    // textAlign: "center",
+    marginTop: RFValue(10),
+    color: "#414651",
   },
   actionButton: {
     width: "100%",

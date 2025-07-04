@@ -105,21 +105,22 @@ const HomeShipmentHistory = ({
         style={styles.shipmentRow}
         onPress={() => handleViewAll?.(item)}
       >
+     
         <Image
           source={{
-            uri: item?.parcel?.thumbnails[0] || fallbackImage,
+            uri:    `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${item?.parcel?.thumbnails[0] || fallbackImage}`,
           }}
           style={styles.shipmentImage}
         />
         <View style={styles.shipmentDetails}>
           <View style={{ flexDirection: "column", gap: 4 }}>
-            <Text size={RFValue(11)} color="#717680">
+            <Text size={RFValue(10)} color="#717680">
               Sender
             </Text>
-            <Text size={RFValue(10)}>
+            <Text size={RFValue(8)}>
               {item.sender.fullName || item.sender.phone}
             </Text>
-            <Text size={10} color="#717680">
+            <Text size={8} color="#717680">
               {formatDate(item.createdAt)}
             </Text>
           </View>
@@ -127,7 +128,7 @@ const HomeShipmentHistory = ({
             <Text size={10} color="#717680">
               Receiver
             </Text>
-            <Text size={RFValue(10)}>
+            <Text size={RFValue(8)}>
               {item?.receiver.fullName || item?.receiver.phone}
             </Text>
           </View>
@@ -135,7 +136,7 @@ const HomeShipmentHistory = ({
             <Text size={10} color="#717680">
               Charges
             </Text>
-            <Text size={RFValue(10)}>₦{item?.parcel.totalFee}</Text>
+            <Text size={RFValue(8)}>₦{item?.parcel.totalFee}</Text>
             <View
               style={{
                 backgroundColor: currentColor.bg,
@@ -146,7 +147,7 @@ const HomeShipmentHistory = ({
               <Text
                 style={{
                   color: currentColor.text,
-                  fontSize: RFValue(10),
+                  fontSize: RFValue(8),
                   textAlign: "center",
                 }}
               >

@@ -7,6 +7,10 @@ import NavigationStack from '@/navigation/NavigationStack';
 import Toast from 'react-native-toast-message';
 import {toastConfig} from '@/helper/toastConfig';
 import { Buffer } from 'buffer';
+import * as Notifications from 'expo-notifications';
+import { registerForPushNotificationsAsync } from '@/helper/notification';
+import { pushNotification } from './services/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function App() {
   const [loaded, error] = useFonts({
     Outfit: require('./assets/fonts/PublicSans-Regular.ttf'),
@@ -20,16 +24,41 @@ global.Buffer = Buffer;
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+  // useEffect(() => {
+  //   if (loaded) {
+  //     SplashScreen.hideAsync();
+  //   }
+  // }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
-  return (
+  // if (!loaded) {
+  //   return null;
+  // }
+  Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+       shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+ useEffect(() => {
+    registerForPushNotificationsAsync().then(async token => {
+      if (token) {
+        await AsyncStorage.setItem('notificationToken', token);
+      }
+    });
+
+    const subscription = Notifications.addNotificationReceivedListener(notification => {
+      console.log('Notification received:', notification);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+
+  return ( 
     <ThemeProvider>
       <NavigationStack />
       <Toast config={toastConfig} />

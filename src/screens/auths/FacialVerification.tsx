@@ -24,6 +24,7 @@ import {useDispatch} from 'react-redux';
 import { useSelector } from 'react-redux';
 import { updateUserKyc } from '../../../services/auth';
 import { getUser } from '../../../services/auth';
+import { upload } from '../../../services/upload';
 
 const {width, height} = Dimensions.get('window');
 
@@ -116,8 +117,8 @@ const FacialVerification = ({navigation}: Props) => {
     try {
       console.log(facialVerificationImage, 'facialVerificationImage');
       
-    // const userImageUrl = await upload([facialVerificationImage]);
-    //   console.log(userImageUrl, 'userImageUrl');
+    const userImageUrl = await upload([facialVerificationImage]);
+      console.log(userImageUrl, 'userImageUrl');
       const payload = {
         businessName: businessName,
         state: state,
@@ -127,9 +128,8 @@ const FacialVerification = ({navigation}: Props) => {
         identificationType: idType,
         identificationNumber: idNumber,
         identificationImages: [idFrontImage, idBackImage],
-        userImage: facialVerificationImage, // ✅ Use the first image URL from the array
-        // userImage: userImageUrl?.data?.images[0], // ✅ Use the first image URL from the array
-        // userImage: userImageUrl?.data.url
+        // userImage: facialVerificationImage, // ✅ Use the first image URL from the array
+        userImage: userImageUrl?.data?.details[0], // ✅ Use the first image URL from the array
       };
       console.log(payload, 'payload');
   

@@ -23,8 +23,10 @@ import PrintParcel from '@/components/PrintParcel';
 import PrintParcelItem from '@/components/printParcelItem';
 import { HomeShipmentHistoryScreen } from '@/components/HomeShipmentHistoryScreen';
 import ReceiverType from '@/screens/home/parcel/parcel-out-receiver/ReceiverType';
+import ParcelOutReceiver from '@/screens/home/parcel/parcel-out-receiver/receiver/ParcelOutReceiver';
 
 import ParcelCongratulation from '@/screens/home/parcel/ParcelCongratulation';
+import ParcelOtpVerificationReceiver from '@/screens/home/parcel/parcel-out-receiver/receiver/ParcelOtpVerificationReceiver';
 const Report = createStackNavigator<ReportStackList>();
 
 interface Props {
@@ -152,6 +154,16 @@ const ReportStack = ({navigation}: Props) => {
             <Report.Screen
               name='ReceiverType'
               component={ReceiverType}
+              options={{headerShown: false}}
+            />
+            <Report.Screen
+              name='ParcelOutReceiver'
+              component={ParcelOutReceiver}
+              options={{headerShown: false}}
+            />
+            <Report.Screen
+              name='ParcelOtpVerificationReceiver'
+              component={ParcelOtpVerificationReceiver}
               options={{headerShown: false}}
             />
     </Report.Navigator>

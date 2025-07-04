@@ -12,19 +12,30 @@ export interface IAccountButton {
   label: string;
   url?: string;
   desc: string
+  icon?: React.ReactNode;
 }
 
-interface AccountButtonsProps {
+interface IAccountButtonSection {
+  heading: string;
   buttons: IAccountButton[];
 }
 
+interface AccountButtonsProps {
+  sections: IAccountButtonSection[];
+}
 
-const AccountButton = ({ buttons }: AccountButtonsProps) => {
+const AccountButton = ({ sections }: AccountButtonsProps) => {
   const navigation = useNavigation();
   return (
     <View style={styles.parcelButtonsContainer}>
-      {buttons.map((button, index) => (
-       <TouchableOpacity
+      {sections.map((section, sectionIndex) => (
+        <View key={sectionIndex} style={{ marginBottom: 10 }}>
+          <Text size={12} font="Bold" color="#A4A7AE" style={{ marginBottom: 10 }}>
+            {section.heading}
+          </Text>
+
+          {section.buttons.map((button, buttonIndex) => (
+                  <TouchableOpacity
        onPress={() => {
          if (button.url) {
            navigation.navigate("AccountStack", {
@@ -32,7 +43,7 @@ const AccountButton = ({ buttons }: AccountButtonsProps) => {
            });
          }
        }}
-       key={index}
+       key={buttonIndex}
        style={{ marginBottom: 10 }} // Adds space between buttons
      >
        <View
@@ -48,7 +59,9 @@ const AccountButton = ({ buttons }: AccountButtonsProps) => {
            borderRadius: 10,
          }}
        >
-         <View
+    <View style={{flexDirection:"row", gap: 6, alignItems:"center"}}>
+         <View>{button.icon}</View>
+    <View
            style={{
              flexDirection: "column",
              alignItems: "flex-start",
@@ -62,20 +75,23 @@ const AccountButton = ({ buttons }: AccountButtonsProps) => {
              {button.desc}
            </Text>
          </View>
+    </View>
      
          <ArrowRight color="" />
        </View>
      </TouchableOpacity>
-     
+          ))}
+        </View>
       ))}
     </View>
   );
 };
 
+
 const styles = StyleSheet.create({
   parcelButtonsContainer: {
     flexDirection: "column",
-    flexWrap: "wrap",
+    // flexWrap: "wrap",
     gap: 10,
     padding: RFValue(8),
     borderRadius: RFValue(8),

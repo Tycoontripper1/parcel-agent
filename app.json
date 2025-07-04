@@ -18,14 +18,15 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#213264"
+        "backgroundColor": "#213264",
+              "googleServicesFile": "./android/app/google-services.json"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "CAMERA",
         "WRITE_EXTERNAL_STORAGE"
       ],
-      "package": "com.codydematth.parcelagent"
+      "package": "com.app.parcelagent"
     },
     "web": {
       "favicon": "./assets/favicon.png"

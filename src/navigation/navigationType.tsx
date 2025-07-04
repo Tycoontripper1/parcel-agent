@@ -84,7 +84,13 @@ export type WalletStackList = {
   TransactionHistory: undefined;
   NotificationsScreen: undefined;
   WalletEarnings: undefined;
-  
+  WalletToWallet: undefined;
+  WithdrawToBankScreen: undefined;
+  InputWithdrawAmountScreen:{
+    accountNumber: string;
+    accountName: string;
+    bankCode: string;
+  };
   ComingSoon: undefined;
 };
 export type AccountStackList = {
@@ -98,6 +104,9 @@ export type AccountStackList = {
   OverdueParcel: undefined;
   ParcelUpdates: undefined;
   Settings: undefined;
+  RaiseDispute: undefined;
+  Support: undefined;
+  Feedback: undefined;
 };
 export type ReportStackList = {
   Reports: undefined;
@@ -118,7 +127,8 @@ export type ReportStackList = {
   PrintParcel: undefined;
   PrintParcelItem: undefined;
   ReceiverType: undefined;
-
+ParcelOutReceiver: {readOnly:boolean};
+ParcelOtpVerificationReceiver: {readonly:boolean};
   ParcelCongratulation: {message: string, note: string};
     HomeShipmentHistory: {
     searchQuery: string;

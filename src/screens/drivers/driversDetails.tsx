@@ -112,6 +112,7 @@ const DriversDetails = ({ navigation,route }: Props) => {
     addedBy: "Nill",
     createdAt: "Nill",
   };
+  console.log(driver.identificationImages, "driverDtaisls")
   const saveDriverDetails = async () => {
     await AsyncStorage.setItem('driver', JSON.stringify(driver));
     await AsyncStorage.setItem('driverId', driver?.id);
@@ -164,7 +165,7 @@ const DriversDetails = ({ navigation,route }: Props) => {
         >
      {driver.userImage ? (
   <Image
-    source={{ uri: driver.userImage }}
+    source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${driver.userImage}` }}
     style={{
       width: 84,
       height: 84,
@@ -325,12 +326,12 @@ const DriversDetails = ({ navigation,route }: Props) => {
   <View style={styles.sectionContainer}>
     <Text style={styles.title}>Front Image</Text>
     <Image
-      source={{ uri: driver.identificationImages[0] }}
+      source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${driver.identificationImages[0]}` }}
       style={styles.image}
     />
     <Text style={styles.title}>Back Image</Text>
     <Image
-      source={{ uri: driver.identificationImages[1] }}
+      source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${driver.identificationImages[1]}` }}
       style={styles.image}
     />
   </View>

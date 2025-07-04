@@ -162,12 +162,13 @@ const AccountInformation = ({ navigation }: Props) => {
           }}
         >
           {/* Profile Image */}
+          
           <Image
             source={
               selectedImage
                 ? { uri: selectedImage }
-                : userDetail?.userImage
-                ? { uri: userDetail.userImage }
+                : `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}`
+                ? { uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}` }
                 : undefined
             }
             style={{
@@ -185,7 +186,7 @@ const AccountInformation = ({ navigation }: Props) => {
             <EditIcon />
           </TouchableOpacity>
           <View style={$bodyHeader}>
-            <Text font="SemiBold" size={16}>
+            <Text font="SemiBold" size={14}>
               {userDetail?.firstName} {userDetail?.lastName}
             </Text>
             <View
@@ -196,7 +197,7 @@ const AccountInformation = ({ navigation }: Props) => {
                 borderColor: "#E9EAEB",
               }}
             >
-              <Text size={12} font="Medium" color="#717680">
+              <Text size={10} font="Medium" color="#717680">
                 Agent ID: {userDetail?.agentId}
               </Text>
             </View>
@@ -211,12 +212,12 @@ const AccountInformation = ({ navigation }: Props) => {
             paddingHorizontal: RFValue(12),
           }}
         >
-          <Text font="SemiBold" size={16}>
+          <Text font="SemiBold" size={14}>
             Personal Information
           </Text>
           {!editInfo && (
             <TouchableOpacity style={styles.edit} onPress={handleEditProfile}>
-              <Text font="Regular" size={14} color="#213264">
+              <Text font="Regular" size={12} color="#213264">
                 Edit Profile
               </Text>
               <EditIcon />

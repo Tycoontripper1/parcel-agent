@@ -28,6 +28,16 @@ const omitAnObjectKey = (obj: any, ...props: any[]) => {
   });
   return result;
 };
+export const formatCurrency = (value:any) => {
+  if (!value) return '';
+  const amount = parseFloat(value) / 100;
+  return amount.toLocaleString('en-NG', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 
 const findObjectByValueInArray = (
   arr: IObjectMapper[] | any,
@@ -43,7 +53,7 @@ const calculatePerc = (amount: string) => {
   return (perc * num).toFixed(2) + '';
 };
 
-const formatToDays = (date: string) => {
+export const formatToDays = (date: string) => {
   const date_1 = new Date(date);
   const date_2 = new Date();
 
@@ -113,4 +123,5 @@ export const Helper = {
   paddingTop,
   numberFormat,
   vibrate,
+  formatCurrency,
 };
