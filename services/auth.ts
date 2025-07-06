@@ -31,6 +31,16 @@ export const getUser = async (): Promise<any | null> => {
     return null;
   }
 };
+export const getProfile = async (): Promise<any | null> => {
+  try {
+    const user = await AsyncStorage.getItem('userProfile');
+    return user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    return null;
+  }
+};
+
 export const getDriver = async (): Promise<any | null> => {
   try {
     const driver = await AsyncStorage.getItem('driver');
@@ -49,6 +59,28 @@ export const clearAuth = async () => {
     console.error('Error clearing auth:', error);
   }
 };
+export const getUserProfile = async () => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/users/profile?userType=agent`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get users failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
 
 export const registerUser = async (data: {
   firstName: string;

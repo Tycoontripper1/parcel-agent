@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useCallback, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -8,11 +8,12 @@ import {
   Platform,
   ViewStyle,
   Alert,
+  Keyboard,
 } from "react-native";
 
 import { RFValue } from "react-native-responsive-fontsize";
 import Text from "@/components/Text";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import type { RouteProp } from "@react-navigation/native";
 import HomeHeader from "@/components/share/HomeHeader";
 import { CustomView, Spinner } from "@/components";
@@ -24,6 +25,15 @@ import { RootState } from "@/redux/store";
 import { updateField } from "@/redux/slices/formSlice";
 import { fundTransfer } from "../../../../../services/transaction";
 import Toast from "react-native-toast-message";
+import TransferErrorModal from "@/components/TransferErrorModal";
+import {
+  HomeStackList,
+  RootStackParamList,
+  WalletStackList,
+} from "@/navigation/navigationType";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { getUserProfile } from "../../../../../services/auth";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const fixedAmounts = [100, 500, 1000, 2000, 5000, 10000];
 
@@ -31,10 +41,12 @@ type WithdrawAmountRouteParams = {
   accountNumber?: string;
   accountName?: string;
   bankCode?: string;
+  bankName?: string;
 };
 const $buttonsContainer: ViewStyle = {
   paddingVertical: RFValue(10),
 };
+
 
 export const formatCurrency = (value: any) => {
   if (!value) return "";
@@ -45,107 +57,204 @@ export const formatCurrency = (value: any) => {
     maximumFractionDigits: 2,
   });
 };
-
+type Props = NativeStackScreenProps<WalletStackList>;
 const InputWithdrawAmountScreen = ({
   route,
-}: {
-  route: RouteProp<{ params: WithdrawAmountRouteParams }, "params">;
-}) => {
+  navigation,
+}: NativeStackScreenProps< HomeStackList>) => {
   const [amount, setAmount] = useState("");
-  const navigation = useNavigation();
   const [formattedAmount, setFormattedAmount] = useState("");
-    const formData = useSelector((state: RootState) => state.form);
+  const formData = useSelector((state: RootState) => state.form);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   // you can get account details from previous screen like this:
-  const { accountNumber, accountName, bankCode } = route.params || {};
+  const { accountNumber, accountName, bankCode, bankName } =
+    (route.params as WithdrawAmountRouteParams) || {};
+  const [rawAmount, setRawAmount] = useState(""); // Stores raw number (e.g., "1", "200")
+  const [displayValue, setDisplayValue] = useState(""); // Empty initial value, shows placeholder
+const [userProfile, setUserProfile] = useState<any>(null);
 
-  // Handle typing input
-  const handleAmountChange = (text: string) => {
-    const numeric = text.replace(/[^0-9]/g, "");
-    console.log(numeric, "numeric value");
-    if (numeric === "") {
-      setAmount("");
-      setFormattedAmount("0");
-    } else {
-      setAmount(numeric);
-console.log(amount)
-       dispatch(updateField({ key: "amount", value: Number(numeric) }));
-      setFormattedAmount(formatCurrency(numeric));
-    }
+    useFocusEffect(
+      useCallback(() => {
+        const fetchUser = async () => {
+          const userDetails = await getUserProfile();
+          setUserProfile(userDetails?.data?.details || null);
+        };
+        fetchUser();
+      }, [])
+    );
+
+  
+const formatForDisplay = (value: string) => {
+  if (!value) return ""; // Returns empty string for empty input (shows placeholder)
+  
+  // Handle cases where value ends with . or .0 (partial decimal entry)
+  if (value.endsWith(".")) return `${value}00`;
+  if (value.endsWith(".0")) return `${value}0`;
+  
+  const num = parseFloat(value);
+  
+  // Return formatted number with commas and 2 decimal places
+  return num.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
+const handleAmountChange = (text: string) => {
+  // 1. Clean input - allow only numbers and single decimal point
+  let numericValue = text
+    .replace(/[^0-9.]/g, "") // Remove non-numeric chars
+    .replace(/(\..*)\./g, "$1"); // Allow only one decimal point
+
+  // 2. Update raw value (unformatted)
+  setRawAmount(numericValue);
+  
+  // 3. Update display value (formatted)
+  setDisplayValue(numericValue); // Show raw while typing
+  
+  // 4. Send raw value to backend (without formatting)
+  const backendValue = numericValue === "" ? "0" : numericValue.split(".")[0];
+  dispatch(updateField({ key: "amount", value: Number(backendValue) }));
+};
+
+const handleBlur = () => {
+  // Format display when field loses focus
+  if (rawAmount) {
+    setDisplayValue(formatForDisplay(rawAmount));
+  } else {
+    setDisplayValue(""); // Shows placeholder when empty
+  }
+};
+
+  const handleSelectAmount = (value: number) => {
+    const numeric = String(value);
+    setRawAmount(numeric);
+    setDisplayValue(numeric);
+    dispatch(updateField({ key: "amount", value: value }));
   };
 
-  // Handle fixed amount click
-  const handleSelectAmount = (value: any) => {
-    const numeric = String(value * 100);
-    setAmount(numeric);
-    dispatch(updateField({ key: "amount", value: Number(numeric) }));
-    setFormattedAmount(formatCurrency(numeric));
-  };
   const handleContinue = () => {
     //   if (!amount || isNaN(Number(amount))) return;
     setShowModal(true);
-    // Navigate or send to API
-    //   navigation.navigate('WithdrawSummary', {
-    //     amount,
-    //     accountNumber,
-    //     accountName,
-    //     bankCode,
-    //   });
   };
-  const handlePay = async () => {
-    // Optional: validate input
-    if (!amount || parseFloat(amount) <= 0) {
-      Alert.alert("Error", "Please enter a valid amount.");
-      return;
-    }
-    if (!accountNumber || !accountName) {
-      Alert.alert("Error", "Account number and account name are required.");
-      return;
+const handlePay = async () => {
+  Keyboard.dismiss(); // Add this before showing modal
+  // Validate input
+  if (!rawAmount || parseFloat(rawAmount) <= 0) {
+    Alert.alert("Error", "Please enter a valid amount.");
+    return;
+  }
+  if (!accountNumber || !accountName) {
+    Alert.alert("Error", "Account number and account name are required.");
+    return;
+  }
+
+  setShowModal(false);
+  setLoading(true);
+
+  const data = {
+    account_number: accountNumber,
+    bank_code: bankCode,
+    account_name: accountName,
+    amount: String(rawAmount),
+    narration: formData.narration || "",
+    sender_name: userProfile?.wallet?.accountName,
+  };
+  console.log("Transfer Data:", data);
+
+  try {
+    Keyboard.dismiss(); // Add this before showing modal
+    const result = await fundTransfer(data);
+    
+    // Success handling
+    Toast.show({
+      type: "success",
+      text1: "Transfer Successful",
+      text2: `₦${formatForDisplay(rawAmount)} sent to ${accountName}`,
+      position: "top",
+      visibilityTime: 4000,
+      topOffset: 50,
+    });
+
+    navigation.navigate("ReceiptScreen", {
+      trxId: result.data.details.trxId,
+      sessionId: result.data.details.sessionId,
+      amount: String(rawAmount) || "0",
+      accountName,
+      accountNumber,
+      bankName,
+      narration: formData.narration,
+    });
+
+  } catch (error: any) {
+    Keyboard.dismiss(); // Add this before showing modal
+    let errorMessage = "Transfer failed. Please try again later.";
+    
+    // Customize messages based on error type
+    if (error.response) {
+      switch (error.response.status) {
+        case 400:
+          errorMessage = error.response.data?.message || "Invalid transaction details";
+          break;
+        case 401:
+          errorMessage = "Session expired. Please login again";
+          break;
+        case 403:
+          errorMessage = "Insufficient balance for this transaction";
+          break;
+        case 500:
+          errorMessage = "Server error. Please try again later";
+          break;
+      }
+    } else if (error.message?.includes("network")) {
+      errorMessage = "Network error. Check your connection";
     }
 
-    // Optional: disable the button / show loader here
-        setShowModal(false);
-    setLoading(true);
-    const data = {
-      account_number: accountNumber,
-      bank_code: bankCode,
-      account_name: accountName,
-      amount: parseFloat(amount),
-      narration: formData.narration || "",
-      sender_name: "Oladeji Toheeb",
-    };
-    try {
-      const result = await fundTransfer(data);
-      console.log(result.data.details);
-      Toast.show({
-        type: "success",
-        text1: "Payment Successful",
-        text2: `₦${formatCurrency(formData.amount)} has been sent to ${accountName}`,
-      });
-         setShowModal(false);
-    } catch (error) {
-      console.error("Fetch error:", error);
-      setLoading(false);
-    }
+   // Show error modal
+   setShowErrorModal(true);
 
-    // setTimeout(() => {
-    //   Alert.alert("Success", "Payment completed successfully!");
-    //   setShowModal(false);
-    //   // reset form state if needed
-    // }, 1000);
-  };
+    // Also show toast notification
+    Toast.show({
+      type: "error",
+      text1: "Transfer Failed",
+      text2: errorMessage,
+      position: "top",
+      visibilityTime: 5000,
+      topOffset: 50,
+    });
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   const [showModal, setShowModal] = useState(false);
   return (
     <CustomView style={{ flex: 1, backgroundColor: "#fff" }}>
-          {loading && (
+      {loading && (
         <Spinner
           message={`Processing your Payment Please wait.....`}
-          width={'75%'}
+          width={"75%"}
           height={200}
         />
       )}
+        <TransferErrorModal
+        visible={showErrorModal}
+        errorMessage={errorMessage}
+        amount={formatForDisplay(rawAmount)}
+        recipient={accountName || ""}
+        onRetry={() => {
+          setShowErrorModal(false);
+          handlePay(); // Retry the payment
+        }}
+        onCancel={() => {
+          setShowErrorModal(false);
+          // Additional cleanup if needed
+        }}
+      />
       <BottomSheetModal
         isVisible={showModal}
         onClose={() => setShowModal(false)}
@@ -154,7 +263,7 @@ console.log(amount)
         <View style={{ gap: RFValue(12) }}>
           <View style={{ flexDirection: "row", justifyContent: "center" }}>
             <Text style={{ fontWeight: "700", fontSize: RFValue(25) }}>
-             ₦{formatCurrency(formData.amount)}
+              ₦{formatForDisplay(String(formData.amount))}
             </Text>
           </View>
           {/* Account Number and Bank */}
@@ -181,37 +290,42 @@ console.log(amount)
           >
             <Text style={{ color: "#888" }}>Amount</Text>
             <Text style={{ fontSize: RFValue(16), fontWeight: "bold" }}>
-                ₦{formatCurrency(formData.amount)}
+              ₦{formatForDisplay(String(formData.amount))}
             </Text>
           </View>
 
           {/* Payment Method */}
-          <View>
+       <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             <Text style={{ color: "#888" }}>Payment Method</Text>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#f0f0f0",
-                paddingVertical: RFValue(10),
-                paddingHorizontal: RFValue(12),
-                borderRadius: RFValue(8),
-                marginTop: RFValue(5),
-              }}
-            >
-              <Text>Wallet</Text>
-            </TouchableOpacity>
+            <Text style={{ fontSize: RFValue(16), fontWeight: "bold" }}>
+              Wallet
+            </Text>
           </View>
 
           {/* Available Balance */}
-          <View style={{ marginTop: RFValue(10) }}>
-            <Text style={{ color: "#888" }}>Available Balance</Text>
-            <Text style={{ fontWeight: "bold" }}>₦10,200</Text>
-          </View>
+         <View style={styles.balanceContainer}>
+  <View style={styles.balanceRow}>
+    <Text style={styles.balanceLabel}>Available Balance</Text>
+    <Text style={styles.balanceAmount}>₦{formatForDisplay(String(userProfile?.wallet?.balance))}</Text>
+  </View>
+  
+  {/* Insufficient Funds Warning - Only shows when amount > balance */}
+  {parseFloat(rawAmount) > userProfile?.wallet?.balance && (
+    <View style={styles.warningContainer}>
+      <MaterialIcons name="error-outline" size={16} color="#FF3B30" />
+      <Text style={styles.warningText}>Insufficient balance</Text>
+    </View>
+  )}
+</View>
 
           <View style={$buttonsContainer}>
             <ButtonHome
               onPress={handlePay}
-              title=  {`Pay ₦${formatCurrency(formData.amount)}`}
+              title={`Pay ₦${formatForDisplay(String(formData.amount))}`}
               style={{ height: 45 }}
+                disabled={!rawAmount || parseFloat(rawAmount)> userProfile?.wallet?.balance}
             />
           </View>
         </View>
@@ -228,12 +342,13 @@ console.log(amount)
         <Text style={styles.label}>Enter amount in ₦</Text>
         <View style={styles.amountInputWrapper}>
           <Text style={styles.nairaIcon}>₦</Text>
-          <TextInput
-            value={formattedAmount}
+   <TextInput
+            value={displayValue}
             onChangeText={handleAmountChange}
-            placeholder="0"
+            onBlur={handleBlur}
+            placeholder="0.00"
             placeholderTextColor="#999"
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
             style={styles.amountInput}
           />
         </View>
@@ -270,7 +385,7 @@ console.log(amount)
             onPress={handleContinue}
             title={"Continue"}
             style={{ height: 45 }}
-            disabled={!amount}
+            disabled={!rawAmount}
           />
         </View>
       </KeyboardAvoidingView>
@@ -285,6 +400,41 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: RFValue(16),
     marginTop: RFValue(30),
+  },
+    balanceContainer: {
+    marginTop: RFValue(16),
+    padding: RFValue(12),
+    backgroundColor: '#FAFAFA',
+    borderRadius: RFValue(8),
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  balanceLabel: {
+    color: '#888',
+    fontSize: RFValue(14),
+  },
+  balanceAmount: {
+    fontWeight: 'bold',
+    fontSize: RFValue(16),
+    color: '#00A300', // Green for positive balance
+  },
+  warningContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: RFValue(8),
+    padding: RFValue(8),
+    backgroundColor: '#FFF0F0',
+    borderRadius: RFValue(4),
+  },
+  warningText: {
+    color: '#FF3B30',
+    fontSize: RFValue(12),
+    marginLeft: RFValue(4),
   },
   amountInputWrapper: {
     flexDirection: "row",
@@ -387,3 +537,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+

@@ -148,25 +148,6 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
     const cleanSenderPhone = formData.senderPhoneNumber.replace(/\D/g, "");
     const cleanReceiverPhone = formData.receiverPhoneNumber.replace(/\D/g, "");
 
-    // Driver Name
-    // if (!formData.driverName.trim()) {
-    //   setDriverNameError("Driver name is required.");
-    //   isValid = false;
-    // } else {
-    //   setDriverNameError("");
-    // }
-
-    // // Driver Number
-    // if (!cleanDriverNumber) {
-    //   setDriverPhoneError("Phone Number is required.");
-    //   isValid = false;
-    // } else if (cleanDriverNumber.length !== 11) {
-    //   setDriverPhoneError("Please enter a valid 11-digit mobile number.");
-    //   isValid = false;
-    // } else {
-    //   setDriverPhoneError("");
-    // }
-
     // Sender Phone
     if (!cleanSenderPhone) {
       setSenderPhoneError("Phone Number is required.");
@@ -341,42 +322,6 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
             keyboardType="number-pad"
             errorMessage={senderPhoneError}
           />
-          {/* <Input
-            label="Driver Phone Number"
-            placeholder="Enter phone number"
-            placeholderTextColor="#B8C2CC"
-            value={formData.driverNumber}
-            onChangeText={(value) => {
-              const cleaned = value.replace(/\D/g, "").slice(0, 11);
-              dispatch(
-                updateField({
-                  key: "driverNumber",
-                  value: formatPhoneNumber11(cleaned),
-                })
-              );
-              if (cleaned.length === 11) setDriverPhoneError("");
-            }}
-            keyboardType="number-pad"
-            errorMessage={driverPhoneError}
-          />
-          <Input
-            label="Driver Name"
-            placeholder="Enter driver name"
-            placeholderTextColor="#B8C2CC"
-            value={formData.driverName}
-            onChangeText={(value) => {
-              dispatch(
-                updateField({
-                  key: "driverName",
-                  value,
-                })
-              );
-              if (value.trim()) setDriverNameError("");
-            }}
-            keyboardType="default"
-            errorMessage={driverNameError}
-          /> */}
-
           <SelectInput
             label="Arriving From State"
             data={Object.keys(statesWithLocations)}

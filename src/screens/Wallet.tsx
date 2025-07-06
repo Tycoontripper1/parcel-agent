@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -12,12 +12,13 @@ import {
   ImageBackground,
   ViewStyle,
   Alert,
+  RefreshControl,
 } from "react-native";
-import * as Clipboard from 'expo-clipboard';
+import * as Clipboard from "expo-clipboard";
 import { color } from "@/constants/Colors";
 
 import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { CustomView } from "@/components";
 import ScreenHeader from "@/components/share/ScreenHeader";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -34,8 +35,9 @@ import TransferIcon from "@/components/svg/TransferIcon";
 import USSDIcon from "@/components/svg/USSDIcon";
 import EmptyWallet from "@/components/svg/EmptyEarning";
 import BottomSheetModal from "@/components/BottomSheetModal";
+import { getUserProfile } from "../../services/auth";
 
-const transactions:any = [
+const transactions: any = [
   // {
   //   id: "1",
   //   type: "credit",
@@ -66,7 +68,7 @@ const transactions:any = [
   // },
 ];
 const { width } = Dimensions.get("window");
-type Props = NativeStackScreenProps< WalletStackList>;
+type Props = NativeStackScreenProps<WalletStackList>;
 
 export interface Wallet {
   title: string;
@@ -75,267 +77,283 @@ export interface Wallet {
 
 const WalletScreen = ({ navigation }: Props) => {
   const [isWallet, setIsWallet] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [filter, setFilter] = useState("all");
-  const filteredTransactions = transactions?.filter((tx:any) =>
+  const filteredTransactions = transactions?.filter((tx: any) =>
     filter === "all" ? true : tx.type === filter
   );
   const [showModal, setShowModal] = useState(false);
-  const groupedTransactions = filteredTransactions.reduce((acc:any, tx:any) => {
-    if (!acc[tx.date]) acc[tx.date] = [];
-    acc[tx.date].push(tx);
-    return acc;
-  }, {} as Record<string, typeof transactions>);
+  const groupedTransactions = filteredTransactions.reduce(
+    (acc: any, tx: any) => {
+      if (!acc[tx.date]) acc[tx.date] = [];
+      acc[tx.date].push(tx);
+      return acc;
+    },
+    {} as Record<string, typeof transactions>
+  );
 
-const $bodyHeader: ViewStyle = {
-  paddingTop: RFValue(18),
-  paddingBottom: RFValue(12),
+  const $bodyHeader: ViewStyle = {
+    paddingTop: RFValue(18),
+    paddingBottom: RFValue(12),
+  };
+
+  const copyToClipboard = async (text: string) => {
+    await Clipboard.setStringAsync(text);
+    Alert.alert("Copied", "Account number copied to clipboard");
+  };
+
+    useFocusEffect(
+      useCallback(() => {
+        const fetchUser = async () => {
+          const userDetails = await getUserProfile();
+          console.log(userDetails?.data?.details.wallet, "User Profile Data");
+          setUserProfile(userDetails?.data?.details.wallet || null);
+        };
+        fetchUser();
+      }, [])
+    );
+    const [refreshing, setRefreshing] = useState(false);
+
+const onRefresh = async () => {
+  setRefreshing(true);
+  await getUserProfile();
+  setRefreshing(false);
 };
 
-const copyToClipboard = async (text: string) => {
-  await Clipboard.setStringAsync(text);
-  Alert.alert("Copied", "Account number copied to clipboard");
-};
-  const WalletData: Wallet[] = [
-    {
-      title: 'Bank Name',
-      icon: "Providus Virtual Account",
-      // title: 'Fund with Card',
-      // icon: <WalletIcon />,
-    },
-    {
-      title: 'Account Number',
-      icon: "1234567890",
-      // title: 'Fund with Bank Transfer',
-      // icon: <TransferIcon />,
-    },
   
-  ];
   return (
     <CustomView style={styles.container}>
-      <ScreenHeader
-        title="Wallet"
-        onNotificationShow={false}
-        type="Home"
-      />
+      <ScreenHeader title="Wallet" onNotificationShow={false} type="Home" />
       {/* <KeyboardAvoidingView
         style={{ paddingTop: 10 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       > */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="handled"
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+              colors={["#00A300"]} // Your brand color
+            tintColor="#00A300" // For iOS
+          />
+        }
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            width: "100%",
+            gap: RFValue(6),
+          }}
         >
-          <View
+          {/* Balance Card */}
+          <View style={styles.balanceCard}>
+            <View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                }}
+              >
+                <View>
+                  <WalletIconBlue />
+                  <Text style={styles.balanceLabel}>Wallet Balance</Text>
+                  <Text style={styles.balance}>₦{userProfile?.balance}</Text>
+                </View>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => setShowModal(true)}
+              style={styles.fundButton}
+            >
+              <Text style={styles.fundButtonText}>Fund Wallet</Text>
+            </TouchableOpacity>
+          </View>
+          {/* Balance Card */}
+          <View style={styles.balanceCard}>
+            <View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                }}
+              >
+                <View>
+                  <EarningIcon />
+                  <Text style={styles.balanceLabel}>Earnings</Text>
+                  <Text style={styles.balance}>₦0.00</Text>
+                </View>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("WalletEarnings")}
+              style={styles.fundButton}
+            >
+              <Text style={styles.fundButtonText}>View</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={$bodyHeader}>
+          <Text
             style={{
-              flexDirection: "row",
-              width:"100%",
-              gap: RFValue(6),
+              color: "#414651",
+              fontSize: RFValue(18),
+              fontWeight: "500",
             }}
           >
-            {/* Balance Card */}
-            <View
-              style={styles.balanceCard}
-            >
-              <View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <View>
-                    <WalletIconBlue />
-                    <Text style={styles.balanceLabel}>Wallet Balance</Text>
-                    <Text style={styles.balance}>₦0.00</Text>
-                  </View>
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() => setShowModal(true)}
-                style={styles.fundButton}
-              >
-                <Text style={styles.fundButtonText}>Fund Wallet</Text>
-              </TouchableOpacity>
-            </View>
-            {/* <FundWallet
-            isModalVisible={isWallet}
-            setIsModalVisible={setIsWallet}
-            data={WalletData}
-            placeholder='Fund Wallet'
-            onSelect={() => ''}
-          /> */}
-            {/* Balance Card */}
-            <View
-              style={styles.balanceCard}
-            >
-              <View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <View>
-                    <EarningIcon />
-                    <Text style={styles.balanceLabel}>Earnings</Text>
-                    <Text style={styles.balance}>₦0.00</Text>
-                  </View>
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('WalletEarnings')}
-                style={styles.fundButton}
-              >
-                <Text style={styles.fundButtonText}>View</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={$bodyHeader}>
-            <Text style={{color:"#414651", fontSize:RFValue(18), fontWeight:'500'}}>
             Transaction History
-            </Text>
+          </Text>
         </View>
-          <View style={styles.filterContainer}>
-            {["all", "credit", "debit"].map((type) => (
-              <TouchableOpacity
-                key={type}
+        <View style={styles.filterContainer}>
+          {["all", "credit", "debit"].map((type) => (
+            <TouchableOpacity
+              key={type}
+              style={[
+                styles.filterButton,
+                filter === type && styles.activeFilter,
+              ]}
+              onPress={() => setFilter(type)}
+            >
+              <Text
                 style={[
-                  styles.filterButton,
-                  filter === type && styles.activeFilter,
+                  styles.filterText,
+                  filter === type && styles.activeText,
                 ]}
-                onPress={() => setFilter(type)}
               >
-                <Text
-                  style={[
-                    styles.filterText,
-                    filter === type && styles.activeText,
-                  ]}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          {/* <FlatList
-            data={Object.keys(groupedTransactions)}
-            keyExtractor={(date) => date}
-            renderItem={({ item: date }) => (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{date}</Text>
-                {groupedTransactions[date].map((tx) => (
-                  <View key={tx.id} style={styles.transactionRow}>
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <View style={styles.transactionIconContainer}>
-                        {tx.type === "credit" ? <CreditIcon /> : <DebitIcon />}
-                      </View>
-                      <View style={{ flexDirection: "column", gap: 12 }}>
-                        <Text style={styles.transactionTitle}>{tx.title}</Text>
-                        <Text style={styles.transactionDate}>{tx.date}</Text>
-                      </View>
-                    </View>
-
-                    <View style={{ flexDirection: "column", gap: 8 }}>
-                      <Text style={[styles.transactionAmount]}>
-                        ₦{Math.abs(tx.amount)}
-                      </Text>
-                      <Text
-                        style={[
-                          styles.transactionType,
-                          tx.type === "credit" ? styles.credit : styles.debit,
-                        ]}
-                      >
-                        {tx.type === "credit" ? "Credit" : "Debit"}
-                      </Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
-              
-          /> */}
-<View style={''}>
-  {Object.keys(groupedTransactions).length === 0 ? (
-    <View style={styles.emptyContainer}>
-      <EmptyWallet />
-      <Text style={styles.emptyText}>No transactions yet</Text>
-    </View>
-  ) : (
-    <>
-      {Object.keys(groupedTransactions).map((date) => (
-        <View key={date} style={styles.section}>
-          <Text style={styles.sectionTitle}>{date}</Text>
-          {groupedTransactions[date].map((tx:any) => (
-            <View key={tx.id} style={styles.transactionRow}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <View style={styles.transactionIconContainer}>
-                  {tx.type === "credit" ? <CreditIcon /> : <DebitIcon />}
-                </View>
-                <View style={{ flexDirection: "column", gap: 12 }}>
-                  <Text style={styles.transactionTitle}>{tx.title}</Text>
-                  <Text style={styles.transactionDate}>{tx.date}</Text>
-                </View>
-              </View>
-              <View style={{ flexDirection: "column", gap: 8 }}>
-                <Text style={styles.transactionAmount}>₦{Math.abs(tx.amount)}</Text>
-                <Text
-                  style={[
-                    styles.transactionType,
-                    tx.type === "credit" ? styles.credit : styles.debit,
-                  ]}
-                >
-                  {tx.type === "credit" ? "Credit" : "Debit"}
-                </Text>
-              </View>
-            </View>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </Text>
+            </TouchableOpacity>
           ))}
         </View>
-      ))}
+        <View style={""}>
+          {Object.keys(groupedTransactions).length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <EmptyWallet />
+              <Text style={styles.emptyText}>No transactions yet</Text>
+            </View>
+          ) : (
+            <>
+              {Object.keys(groupedTransactions).map((date) => (
+                <View key={date} style={styles.section}>
+                  <Text style={styles.sectionTitle}>{date}</Text>
+                  {groupedTransactions[date].map((tx: any) => (
+                    <View key={tx.id} style={styles.transactionRow}>
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <View style={styles.transactionIconContainer}>
+                          {tx.type === "credit" ? (
+                            <CreditIcon />
+                          ) : (
+                            <DebitIcon />
+                          )}
+                        </View>
+                        <View style={{ flexDirection: "column", gap: 12 }}>
+                          <Text style={styles.transactionTitle}>
+                            {tx.title}
+                          </Text>
+                          <Text style={styles.transactionDate}>{tx.date}</Text>
+                        </View>
+                      </View>
+                      <View style={{ flexDirection: "column", gap: 8 }}>
+                        <Text style={styles.transactionAmount}>
+                          ₦{Math.abs(tx.amount)}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.transactionType,
+                            tx.type === "credit" ? styles.credit : styles.debit,
+                          ]}
+                        >
+                          {tx.type === "credit" ? "Credit" : "Debit"}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              ))}
+            </>
+          )}
+        </View>
 
-    </>
-  )}
-</View>
+        {Object.keys(groupedTransactions).length > 0 && (
+          <TouchableOpacity
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => navigation.navigate("TransactionHistory")}
+          >
+            <Text style={styles.viewAllText}>View All</Text>
+          </TouchableOpacity>
+        )}
+        <BottomSheetModal
+          isVisible={showModal}
+          onClose={() => setShowModal(false)}
+          title="Fund Wallet"
+        >
+          <View style={{ gap: 12, paddingVertical: RFValue(20) }}>
+            {/* Bank Name */}
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Text style={{ color: "#888", fontSize: RFValue(16) }}>Bank</Text>
+              <Text>{userProfile?.bankName}</Text>
+            </View>
 
-{Object.keys(groupedTransactions).length > 0 && (
-  <TouchableOpacity 
-    style={{ display: 'flex', justifyContent: "center", alignItems: "center" }} 
-    onPress={() => navigation.navigate('TransactionHistory')}
-  >
-    <Text style={styles.viewAllText}>View All</Text>
-  </TouchableOpacity>
-)}
-<BottomSheetModal
-  isVisible={showModal}
-  onClose={() => setShowModal(false)}
-  title="Fund Wallet"
->
-  <View style={{ gap: 12 , paddingVertical: RFValue(20) }}>
-    {/* Bank Name */}
-    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-      <Text style={{ color: "#888", fontSize: RFValue(16) }}>Bank</Text>
-      <Text>{"Providus Virtual Account"}</Text>
-    </View>
+                        <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#888", fontSize: RFValue(16) }}>
+                Account Name
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ marginRight: 8 }}>{userProfile?.accountName}</Text>
+              </View>
+            </View>
 
-    {/* Account Number with Copy Icon */}
-    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-      <Text style={{ color: "#888", fontSize: RFValue(16) }}>Account Number</Text>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text style={{ marginRight: 8 }}>{"284885756563"}</Text>
-        <TouchableOpacity onPress={() => Clipboard.setString("284885756563")}>
-          <Feather name="copy" size={16} color="#47104C" />
-        </TouchableOpacity>
-      </View>
-    </View>
+            {/* Account Number with Copy Icon */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#888", fontSize: RFValue(16) }}>
+                Account Number
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ marginRight: 8 }}>{userProfile?.accountNumber}</Text>
+                <TouchableOpacity
+                  onPress={() => Clipboard.setString(userProfile?.accountNumber || "")}
+                >
+                  <Feather name="copy" size={16} color="#47104C" />
+                </TouchableOpacity>
+              </View>
+            </View>
+ {/* Account Balance with auto-refresh */}
+  <View style={styles.accountDetailRow}>
+    <Text style={styles.detailLabel}>Available Balance</Text>
+    <Text style={styles.balanceText}>
+      ₦{(userProfile?.balance || 0).toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+      })}
+    </Text>
   </View>
-</BottomSheetModal>
-
-
-        </ScrollView>
+          </View>
+        </BottomSheetModal>
+      </ScrollView>
       {/* </KeyboardAvoidingView> */}
     </CustomView>
   );
@@ -509,6 +527,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: "#007BFF",
     borderRadius: 8,
+  },
+    accountDetailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+    detailLabel: {
+    color: "#888",
+    fontSize: RFValue(14),
+  },
+  balanceText: {
+    fontWeight: "bold",
+    fontSize: RFValue(16),
+    color: "#00A300",
   },
 
 });

@@ -48,9 +48,12 @@ const CustomView = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
   },
   padded: {
-    padding: RFValue(16),
+    paddingTop: RFValue(16),
+    paddingHorizontal: RFValue(16),
+
   },
 });
 

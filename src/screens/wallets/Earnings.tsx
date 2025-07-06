@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
     View,
     Text,
@@ -15,7 +15,7 @@ import {
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { CustomView } from "@/components";
 import CreditIcon from "@/components/svg/CreditIcon";
 import DebitIcon from "@/components/svg/DebitIcon";
@@ -33,6 +33,7 @@ import WalletIcon from "@/components/svg/WalletIcon";
 import TransferIcon from "@/components/svg/TransferIcon";
 import USSDIcon from "@/components/svg/USSDIcon";
 import WithdrawFunds from "@/components/WithdrawFunds";
+import { getUserProfile } from "../../../services/auth";
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const { width } = Dimensions.get("window");
@@ -85,7 +86,7 @@ const getProperDate = (isoString: string) => {
       year: "2-digit",
     });
   };
-  
+  const [userProfile, setUserProfile] = useState<any>(null);
 
 const getRandomType = (): TransactionType => {
   const types: TransactionType[] = ["Handling fee", "Overdue fee", "Upfront fee"];
@@ -163,6 +164,7 @@ const transactions: Transaction[] = [
   icon: React.ReactNode;
   route: string;
 }
+
 
   const WalletData = useMemo<Wallet[]>(() => [
     { title: 'Wallet To Wallet', icon: <WalletIcon />, route:"WithdrawToBankScreen" },

@@ -35,7 +35,7 @@ export const getParcelDetails = async (): Promise<any | null> => {
   }
 };
 export const fundTransfer = async (data: {
-    amount: number;
+    amount: string;
     bank_code?: string;
     account_number: string;
     account_name: string;
@@ -45,7 +45,7 @@ export const fundTransfer = async (data: {
   }) => {
     try {
         const token = await getToken()
-      const response = await fetch(`${apiKey}/wallets/transfer?userType='agent'&trxType="outward"`, {
+      const response = await fetch(`${apiKey}/wallets/transfer?userType=agent&trxType=outward`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

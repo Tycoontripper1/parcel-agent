@@ -88,6 +88,7 @@ const WithdrawToBankScreen = ({ navigation }: Props) => {
       accountNumber,
       bankCode: selectedBank?.code ?? "",
       accountName,
+      bankName: selectedBank?.name ?? "",
     });
   };
 
