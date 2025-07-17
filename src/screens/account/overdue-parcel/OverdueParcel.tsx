@@ -72,7 +72,7 @@ const OverdueParcel = ({ navigation }: Props) => {
                   });
               
                   const result = await response.json();
-  console.log(result, "result");
+  //(result, "result");
   if (result) {
     setLoading(false);
     setModalVisible(true);
@@ -86,7 +86,7 @@ const OverdueParcel = ({ navigation }: Props) => {
 
   }
 } catch (error:any) {
-    console.log(error);
+    //(error);
     Toast.show({
       type: "error",
       text1: "Error",
@@ -103,7 +103,7 @@ const OverdueParcel = ({ navigation }: Props) => {
     //   // navigation.navigate('OTPVerificationScreen');
     // }, 2000);
 
-    console.log({ formDataState });
+    //({ formDataState });
   };
 
   // Styles

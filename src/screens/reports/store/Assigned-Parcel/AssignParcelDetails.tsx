@@ -52,7 +52,7 @@ const AssignParcelDetails = ({ route, navigation }: Props) => {
          const [modalVisible, setModalVisible] = useState(false);
     
       const HandleContinue = () => {
-        console.log({formData});
+        //({formData});
         navigation.navigate('PrintParcel');
       };
     const { idFrontImage, idBackImage } = useSelector(

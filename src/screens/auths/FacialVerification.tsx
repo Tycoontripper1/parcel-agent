@@ -104,21 +104,21 @@ const FacialVerification = ({navigation}: Props) => {
 //   }
 // };
 
-  console.log(facialVerificationImage, 'facialVerificationImage');
-  console.log("hello")
+  //(facialVerificationImage, 'facialVerificationImage');
+  //("hello")
 
 
   const handleSubmit = async () => {
     setLoading(true);
     const userDetails =  await getUser();
-    console.log(userDetails, 'userDetails');
+    //(userDetails, 'userDetails');
     const username = userDetails?.firstName;
   
     try {
-      console.log(facialVerificationImage, 'facialVerificationImage');
+      //(facialVerificationImage, 'facialVerificationImage');
       
     const userImageUrl = await upload([facialVerificationImage]);
-      console.log(userImageUrl, 'userImageUrl');
+      //(userImageUrl, 'userImageUrl');
       const payload = {
         businessName: businessName,
         state: state,
@@ -131,10 +131,10 @@ const FacialVerification = ({navigation}: Props) => {
         // userImage: facialVerificationImage, // ✅ Use the first image URL from the array
         userImage: userImageUrl?.data?.details[0], // ✅ Use the first image URL from the array
       };
-      console.log(payload, 'payload');
+      //(payload, 'payload');
   
       const result = await updateUserKyc(payload);
-      console.log(result, '✅ KYC submitted');
+      //(result, '✅ KYC submitted');
   
       Helper.vibrate();
       Toast.show({
@@ -145,7 +145,7 @@ const FacialVerification = ({navigation}: Props) => {
   
       navigation.navigate('CongratulationScreen');
     } catch (error: any) {
-      console.log(error, '❌ KYC submission error');
+      //(error, '❌ KYC submission error');
       Toast.show({
         type: 'error',
         text1: 'Error',

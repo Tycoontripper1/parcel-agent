@@ -35,7 +35,7 @@ const ParcelDriverOutPreviewScreen = ({navigation}: Props) => {
        , []);
 
   const HandleContinue = () => {
-    console.log({formData});
+    //({formData});
     navigation.navigate('SearchParcelOutDriverId');
   };
 

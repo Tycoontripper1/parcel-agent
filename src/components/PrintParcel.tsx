@@ -166,7 +166,7 @@ const PrintParcel = ({ navigation }: Props) => {
   
     try {
       const uri = await viewShot?.capture?.();
-      console.log("Captured URI:", uri);
+      //("Captured URI:", uri);
   
       if (uri) {
         const isAvailable = await Sharing.isAvailableAsync();
@@ -203,7 +203,7 @@ const PrintParcel = ({ navigation }: Props) => {
         return;
       }
   
-      console.log("Captured URI:", uri);
+      //("Captured URI:", uri);
   
       let response;
       try {
@@ -239,7 +239,7 @@ const PrintParcel = ({ navigation }: Props) => {
             base64: true,
           });
   
-          console.log("PDF Saved at:", pdfUri);
+          //("PDF Saved at:", pdfUri);
   
           const canShare = await Sharing.isAvailableAsync();
           if (canShare) {

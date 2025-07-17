@@ -64,7 +64,7 @@ const ShipmentHistory = () => {
       console.error('Failed to fetch shipments:', error);
     }
   };  
-  console.log(shipments.length, 'rows');
+  //(shipments.length, 'rows');
 
   const mapShipments = (data: ParcelDetails[]) => {
     return data.map((shipment) => ({

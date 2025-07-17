@@ -167,7 +167,7 @@ const ComfirmationDriver
     const dispatch = useDispatch();
 
     const handleSubmit = () => {
-      console.log(formData);
+      //(formData);
       setLoading(true);
       setTimeout(() => {
         setLoading(false);

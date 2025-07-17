@@ -92,10 +92,10 @@ const [showModal, setShowModal] = useState(false);
         setUserProfile(rows.wallet);
 
         AsyncStorage.setItem('userProfile', JSON.stringify(rows));
-        console.log(rows, 'User Profile Data');
+        //(rows, 'User Profile Data');
       
       } catch (error) {
-        console.error('Failed to fetch user:', error);
+        // console.error('Failed to fetch user:', error);
       }
     };  
     
@@ -215,8 +215,8 @@ const [showModal, setShowModal] = useState(false);
                     <View
                       style={{ flexDirection: "row", justifyContent: "space-between" }}
                     >
-                      <Text style={{ color: "#888", fontSize: RFValue(16) }}>Bank</Text>
-                      <Text>{userProfile?.bankName}</Text>
+                      <Text style={{ color: "#888", fontSize: RFValue(14) }}>Bank</Text>
+                      <Text style={{ marginRight: 8 , fontSize:RFValue(12),fontWeight:"600"}} >{userProfile?.bankName}</Text>
                     </View>
         
                                 <View
@@ -226,11 +226,11 @@ const [showModal, setShowModal] = useState(false);
                         alignItems: "center",
                       }}
                     >
-                      <Text style={{ color: "#888", fontSize: RFValue(16) }}>
+                      <Text style={{ color: "#888", fontSize: RFValue(14) }}>
                         Account Name
                       </Text>
                       <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <Text style={{ marginRight: 8 }}>{userProfile?.accountName}</Text>
+                        <Text style={{ marginRight: 8 , fontSize:RFValue(12),fontWeight:"600"}}>{userProfile?.accountName}</Text>
                       </View>
                     </View>
         
@@ -242,11 +242,11 @@ const [showModal, setShowModal] = useState(false);
                         alignItems: "center",
                       }}
                     >
-                      <Text style={{ color: "#888", fontSize: RFValue(16) }}>
+                      <Text style={{ color: "#888", fontSize: RFValue(14) }}>
                         Account Number
                       </Text>
                       <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <Text style={{ marginRight: 8 }}>{userProfile?.accountNumber}</Text>
+                        <Text style={{ marginRight: 8 , fontSize:RFValue(12),fontWeight:"600"}}>{userProfile?.accountNumber}</Text>
                         <TouchableOpacity
                           onPress={() => Clipboard.setStringAsync(userProfile?.accountNumber || "")}
                         >
@@ -305,7 +305,8 @@ const styles = StyleSheet.create({
   searchInput: {
     backgroundColor: '#fff',
     borderRadius: RFValue(8),
-    padding: RFValue(12),
+    paddingHorizontal: RFValue(12),
+    paddingVertical:RFValue(8),
     borderWidth: 1,
     borderColor: '#E9EAEB',
     flexDirection: 'row',
@@ -402,7 +403,7 @@ export default DashboardScreen;
 //   useEffect(() => {
 //     const fetchUser = async () => {
 //       const userDetails = await getUser();
-//       console.log(userDetails, 'userDetails');
+//       //(userDetails, 'userDetails');
 //       setUserDetails(userDetails)
 //     };
 //     fetchUser();

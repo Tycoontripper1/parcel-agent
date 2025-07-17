@@ -44,7 +44,7 @@ const FundWallet = ({
     onSelect(value);
     setIsModalVisible(false);
   };
-  console.log(selectedValue);
+  //(selectedValue);
   const {theme} = useTheme();
   const $bottomSheet: ViewStyle = {
     backgroundColor: theme.background,

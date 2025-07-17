@@ -30,7 +30,7 @@ const CongratulationScreen = ({navigation}: Props) => {
   };
 
   const handleSubmit = () => {
-    console.log(formData);
+    //(formData);
     setLoading(true);
     setTimeout(() => {
       setLoading(false);

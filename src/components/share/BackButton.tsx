@@ -18,7 +18,7 @@ const BackButton = (p: IBackButton) => {
         width: 38,
         backgroundColor: '#F5F5F5',
         borderRadius: 8,
-        marginHorizontal: RFValue(10),
+        marginHorizontal: RFValue(8),
       }}>
       <Ionicons name='arrow-back-outline' size={16} />
     </TouchableOpacity>

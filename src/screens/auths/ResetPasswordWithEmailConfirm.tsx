@@ -81,10 +81,10 @@ const ResetPasswordWithEmailConfirm = ({navigation, route}: Props) => {
         
         
       };
-      console.log(payload, 'payload');
+      //(payload, 'payload');
   
       const result = await verifyOtpAccountReset(payload);
-      console.log('OTP verification result:', result);
+      //('OTP verification result:', result);
   
       // Extract and store token and user details
       const token = result?.data?.token;

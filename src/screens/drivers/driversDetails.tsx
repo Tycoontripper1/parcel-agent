@@ -79,7 +79,7 @@ const DriversDetails = ({ navigation,route }: Props) => {
             throw new Error(result.message || 'Failed to fetch drivers');
           }
     
-          console.log(result, 'result');
+          //(result, 'result');
           setAllDrivers(result?.data?.details?.rows);
         } catch (error) {
           console.error('Failed to fetch drivers:', error);
@@ -112,7 +112,7 @@ const DriversDetails = ({ navigation,route }: Props) => {
     addedBy: "Nill",
     createdAt: "Nill",
   };
-  console.log(driver.identificationImages, "driverDtaisls")
+  //(driver.identificationImages, "driverDtaisls")
   const saveDriverDetails = async () => {
     await AsyncStorage.setItem('driver', JSON.stringify(driver));
     await AsyncStorage.setItem('driverId', driver?.id);

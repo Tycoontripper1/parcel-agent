@@ -23,7 +23,7 @@ const PreviewScreen = ({ navigation }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    console.log(idFrontImage, idBackImage, "images");
+    //(idFrontImage, idBackImage, "images");
     try {
       setLoading(true);
       // Upload ID images

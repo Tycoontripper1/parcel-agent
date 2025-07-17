@@ -173,7 +173,7 @@ const CreateAccountScreen = ({ navigation }: Props) => {
     // if (!handleValidation()) return;
 
     setLoading(true);
-    console.log(formData.phone, "formData");
+    //(formData.phone, "formData");
     const plainPhone = formData.phone.replace(/\D/g, "");
     try {
       const payload = {
@@ -192,10 +192,10 @@ const CreateAccountScreen = ({ navigation }: Props) => {
         // password: "Password@1",
         // confirm: "Password@1"
       };
-      console.log(payload)
+      //(payload)
 
       const result = await registerUser(payload);
-      console.log(result, "result");
+      //(result, "result");
 
       setLoading(false);
       Helper.vibrate();
@@ -209,7 +209,7 @@ const CreateAccountScreen = ({ navigation }: Props) => {
       await AsyncStorage.setItem('user', JSON.stringify(userDetails));
       navigation.navigate("OTPVerificationScreen", { phone: formData.phone });
     } catch (error: any) {
-      console.log(error, "error");
+      //(error, "error");
       setLoading(false);
       Toast.show({
         type: "error",

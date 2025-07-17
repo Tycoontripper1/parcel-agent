@@ -76,6 +76,7 @@ export type HomeStackList = {
   ParcelOtpVerificationReceiver: {readonly:boolean};
   ParcelCongratulation: {message: string, note: string};
   BarcodeScannerScreen: undefined;
+  TransactionDetails:{transaction:any};
   UnAssignParcelDetails: {item: any};
   ReceiptScreen: {
     trxId: any;
@@ -86,6 +87,7 @@ export type HomeStackList = {
     accountNumber: any;
     accountName: any;
   };
+  
 };
 export type WalletStackList = {
   Wallet: undefined;

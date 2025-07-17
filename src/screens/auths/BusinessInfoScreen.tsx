@@ -69,7 +69,7 @@ const BusinessInfoScreen = ({navigation}: Props) => {
           if (selectedFromState && selectedFromLocation) {
             const combined = `${selectedFromState}, ${selectedFromLocation}`;
             dispatch(updateField({ key: "location", value: combined }));
-            console.log("agent location:", combined);
+            //("agent location:", combined);
           }
         }, [selectedFromState, selectedFromLocation, dispatch]);
       
@@ -104,7 +104,7 @@ const BusinessInfoScreen = ({navigation}: Props) => {
       return;
     }
     navigation.navigate('IdentityVerificationScreen');
-    console.log({formData});
+    //({formData});
   };
 
   // Styles

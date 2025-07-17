@@ -29,7 +29,7 @@ export default function BarcodeScannerScreen({navigation}: Props) {
     setLoading(true); // start showing loader
     try {
       setScannedData(data);
-      console.log('Scanned Barcode:', data);
+      //('Scanned Barcode:', data);
       await AsyncStorage.setItem('scannedParcelID', data);
     //   navigation.navigate('ScreenOneParcelInDriverPreview');
     } catch (error) {

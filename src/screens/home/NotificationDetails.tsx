@@ -1,5 +1,5 @@
 // screens/NotificationDetails.tsx
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -8,50 +8,54 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {RouteProp, useFocusEffect, useRoute} from '@react-navigation/native';
 import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
+import { format, subDays } from 'date-fns';
 import {HomeStackList} from '@/navigation/navigationType';
 import {NotificationItem} from './NotificationScreen';
 import {CustomView} from '@/components';
 import HomeHeader from '@/components/share/HomeHeader';
 import {RFValue} from 'react-native-responsive-fontsize';
+import { getAllNotification } from '../../../services/auth';
 
 interface Props {
   navigation: NativeStackNavigationProp<HomeStackList>;
   route: RouteProp<HomeStackList, 'NotificationDetails'>;
 }
 
-const notificationsData: NotificationItem[] = [
-  {
-    id: '1',
-    title: 'Parcel Assigned to Driver',
-    description: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`,
 
-    date: '01-10-2024',
-    time: '01:30 PM',
-  },
-  {
-    id: '2',
-    title: 'Wallet Credited',
-    description: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`,
-    date: '01-10-2024',
-    time: '01:30 PM',
-  },
-  {
-    id: '3',
-    title: 'Wallet Debited',
-    description: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`,
-
-    date: '01-10-2024',
-    time: '01:30 PM',
-  },
-];
 
 const NotificationDetails = ({route}: Props) => {
   const {id} = route.params;
+  const [notificationsData, setNotifications] = useState<NotificationItem[]>([]);
+
+
+useFocusEffect(
+  useCallback(() => {
+    const fetchNotification = async () => {
+      // Get current date
+      const currentDate = new Date();
+      
+      // Calculate date 7 days ago
+      const sevenDaysAgo = subDays(currentDate, 7);
+      
+      // Format dates as YYYY-MM-DD strings
+      const endDate = format(currentDate, 'yyyy-MM-dd');
+      const startDate = format(sevenDaysAgo, 'yyyy-MM-dd');
+
+      //('Fetching notifications from', startDate, 'to', endDate);
+      
+      const notification = await getAllNotification(startDate, endDate);
+      setNotifications(notification?.data.details || []);
+    };
+    
+    fetchNotification();
+  }, [])
+);
+  
   const notification = notificationsData.find((x) => x.id === id);
 
   return (
@@ -70,7 +74,7 @@ const NotificationDetails = ({route}: Props) => {
           keyboardShouldPersistTaps='handled'>
           <View style={styles.container}>
             <Text style={styles.title}>{notification?.title}</Text>
-            <Text style={styles.description}>{notification?.description}</Text>
+            <Text style={styles.message}>{notification?.content}</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -81,7 +85,7 @@ const NotificationDetails = ({route}: Props) => {
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: '#F9F9F9', padding: 16},
   title: {fontSize: 20, fontWeight: 'bold', marginBottom: 16},
-  description: {fontSize: 16, color: '#666'},
+  message: {fontSize: 16, color: '#666'},
 });
 
 export default NotificationDetails;

@@ -1,80 +1,525 @@
-import {CustomView, Spinner, Text} from '@/components';
-import ButtonHome from '@/components/ButtonHome';
-import KeyBoardView from '@/components/KeyBoardView';
-import BackButton from '@/components/share/BackButton';
-import StepProgress from '@/components/share/StepProgress';
-import {HomeStackList} from '@/navigation/navigationType';
-import {RootState} from '@/redux/store';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ViewStyle,
-} from 'react-native';
-import {RFValue} from 'react-native-responsive-fontsize';
-import Toast from 'react-native-toast-message';
-import {useSelector,useDispatch} from 'react-redux';
-import { SendParcelData } from '../../../../../services/parcel';
-import { resetForm } from '@/redux/slices/parcelSlice';
+// import {CustomView, Spinner, Text} from '@/components';
+// import ButtonHome from '@/components/ButtonHome';
+// import KeyBoardView from '@/components/KeyBoardView';
+// import BackButton from '@/components/share/BackButton';
+// import StepProgress from '@/components/share/StepProgress';
+// import {HomeStackList} from '@/navigation/navigationType';
+// import {RootState} from '@/redux/store';
+// import {NativeStackScreenProps} from '@react-navigation/native-stack';
+// import React, {useState} from 'react';
+// import {
+//   View,
+//   StyleSheet,
+//   Image,
+//   TouchableOpacity,
+//   ViewStyle,
+// } from 'react-native';
+// import {RFValue} from 'react-native-responsive-fontsize';
+// import Toast from 'react-native-toast-message';
+// import {useSelector,useDispatch} from 'react-redux';
+// import { SendParcelData } from '../../../../../services/parcel';
+// import { resetForm } from '@/redux/slices/parcelSlice';
 
 
-type Props = NativeStackScreenProps<HomeStackList>;
-const ParcelPreviewScreen = ({navigation}: Props) => {
-  const formData = useSelector((state: RootState) => state.parcel);
-const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const HandleParcelInSender = async () => {
-    setLoading(true);
+// type Props = NativeStackScreenProps<HomeStackList>;
+// const ParcelPreviewScreen = ({navigation}: Props) => {
+//   const formData = useSelector((state: RootState) => state.parcel);
+// const dispatch = useDispatch();
+//   const [loading, setLoading] = useState(false);
+//   const HandleParcelInSender = async () => {
+//     setLoading(true);
   
-    try {
-      const payload = {
-        sender: {
-          phone: formData.senderPhoneNumber.replace(/-/g, ''),
-          // fullName: formData.senderFullName,
-          email: formData.senderEmail,
-          address: formData.senderAddress,
-        },
-        receiver: {
-          phone: formData.receiverPhoneNumber.replace(/-/g, ''),
-          fullName: formData.receiverFullName,
-          // email: formData.receiverEmail,
-          address: formData.receiverAddress,
-        },
-        park: {
-          source: formData.sendingFrom,
-          destination: formData.deliveryMotorPark,
-        },
-        parcel: {
-          type: formData.parcelType,
-          value: String(Number(formData.parcelValue)),
-          chargesPayable: String(Number(formData.chargesPayable)),
-          chargesPaidBy: formData.chargesPayBy,
-          handlingFee: String(Number(formData.handlingFee)),
-          totalFee: String(Number(formData.handlingFee) + Number(formData.chargesPayable)),
-          description: formData.parcelDescription,
-          thumbnails: formData.parcelImages,
-        },
-        paymentOption: "bank",
-      };
+//     try {
+//       const payload = {
+//         sender: {
+//           phone: formData.senderPhoneNumber.replace(/-/g, ''),
+//           // fullName: formData.senderFullName,
+//           email: formData.senderEmail,
+//           address: formData.senderAddress,
+//         },
+//         receiver: {
+//           phone: formData.receiverPhoneNumber.replace(/-/g, ''),
+//           fullName: formData.receiverFullName,
+//           // email: formData.receiverEmail,
+//           address: formData.receiverAddress,
+//         },
+//         park: {
+//           source: formData.sendingFrom,
+//           destination: formData.deliveryMotorPark,
+//         },
+//         parcel: {
+//           type: formData.parcelType,
+//           value: String(Number(formData.parcelValue)),
+//           chargesPayable: String(Number(formData.chargesPayable)),
+//           chargesPaidBy: formData.chargesPayBy,
+//           handlingFee: String(Number(formData.handlingFee)),
+//           totalFee: String(Number(formData.handlingFee) + Number(formData.chargesPayable)),
+//           description: formData.parcelDescription,
+//           thumbnails: formData.parcelImages,
+//         },
+//         paymentOption: "bank",
+//       };
       
   
-      const result = await SendParcelData(payload); 
+//       const result = await SendParcelData(payload); 
     
+//       Toast.show({
+//         type: 'success',
+//         text1: 'Success',
+//         text2: result?.data?.message ||'Parcel Received!',
+//       });
+  
+//       dispatch(resetForm()); // 🧼 clear form
+  
+//       navigation.navigate('Dashboard'); // ✅ go home
+//     } catch (error: any) {
+//       console.error('Parcel submission error:', error);
+  
+//       Toast.show({
+//         type: 'error',
+//         text1: 'Submission Failed',
+//         text2: error.message || 'Something went wrong',
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+  
+//   // Styles
+//   const $bodyHeader: ViewStyle = {
+//     padding: RFValue(16),
+//     flexDirection: 'column',
+//     gap: 6,
+//   };
+//   const $buttonsContainer: ViewStyle = {
+//     padding: RFValue(16),
+//   };
+
+//   return (
+//     <CustomView style={{paddingVertical: RFValue(10)}}>
+//       {loading && <Spinner />}
+//       <BackButton onClick={() => navigation.goBack()} />
+//       <StepProgress step={3} totalSteps={3} />
+//       {/* Body */}
+//       <KeyBoardView padded={false}>
+//         <View style={$bodyHeader}>
+//           <Text font='SemiBold' size={18}>
+//             Confirm Parcel Details
+//           </Text>
+//         </View>
+//         {/* Sender's Information */}
+//         <View style={styles.sectionContainer}>
+//           <Text style={styles.sectionHeader} font='SemiBold' size={16}>
+//             Sender's Information
+//           </Text>
+//           <View
+//             style={{
+//               backgroundColor: 'white',
+//               padding: RFValue(6),
+//               borderRadius: 8,
+//             }}>
+//             {/* <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Name: </Text>
+//               <Text style={styles.infoText}>{formData.senderFullName} </Text>
+//             </View> */}
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Email: </Text>
+//               <Text style={styles.infoText}>{formData.senderEmail} </Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Phone Number:</Text>
+//               <Text style={styles.infoText}>{formData.senderPhoneNumber} </Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Address: </Text>
+//               <Text style={styles.infoText}>{formData.senderAddress} </Text>
+//             </View>
+//           </View>
+//         </View>
+
+//         {/* Receiver's Information */}
+//         <View style={styles.sectionContainer}>
+//           <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+//             Receiver's Information
+//           </Text>
+//           <View
+//             style={{
+//               backgroundColor: 'white',
+//               padding: RFValue(6),
+//               borderRadius: 8,
+//             }}>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Name: </Text>
+//               <Text style={styles.infoText}>{formData.receiverFullName} </Text>
+//             </View>
+//             {/* <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Email: </Text>
+//               <Text style={styles.infoText}>{formData.receiverEmail} </Text>
+//             </View> */}
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Phone Number:</Text>
+//               <Text style={styles.infoText}>
+//                 {formData.receiverPhoneNumber}{' '}
+//               </Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Address: </Text>
+//               <Text style={styles.infoText}>{formData.receiverAddress} </Text>
+//             </View>
+//           </View>
+//         </View>
+
+//         {/* Park Detail */}
+//         <View style={styles.sectionContainer}>
+//           <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+//             Park Detail
+//           </Text>
+//           <View
+//             style={{
+//               backgroundColor: 'white',
+//               padding: RFValue(6),
+//               borderRadius: 8,
+//             }}>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Dispatch Park:</Text>
+//               <Text style={styles.infoText}> {formData.sendingFrom}</Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Delivery Park:</Text>
+//               <Text style={styles.infoText}>{formData.deliveryMotorPark}</Text>
+//             </View>
+//           </View>
+//         </View>
+
+//         {/* Parcel Information */}
+//         <View style={styles.sectionContainer}>
+//           <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+//             Parcel Information
+//           </Text>
+//           <View
+//             style={{
+//               backgroundColor: 'white',
+//               padding: RFValue(6),
+//               borderRadius: 8,
+//             }}>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Charges Paid By:</Text>
+//               <Text style={styles.infoText}>{formData.chargesPayBy}</Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Parcel Type:</Text>
+//               <Text style={styles.infoText}>{formData.parcelType}</Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Parcel Worth:</Text>
+//               <Text style={styles.infoText}>₦{formData.parcelValue}</Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//                 borderBottomWidth: 1,
+//                 borderBottomColor: '#E9EAEB',
+//               }}>
+//               <Text style={styles.infoText}>Charges Payable:</Text>
+//               <Text style={styles.infoText}>₦{formData.chargesPayable}</Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Handling Fee:</Text>
+//               <Text style={styles.infoText}>
+//               ₦{formData.handlingFee}
+//               </Text>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center',
+//                 justifyContent: 'space-between',
+//               }}>
+//               <Text style={styles.infoText}>Total Paid:</Text>
+//               <Text style={styles.infoText}>
+//               ₦{parseFloat(formData.handlingFee) + parseFloat(formData.chargesPayable)}
+//               </Text>
+//             </View>
+//           </View>
+//         </View>
+
+//         {/* Parcel Description */}
+//         <View style={styles.sectionContainer}>
+//           <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+//             Parcel Description
+//           </Text>
+//           <View
+//             style={{
+//               backgroundColor: 'white',
+//               padding: RFValue(6),
+//               borderRadius: 8,
+//             }}>
+//             <Text style={styles.descriptionText}>
+//               {formData.parcelDescription}
+//             </Text>
+//           </View>
+//         </View>
+
+//         {formData.parcelImages &&
+//         formData.parcelImages.filter((photo) => photo).length > 0 ? (
+//           <View style={{paddingVertical: RFValue(10), padding: RFValue(16)}}>
+//             <Text style={styles.counter}>
+//               {formData.parcelImages.filter((photo) => photo !== null).length}
+//            /2 photos
+//             </Text>
+//             <View style={styles.photoGrid}>
+//               {formData.parcelImages.map((photo, index) => (
+//                 <TouchableOpacity key={index} style={styles.photoBox}>
+//                   {photo ? (
+//                     <Image source={{uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}`}} style={styles.photoPreview} />
+//                   ) : (
+//                     <View></View>
+//                   )}
+//                 </TouchableOpacity>
+//               ))}
+//             </View>
+//           </View>
+//         ) : (
+//           <View></View>
+//         )}
+//         <View style={$buttonsContainer}>
+//           <ButtonHome
+//             onPress={HandleParcelInSender}
+//             title='Receive Parcel'
+//             style={{height: 55}}
+//             disabled={!formData.handlingFee}
+//           />
+//         </View>
+//       </KeyBoardView>
+//     </CustomView>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   header: {
+//     fontSize: RFValue(18),
+//     fontWeight: 'bold',
+//     marginBottom: RFValue(16),
+//     textAlign: 'center',
+//   },
+//   sectionContainer: {
+//     marginBottom: RFValue(10),
+//     // paddingVertical: RFValue(12),
+//     backgroundColor: '#FDFDFD',
+//     borderRadius: RFValue(8),
+//     padding: RFValue(16),
+//   },
+//   sectionHeader: {
+//     paddingVertical: RFValue(8),
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#E9EAEB',
+//     marginBottom: RFValue(6),
+//   },
+//   infoText: {
+//     fontSize: RFValue(14),
+//     marginBottom: RFValue(4),
+//     color: '#717680',
+//   },
+//   descriptionText: {
+//     fontSize: RFValue(14),
+//     color: '#555',
+//   },
+//   imageContainer: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     marginBottom: RFValue(16),
+//   },
+//   image: {
+//     width: RFValue(70),
+//     height: RFValue(70),
+//     borderRadius: RFValue(8),
+//   },
+//   button: {
+//     backgroundColor: '#4CAF50',
+//     paddingVertical: RFValue(12),
+//     borderRadius: RFValue(8),
+//     alignItems: 'center',
+//   },
+//   buttonText: {
+//     fontSize: RFValue(16),
+//     color: '#fff',
+//     fontWeight: 'bold',
+//   },
+//   photoGrid: {
+//     flexDirection: 'row',
+//     flexWrap: 'wrap',
+//     justifyContent: 'space-between',
+//     marginBottom: 20,
+//   },
+//   photoBox: {
+//     width: '47%',
+//     aspectRatio: 1,
+//     backgroundColor: '#F5F5F5',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     marginVertical: 20,
+//     borderRadius: 10,
+//     borderColor: '#ddd',
+//   },
+//   photoPreview: {
+//     width: '100%',
+//     height: '100%',
+//     borderRadius: 8,
+//   },
+//   counter: {
+//     fontSize: 14,
+//     color: 'gray',
+//     marginBottom: 20,
+//   },
+// });
+
+// export default ParcelPreviewScreen;
+import { CustomView, Spinner, Text } from "@/components";
+import ButtonHome from "@/components/ButtonHome";
+import KeyBoardView from "@/components/KeyBoardView";
+import BackButton from "@/components/share/BackButton";
+import StepProgress from "@/components/share/StepProgress";
+import { HomeStackList } from "@/navigation/navigationType";
+import { RootState } from "@/redux/store";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import React, { useState } from "react";
+import { View, StyleSheet, Image, TouchableOpacity, ViewStyle } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
+import Toast from "react-native-toast-message";
+import { useDispatch, useSelector } from "react-redux";
+import { SendParcelData } from "../../../../../services/parcel";
+import { resetForm } from "@/redux/slices/parcelSlice";
+import { Ionicons } from "@expo/vector-icons";
+import { setCurrentParcelIndex } from "@/redux/slices/parcelVariationSlice";
+
+type Props = NativeStackScreenProps<HomeStackList>;
+const ParcelPreviewScreen = ({ navigation }: Props) => {
+  const { parcels, currentParcelIndex } = useSelector((state: RootState) => state.parcelVariation);
+  const currentParcel = parcels[currentParcelIndex];
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const handleSelectParcel = (index: number) => {
+    dispatch(setCurrentParcelIndex(index));
+  };
+
+  const handleSubmitAllParcels = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        parcels: parcels.map(parcel => ({
+          sender: {
+            phone: parcel.senderPhoneNumber.replace(/-/g, ''),
+            email: parcel.senderEmail,
+            address: parcel.senderAddress,
+          },
+          receiver: {
+            phone: parcel.receiverPhoneNumber.replace(/-/g, ''),
+            fullName: parcel.receiverFullName,
+            address: parcel.receiverAddress,
+          },
+          park: {
+            source: parcel.sendingFrom,
+            destination: parcel.deliveryMotorPark,
+          },
+          parcel: {
+            type: parcel.parcelType,
+            value: String(Number(parcel.parcelValue)),
+            chargesPayable: String(Number(parcel.chargesPayable)),
+            chargesPaidBy: parcel.chargesPayBy,
+            handlingFee: String(Number(parcel.handlingFee)),
+            totalFee: String(Number(parcel.handlingFee) + Number(parcel.chargesPayable)),
+            description: parcel.parcelDescription,
+            thumbnails: parcel.parcelImages || [],
+          },
+          paymentOption: "bank",
+        }))
+      };
+
+      const result = await SendParcelData(payload);
+      
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: result?.data?.message ||'Parcel Received!',
+        text2: result?.data?.message || 'All Parcels Received!',
       });
-  
-      dispatch(resetForm()); // 🧼 clear form
-  
-      navigation.navigate('Dashboard'); // ✅ go home
+
+      dispatch(resetForm());
+      navigation.navigate('Dashboard');
     } catch (error: any) {
       console.error('Parcel submission error:', error);
-  
       Toast.show({
         type: 'error',
         text1: 'Submission Failed',
@@ -84,11 +529,11 @@ const dispatch = useDispatch();
       setLoading(false);
     }
   };
-  
+
   // Styles
   const $bodyHeader: ViewStyle = {
     padding: RFValue(16),
-    flexDirection: 'column',
+    flexDirection: "column",
     gap: 6,
   };
   const $buttonsContainer: ViewStyle = {
@@ -96,220 +541,147 @@ const dispatch = useDispatch();
   };
 
   return (
-    <CustomView style={{paddingVertical: RFValue(10)}}>
+    <CustomView style={{ paddingVertical: RFValue(10) }}>
       {loading && <Spinner />}
       <BackButton onClick={() => navigation.goBack()} />
       <StepProgress step={3} totalSteps={3} />
+
+      {/* Parcel Navigation */}
+      <View style={styles.parcelNavContainer}>
+        <View style={styles.navButtonContainer}>
+          {currentParcelIndex > 0 ? (
+            <TouchableOpacity 
+              onPress={() => handleSelectParcel(currentParcelIndex - 1)}
+              style={styles.navButton}
+            >
+              <Ionicons name="chevron-back" size={20} color="white" />
+              <Text style={styles.navButtonText}>Previous</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.navButtonPlaceholder} />
+          )}
+        </View>
+
+        <View style={styles.currentParcelIndicator}>
+          <Text font="SemiBold" size={16} style={styles.currentParcelText}>
+            Parcel {currentParcelIndex + 1} of {parcels.length}
+          </Text>
+        </View>
+
+        <View style={styles.navButtonContainer}>
+          {currentParcelIndex < parcels.length - 1 ? (
+            <TouchableOpacity 
+              onPress={() => handleSelectParcel(currentParcelIndex + 1)}
+              style={styles.navButton}
+            >
+              <Text style={styles.navButtonText}>Next</Text>
+              <Ionicons name="chevron-forward" size={20} color="white" />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.navButtonPlaceholder} />
+          )}
+        </View>
+      </View>
+
       {/* Body */}
       <KeyBoardView padded={false}>
         <View style={$bodyHeader}>
-          <Text font='SemiBold' size={18}>
+          <Text font="SemiBold" size={18}>
             Confirm Parcel Details
           </Text>
         </View>
+
         {/* Sender's Information */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={16}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={16}>
             Sender's Information
           </Text>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}>
-            {/* <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={styles.infoText}>Name: </Text>
-              <Text style={styles.infoText}>{formData.senderFullName} </Text>
-            </View> */}
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={styles.infoText}>Email: </Text>
-              <Text style={styles.infoText}>{formData.senderEmail} </Text>
+          <View style={styles.infoBox}>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>Email:</Text>
+              <Text style={styles.infoText}>{currentParcel.senderEmail}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>{formData.senderPhoneNumber} </Text>
+              <Text style={styles.infoText}>{currentParcel.senderPhoneNumber}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={styles.infoText}>Address: </Text>
-              <Text style={styles.infoText}>{formData.senderAddress} </Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>Address:</Text>
+              <Text style={styles.infoText}>{currentParcel.senderAddress}</Text>
             </View>
           </View>
         </View>
 
         {/* Receiver's Information */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Receiver's Information
           </Text>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={styles.infoText}>Name: </Text>
-              <Text style={styles.infoText}>{formData.receiverFullName} </Text>
+          <View style={styles.infoBox}>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>Name:</Text>
+              <Text style={styles.infoText}>{currentParcel.receiverFullName}</Text>
             </View>
-            {/* <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={styles.infoText}>Email: </Text>
-              <Text style={styles.infoText}>{formData.receiverEmail} </Text>
-            </View> */}
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Phone Number:</Text>
-              <Text style={styles.infoText}>
-                {formData.receiverPhoneNumber}{' '}
-              </Text>
+              <Text style={styles.infoText}>{currentParcel.receiverPhoneNumber}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={styles.infoText}>Address: </Text>
-              <Text style={styles.infoText}>{formData.receiverAddress} </Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>Address:</Text>
+              <Text style={styles.infoText}>{currentParcel.receiverAddress}</Text>
             </View>
           </View>
         </View>
 
         {/* Park Detail */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Park Detail
           </Text>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+          <View style={styles.infoBox}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Dispatch Park:</Text>
-              <Text style={styles.infoText}> {formData.sendingFrom}</Text>
+              <Text style={styles.infoText}>{currentParcel.sendingFrom}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Delivery Park:</Text>
-              <Text style={styles.infoText}>{formData.deliveryMotorPark}</Text>
+              <Text style={styles.infoText}>{currentParcel.deliveryMotorPark}</Text>
             </View>
           </View>
         </View>
 
         {/* Parcel Information */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Parcel Information
           </Text>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+          <View style={styles.infoBox}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Charges Paid By:</Text>
-              <Text style={styles.infoText}>{formData.chargesPayBy}</Text>
+              <Text style={styles.infoText}>{currentParcel.chargesPayBy}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Parcel Type:</Text>
-              <Text style={styles.infoText}>{formData.parcelType}</Text>
+              <Text style={styles.infoText}>{currentParcel.parcelType}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Parcel Worth:</Text>
-              <Text style={styles.infoText}>₦{formData.parcelValue}</Text>
+              <Text style={styles.infoText}>₦{currentParcel.parcelValue}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderBottomWidth: 1,
-                borderBottomColor: '#E9EAEB',
-              }}>
+            <View style={[styles.infoRow, styles.borderBottom]}>
               <Text style={styles.infoText}>Charges Payable:</Text>
-              <Text style={styles.infoText}>₦{formData.chargesPayable}</Text>
+              <Text style={styles.infoText}>₦{currentParcel.chargesPayable}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Handling Fee:</Text>
-              <Text style={styles.infoText}>
-              ₦{formData.handlingFee}
-              </Text>
+              <Text style={styles.infoText}>₦{currentParcel.handlingFee}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+            <View style={styles.infoRow}>
               <Text style={styles.infoText}>Total Paid:</Text>
               <Text style={styles.infoText}>
-              ₦{parseFloat(formData.handlingFee) + parseFloat(formData.chargesPayable)}
+                ₦{currentParcel.handlingFee && currentParcel.chargesPayable
+                  ? String(Number(currentParcel.handlingFee) + Number(currentParcel.chargesPayable))
+                  : ""}
               </Text>
             </View>
           </View>
@@ -317,49 +689,43 @@ const dispatch = useDispatch();
 
         {/* Parcel Description */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader} font='SemiBold' size={14}>
+          <Text style={styles.sectionHeader} font="SemiBold" size={14}>
             Parcel Description
           </Text>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: RFValue(6),
-              borderRadius: 8,
-            }}>
+          <View style={styles.infoBox}>
             <Text style={styles.descriptionText}>
-              {formData.parcelDescription}
+              {currentParcel.parcelDescription}
             </Text>
           </View>
         </View>
 
-        {formData.parcelImages &&
-        formData.parcelImages.filter((photo) => photo).length > 0 ? (
-          <View style={{paddingVertical: RFValue(10), padding: RFValue(16)}}>
+        {/* Parcel Photos */}
+        {currentParcel.parcelImages?.filter(photo => photo).length > 0 && (
+          <View style={styles.photoSection}>
             <Text style={styles.counter}>
-              {formData.parcelImages.filter((photo) => photo !== null).length}
-           /2 photos
+              {currentParcel.parcelImages.filter(photo => photo).length}/2 photos
             </Text>
             <View style={styles.photoGrid}>
-              {formData.parcelImages.map((photo, index) => (
+              {currentParcel.parcelImages.map((photo, index) => (
                 <TouchableOpacity key={index} style={styles.photoBox}>
-                  {photo ? (
-                    <Image source={{uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}`}} style={styles.photoPreview} />
-                  ) : (
-                    <View></View>
+                  {photo && (
+                    <Image
+                      source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}` }}
+                      style={styles.photoPreview}
+                    />
                   )}
                 </TouchableOpacity>
               ))}
             </View>
           </View>
-        ) : (
-          <View></View>
         )}
+
+        {/* Submit Button */}
         <View style={$buttonsContainer}>
           <ButtonHome
-            onPress={HandleParcelInSender}
-            title='Receive Parcel'
-            style={{height: 55}}
-            disabled={!formData.handlingFee}
+            onPress={handleSubmitAllParcels}
+            title={parcels.length > 1 ? "Submit All Parcels" : "Submit Parcel"}
+            style={{ height: 55 }}
           />
         </View>
       </KeyBoardView>
@@ -368,15 +734,55 @@ const dispatch = useDispatch();
 };
 
 const styles = StyleSheet.create({
-  header: {
-    fontSize: RFValue(18),
-    fontWeight: 'bold',
+  // Navigation Styles
+  parcelNavContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: RFValue(16),
     marginBottom: RFValue(16),
-    textAlign: 'center',
+    width: '100%',
   },
+  navButtonContainer: {
+    flex: 1,
+    maxWidth: '30%',
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#215B23',
+    borderRadius: RFValue(8),
+    paddingVertical: RFValue(10),
+    paddingHorizontal: RFValue(12),
+    gap: RFValue(6),
+  },
+  navButtonText: {
+    color: 'white',
+    fontSize: RFValue(14),
+    fontWeight: '500',
+  },
+  navButtonPlaceholder: {
+    flex: 1,
+  },
+  currentParcelIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: RFValue(20),
+    paddingHorizontal: RFValue(16),
+    paddingVertical: RFValue(8),
+    minWidth: RFValue(120),
+    justifyContent: 'center',
+    marginHorizontal: RFValue(8),
+  },
+  currentParcelText: {
+    color: '#215B23',
+  },
+
+  // Content Styles
   sectionContainer: {
     marginBottom: RFValue(10),
-    // paddingVertical: RFValue(12),
     backgroundColor: '#FDFDFD',
     borderRadius: RFValue(8),
     padding: RFValue(16),
@@ -386,42 +792,40 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E9EAEB',
     marginBottom: RFValue(6),
+    color: '#414651',
+  },
+  infoBox: {
+    backgroundColor: 'white',
+    padding: RFValue(6),
+    borderRadius: RFValue(8),
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: RFValue(4),
+  },
+  borderBottom: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9EAEB',
   },
   infoText: {
     fontSize: RFValue(14),
-    marginBottom: RFValue(4),
     color: '#717680',
   },
   descriptionText: {
     fontSize: RFValue(14),
-    color: '#555',
+    color: '#717680',
   },
-  imageContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: RFValue(16),
-  },
-  image: {
-    width: RFValue(70),
-    height: RFValue(70),
-    borderRadius: RFValue(8),
-  },
-  button: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: RFValue(12),
-    borderRadius: RFValue(8),
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: RFValue(16),
-    color: '#fff',
-    fontWeight: 'bold',
+  photoSection: {
+    paddingVertical: RFValue(10),
+    paddingHorizontal: RFValue(16),
   },
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: RFValue(20),
   },
   photoBox: {
     width: '47%',
@@ -429,19 +833,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 20,
-    borderRadius: 10,
+    marginVertical: RFValue(10),
+    borderRadius: RFValue(10),
     borderColor: '#ddd',
   },
   photoPreview: {
     width: '100%',
     height: '100%',
-    borderRadius: 8,
+    borderRadius: RFValue(8),
   },
   counter: {
-    fontSize: 14,
+    fontSize: RFValue(14),
     color: 'gray',
-    marginBottom: 20,
+    marginBottom: RFValue(20),
   },
 });
 

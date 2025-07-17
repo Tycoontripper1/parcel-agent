@@ -53,7 +53,7 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
 
     if (!result.canceled) {
       const selected = result.assets[0];
-      console.log('Captured photo URI:', selected.uri); // 👈 Add this
+      //('Captured photo URI:', selected.uri); // 👈 Add this
       const updatedPhotos = [...photos];
       updatedPhotos[index] = selected.uri;
       setPhotos(updatedPhotos);
@@ -62,7 +62,7 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
 
   
 const handleSave = async () => {
-  console.log(photos, 'photos');
+  //(photos, 'photos');
   setLoading(true);
 
   try {
@@ -80,7 +80,7 @@ const handleSave = async () => {
     const userImageUrl = await upload(validPhotos);
 
     if (userImageUrl?.data?.details) {
-      console.log(userImageUrl.data.details, 'userImageUrl');
+      //(userImageUrl.data.details, 'userImageUrl');
       onSave(userImageUrl.data.details);
 
       Helper.vibrate();

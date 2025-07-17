@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
 import {RFValue} from 'react-native-responsive-fontsize';
 import {Ionicons} from '@expo/vector-icons';
 import {color} from '@/constants/Colors';
+import { useFocusEffect } from '@react-navigation/native';
+import { getProfile, getUserProfile } from '../../services/auth';
 
 interface IPaymentOption {
   selectedOption: string;
@@ -20,6 +22,18 @@ const PaymentOption = ({
   setSelectedOption,
   onPress,
 }: IPaymentOption) => {
+
+const [user, setUser] = useState<any>(null);
+ useFocusEffect(
+    useCallback(() => {
+      const fetchProfileAsync = async () => {
+        const userDetails = await getProfile();
+        setUser(userDetails);
+      };
+      fetchProfileAsync();
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
       {/* Title */}
@@ -45,15 +59,15 @@ const PaymentOption = ({
           <View style={styles.detailsContainer}>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Account Number</Text>
-              <Text style={styles.detailValue}>7065738250</Text>
+              <Text style={styles.detailValue}>{user?.wallet?.accountNumber}</Text>
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Bank</Text>
-              <Text style={styles.detailValue}>Seerbit</Text>
+              <Text style={styles.detailValue}>{user?.wallet?.bankName}</Text>
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Account Name</Text>
-              <Text style={styles.detailValue}>Chimark Logistics</Text>
+              <Text style={styles.detailValue}>{user?.wallet?.accountName}</Text>
             </View>
           </View>
         )}

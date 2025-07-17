@@ -2,9 +2,9 @@
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
- export const BASE_URL = 'https://1746-41-173-243-171.ngrok-free.app/parcel/v1.0/api'; // change this
+//  export const BASE_URL = 'https://1746-41-173-243-171.ngrok-free.app/parcel/v1.0/api'; // change this
 //  const apiKey = Constants.expoConfig?.extra?.apiKey;
-export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
+export const apiKey = "https://api.parcelpointng.com:4001/parcel/v1.0"
 
  export const getToken = async (): Promise<string | null> => {
   try {
@@ -42,7 +42,7 @@ export const uploadBulkImages = async (images: string[], username: string) => {
   });
 
   const response = await fetch(
-    `http://45.9.191.184:8001/parcel/v1.0/api/upload/bulk?folder=${username}`,
+    `https://api.parcelpointng.com:4001/parcel/v1.0/upload/bulk?folder=${username}`,
     {
       method: 'POST',
       headers: {
@@ -90,7 +90,7 @@ export const uploadBulkImages = async (images: string[], username: string) => {
     });
   
     const result = await response.json();
-     console.log(result,"result upload");
+     //(result,"result upload");
     if (!response.ok) {
       throw new Error(result.message || 'Failed to upload user image');
     }
@@ -101,9 +101,10 @@ export const uploadBulkImages = async (images: string[], username: string) => {
 
   
 export const upload = async (uris: string[]) => {
-  console.log('Received uris:', JSON.stringify(uris, null, 2));
+  //('Received uris:', JSON.stringify(uris, null, 2));
+
   const token = await getToken();
-  console.log(token,"token")
+  //(token,"token")
   const formData = new FormData();
 
   uris.forEach((imageUri, index) => {
@@ -115,7 +116,7 @@ export const upload = async (uris: string[]) => {
     } as any, `image_${index}.jpg`);
   });
 
-  console.log(formData, 'formData upload');
+  //(formData, 'formData upload');
 
   const response = await fetch(`${apiKey}/files`, {
     method: "POST",
@@ -191,7 +192,7 @@ export const getImage = async (imageSlug: string[]) => {
   //   });
   
   //   const result = await response.json();
-  //   console.log(result, 'result upload');
+  //   //(result, 'result upload');
   
   //   if (!response.ok) {
   //     throw new Error(result.message || 'Failed to upload user image');

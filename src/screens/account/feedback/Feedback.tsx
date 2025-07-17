@@ -45,7 +45,7 @@ const Feedback = ({ navigation }: Props) => {
     if (!formDataState.description) {
       return;
     }
-        console.log({ formDataState });
+        //({ formDataState });
     setLoading(true);
     setTimeout(() => {
       setLoading(false);

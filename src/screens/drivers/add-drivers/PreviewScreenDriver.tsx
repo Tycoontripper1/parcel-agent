@@ -41,8 +41,8 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
  
   const handleImageUpload = async () => {
     setLoading(true);
-    console.log(idFrontImage, "idFrontImage")
-    console.log(idBackImage, "idBackImage")
+    //(idFrontImage, "idFrontImage")
+    //(idBackImage, "idBackImage")
 
     const photos = [idFrontImage, idBackImage];
     try {
@@ -128,8 +128,8 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
   //     return null;
   //   }
   // };
-  console.log(idBackImage, "idBackImage")
-  console.log(idFrontImage, "idFrontImage")
+  //(idBackImage, "idBackImage")
+  //(idFrontImage, "idFrontImage")
   const handleCompleteRegistration = async () => {
     setLoading(true);
     const driver = await getDriver();
@@ -140,8 +140,8 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
         identificationImages: [idFrontImage, idBackImage],
         userImage: facialVerificationImage,
       };
-      console.log(idFrontImage, "idFrontImage")
-      console.log(idBackImage, "idBackImage")
+      //(idFrontImage, "idFrontImage")
+      //(idBackImage, "idBackImage")
 
       const result = await updateDriverKyc(payload, driverId);
 

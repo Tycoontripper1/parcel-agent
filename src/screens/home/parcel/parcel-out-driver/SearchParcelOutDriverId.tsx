@@ -39,7 +39,7 @@ const SearchParcelOutDriverId = ({ navigation }: Props) => {
   useEffect(() => {
     const fetchParcel = async () => {
       const parcelDetails = await getSingleParcel();
-      console.log(parcelDetails, "userDetails");
+      //(parcelDetails, "userDetails");
       setParcelDetails(parcelDetails.id);
     };
     fetchParcel();
@@ -117,7 +117,7 @@ useEffect(() => {
         throw new Error(result.message || 'Unable to fetch driver information.');
       }
   
-      console.log(result, "Fetched Driver Details");
+      //(result, "Fetched Driver Details");
             setTimeout(() => {
         setLoading(false);
         Toast.show({
@@ -172,7 +172,7 @@ useEffect(() => {
         throw new Error(result.message || 'Unable to fetch driver information.');
       }
   
-      console.log(result, "Fetched Driver Details");
+      //(result, "Fetched Driver Details");
   
       const driver = result?.data?.details?.rows?.[0];
       if (driver) {

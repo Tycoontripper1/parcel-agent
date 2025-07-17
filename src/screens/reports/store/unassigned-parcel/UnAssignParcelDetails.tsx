@@ -62,7 +62,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
     try {
       // Store the item in AsyncStorage as a JSON string
       await AsyncStorage.setItem("parcelitem", JSON.stringify(item));
-      console.log(item);
+      //(item);
       navigation.navigate("PrintParcelItem");
     } catch (error) {
       console.error("Error storing item in AsyncStorage:", error);
@@ -74,7 +74,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
     try {
       // Store the item in AsyncStorage as a JSON string
       await AsyncStorage.setItem("singleParcelData", JSON.stringify(item));
-      console.log(item);
+      //(item);
       if (item.status === "unassigned") {
         navigation.navigate("SearchParcelOutDriverId");
       } else if (item.status === "arrived") {

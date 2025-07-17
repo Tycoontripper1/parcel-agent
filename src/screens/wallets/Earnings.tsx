@@ -28,7 +28,7 @@ import { color } from "@/constants/Colors";
 import HomeHeader from "@/components/share/HomeHeader";
 import { MaterialIcons } from "@expo/vector-icons";
 import FundWallet from "@/components/FundWallet";
-import { Wallet } from "../Wallet";
+
 import WalletIcon from "@/components/svg/WalletIcon";
 import TransferIcon from "@/components/svg/TransferIcon";
 import USSDIcon from "@/components/svg/USSDIcon";

@@ -161,9 +161,8 @@ const handlePay = async () => {
     account_name: accountName,
     amount: String(rawAmount),
     narration: formData.narration || "",
-    sender_name: userProfile?.wallet?.accountName,
   };
-  console.log("Transfer Data:", data);
+  //("Transfer Data:", data);
 
   try {
     Keyboard.dismiss(); // Add this before showing modal
@@ -268,7 +267,7 @@ const handlePay = async () => {
           </View>
           {/* Account Number and Bank */}
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{ flexDirection: "row", justifyContent: "space-between", }}
           >
             <Text>Account Number</Text>
             <Text>{formData.account_number}</Text>

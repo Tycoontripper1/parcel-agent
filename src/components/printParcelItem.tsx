@@ -156,7 +156,7 @@ const PrintParcelItem = ({ navigation }: Props) => {
 
     try {
       const uri = await viewShot?.capture?.(); // No more possible null warning
-      console.log("Captured URI:", uri);
+      //("Captured URI:", uri);
 
       if (uri) {
         const isAvailable = await Sharing.isAvailableAsync();
@@ -197,7 +197,7 @@ const PrintParcelItem = ({ navigation }: Props) => {
         return;
       }
 
-      console.log("Captured URI:", uri);
+      //("Captured URI:", uri);
 
       // Fetch the image file
       let response;
@@ -239,7 +239,7 @@ const PrintParcelItem = ({ navigation }: Props) => {
             base64: true,
           });
 
-          console.log("PDF Saved at:", pdfUri);
+          //("PDF Saved at:", pdfUri);
           navigation.navigate("ParcelCongratulation", {
             message: "Parcel received successfully",
             note: "SMS has been sent to notify the sender/receiver.",

@@ -1,6 +1,6 @@
 import {useTheme} from '@/hooks/useTheme';
 import React from 'react';
-import {Text as RNText, StyleSheet, TextStyle} from 'react-native';
+import {Text as RNText, StyleProp, StyleSheet, TextStyle} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 
 interface TextProps {
@@ -8,7 +8,7 @@ interface TextProps {
   children: React.ReactNode;
 
   /** Additional styles for the text */
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
 
   /** Font size multiplier (default: 14) */
   size?: number;

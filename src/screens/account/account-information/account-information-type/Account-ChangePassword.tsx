@@ -55,7 +55,7 @@ const AccountChangePassword = ({ navigation }: Props) => {
     useEffect(() => {
       const fetchUser = async () => {
         const userDetails = await getUser();
-        console.log(userDetails, "userDetails");
+        //(userDetails, "userDetails");
         setUserDetails(userDetails);
       };
       fetchUser();
@@ -112,7 +112,7 @@ const AccountChangePassword = ({ navigation }: Props) => {
   //     // navigation.navigate('OTPVerificationScreen');
   //   }, 2000);
 
-  //   console.log({ formData });
+  //   //({ formData });
   // };
   const handleSaveChanges = async () => {
     if (!handleValidation()) return;
@@ -149,7 +149,7 @@ const AccountChangePassword = ({ navigation }: Props) => {
 
   const handleEditProfile = () => {
     navigation.navigate("AccountEditProfile");
-    console.log({ formData });
+    //({ formData });
   };
 
   // Styles

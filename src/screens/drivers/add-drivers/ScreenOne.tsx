@@ -148,10 +148,10 @@ const ScreenOne = ({ navigation }: Props) => {
         parkLocation: formData.motorParkLocation,
       };
 
-      console.log(DriverOnboardingPayload, "payload");
+      //(DriverOnboardingPayload, "payload");
 
       const result = await onboardingDriver(DriverOnboardingPayload);
-      console.log(result, "✅ Driver Onooarded");
+      //(result, "✅ Driver Onooarded");
 
       await AsyncStorage.setItem("driver", JSON.stringify(result?.data?.details));
       await AsyncStorage.setItem("driverId", result?.data?.details?.id);
@@ -165,7 +165,7 @@ const ScreenOne = ({ navigation }: Props) => {
 
       navigation.navigate("FacialVerification");
     } catch (error: any) {
-      console.log(error, "❌ Driver Onboard error");
+      //(error, "❌ Driver Onboard error");
       Toast.show({
         type: "error",
         text1: "Error",

@@ -20,7 +20,8 @@ type BottomSheetDatePickerProps = {
   placeholder: string;
   errorMessage?: string;
   onSelect: (date: Date) => void;
-   formatDate?: (date: Date) => string; // <-- new prop
+  formatDate?: (date: Date) => string;
+  initialDate?: Date;
 };
 
 const BottomSheetDatePicker = ({
@@ -29,17 +30,29 @@ const BottomSheetDatePicker = ({
   errorMessage,
   onSelect,
   formatDate,
+  initialDate,
 }: BottomSheetDatePickerProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate || null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
+  const [showPicker, setShowPicker] = useState(false); // Added missing state declaration
   const { theme } = useTheme();
 
   const handleChange = (_event: any, date?: Date) => {
-    if (Platform.OS === 'android') setIsModalVisible(false);
+    if (Platform.OS === 'android') {
+      setShowPicker(false); // Hide the Android picker after selection
+    }
+    setIsModalVisible(false); // Hide iOS modal after selection
     if (date) {
       setSelectedDate(date);
       onSelect(date);
+    }
+  };
+
+  const showDatePicker = () => {
+    if (Platform.OS === 'android') {
+      setShowPicker(true); // Show Android system picker
+    } else {
+      setIsModalVisible(true); // Show iOS custom modal
     }
   };
 
@@ -58,47 +71,71 @@ const BottomSheetDatePicker = ({
   return (
     <View style={{ marginVertical: RFValue(10) }}>
       <Text style={styles.label}>{label}</Text>
-   <TouchableOpacity style={inputContainer} onPress={() => setIsModalVisible(true)}>
-  <Ionicons name='calendar' size={20} color={color.inputColor} style={{ marginRight: RFValue(8) }} />
-  <Text style={styles.placeholder}>
-    {selectedDate
-      ? formatDate
-        ? formatDate(selectedDate)
-        : selectedDate.toDateString()
-      : placeholder}
-  </Text>
-</TouchableOpacity>
-
+      <TouchableOpacity 
+        style={inputContainer} 
+        onPress={showDatePicker}
+      >
+        <Ionicons 
+          name='calendar' 
+          size={20} 
+          color={color.inputColor} 
+          style={{ marginRight: RFValue(8) }} 
+        />
+        <Text style={styles.placeholder}>
+          {selectedDate
+            ? formatDate
+              ? formatDate(selectedDate)
+              : selectedDate.toLocaleDateString()
+            : placeholder}
+        </Text>
+      </TouchableOpacity>
 
       {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
 
-      <Modal
-        transparent
-        visible={isModalVisible}
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}>
-        <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
-          <View style={styles.overlay} />
-        </TouchableWithoutFeedback>
-        <View style={[styles.bottomSheet, { backgroundColor: theme.background }]}>
-          <View style={styles.dragHandleContainer}>
-            <View style={styles.dragHandle} />
+      {/* Android Date Picker */}
+      {Platform.OS === 'android' && showPicker && (
+        <DateTimePicker
+          value={selectedDate || new Date()}
+          mode="date"
+          display="default"
+          onChange={handleChange}
+        />
+      )}
+
+      {/* iOS Custom Modal */}
+      {Platform.OS === 'ios' && (
+        <Modal
+          transparent
+          visible={isModalVisible}
+          animationType="slide"
+          onRequestClose={() => setIsModalVisible(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
+            <View style={styles.overlay} />
+          </TouchableWithoutFeedback>
+          <View style={[styles.bottomSheet, { backgroundColor: theme.background }]}>
+            <View style={styles.dragHandleContainer}>
+              <View style={styles.dragHandle} />
+            </View>
+            <View style={styles.header}>
+              <Text font="SemiBold" size={16}>
+                Select Date
+              </Text>
+              <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+                <Ionicons name="close" size={24} color={color.black} />
+              </TouchableOpacity>
+            </View>
+            <DateTimePicker
+              value={selectedDate || new Date()}
+              mode="date"
+              display="spinner"
+              onChange={handleChange}
+              textColor={theme.text}
+              // themeVariant={theme.mode === 'dark' ? 'dark' : 'light'}
+            />
           </View>
-          <View style={styles.header}>
-            <Text style={styles.modalTitle}>Select Date</Text>
-            <TouchableOpacity onPress={() => setIsModalVisible(false)}>
-              <Ionicons name="close" size={24} color={color.black} />
-            </TouchableOpacity>
-          </View>
-          <DateTimePicker
-            value={selectedDate || new Date()}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleChange}
-            style={{ backgroundColor: theme.background }}
-          />
-        </View>
-      </Modal>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -147,9 +184,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: RFValue(10),
-  },
-  modalTitle: {
-    fontSize: RFValue(16),
-    fontWeight: 'bold',
   },
 });

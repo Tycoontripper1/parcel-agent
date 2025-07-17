@@ -38,7 +38,7 @@ const OTPVerificationScreen = ({navigation}: Props) => {
       const userDetails = await getUser();
       const email = userDetails?.email;
       setEmail(email)
-      console.log(email, 'email');
+      //(email, 'email');
     };
   
     fetchUser();
@@ -66,7 +66,7 @@ const OTPVerificationScreen = ({navigation}: Props) => {
         const userDetails =  await getUser();
         const email = userDetails?.email;
         const phone = userDetails?.phone;
-        console.log(email, 'email');
+        //(email, 'email');
   
     try {
       const payload = {
@@ -76,10 +76,10 @@ const OTPVerificationScreen = ({navigation}: Props) => {
         
         
       };
-      console.log(payload, 'payload');
+      //(payload, 'payload');
   
       const result = await verifyOtpAccount(payload);
-      console.log('OTP verification result:', result);
+      //('OTP verification result:', result);
   
       // Extract and store token and user details
       const token = result?.data?.token;
@@ -121,7 +121,7 @@ const OTPVerificationScreen = ({navigation}: Props) => {
       };
   
       const result = await resendOtp(payload);
-      console.log('OTP sent result:', result);
+      //('OTP sent result:', result);
   
       Toast.show({
         type: 'success',

@@ -83,11 +83,11 @@ const UnAssignParcelHistory = ({
   navigation,
 }: Props) => {
   const [isWallet, setIsWallet] = useState(false);
-  console.log(navigation, "navigation");
+  //(navigation, "navigation");
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const { data, label }: { data: ParcelDetails[]; label: string } = route.params;
-  console.log(data);
+  //(data);
 
   type TransactionType = "Handling fee" | "Overdue fee" | "Upfront fee";
 

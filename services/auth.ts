@@ -2,7 +2,7 @@
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // export const apiKey = Constants.expoConfig?.extra?.apiKey;
-export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
+export const apiKey = "https://api.parcelpointng.com:4001/parcel/v1.0"
 
 export const getToken = async (): Promise<string | null> => {
   try {
@@ -116,7 +116,7 @@ export const pushNotification = async (data: {
 }) => {
   try {
       const token = await getToken()
-      console.log(token,"userToken")
+      //(token,"userToken")
     const response = await fetch(`${apiKey}/notifications/token`, {
       method: 'POST',
       headers: {
@@ -155,6 +155,36 @@ export const loginUser = async (data: {
 
     if (!response.ok) {
       throw new Error(result.message || 'Login failed');
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+export const identityVerification = async (data: {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  phone: string;
+  identificationType: string;
+  identificationNumber: string;
+}) => {
+  try {
+  const token = await getToken()
+    const response = await fetch(`${apiKey}/auth/identity/verification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'verification failed');
     }
 
     return result;
@@ -279,7 +309,7 @@ export const updateUserKyc = async (
   
   try {
     const token = await getToken()
-    // console.log(token, 'token')
+    // //(token, 'token')
     const response = await fetch(`${apiKey}/users/update?type=profile&userType=agent`, {
       method: 'PATCH',
       headers: {
@@ -312,7 +342,7 @@ export const updateUserProfile = async (
   
   try {
     const token = await getToken()
-    // console.log(token, 'token')
+    // //(token, 'token')
     const response = await fetch(`${apiKey}/users/update?type=profile&userType=agent`, {
       method: 'PATCH',
       headers: {
@@ -343,7 +373,7 @@ export const updateDriverKyc = async (
   
   try {
     const token = await getToken()
-    // console.log(token, 'token')
+    // //(token, 'token')
     const response = await fetch(`${apiKey}/users/driver/${driverId}`, {
       method: 'PATCH',
       headers: {
@@ -432,6 +462,32 @@ export const getAllDrivers = async () => {
       throw error;
     }
   };
+export const getAllNotification = async (
+  startDate: string | null = null, // Default to null if not provided, allowing for optional start date
+  endDate: string,
+  
+) => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/notifications?startDate=${startDate}&endDate=${endDate}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get notification failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
 export const getDriverById = async (driverId:string) => {
     try {
         const token = await getToken()
@@ -448,6 +504,29 @@ export const getDriverById = async (driverId:string) => {
   
       if (!response.ok) {
         throw new Error(result.message || 'get driver failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+  
+export const markNotificationAsRead = async (notificationId:string) => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/notifications/${notificationId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'update failed');
       }
   
       return result;

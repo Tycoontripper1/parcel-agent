@@ -105,13 +105,13 @@ const AccountInformation = ({ navigation }: Props) => {
       });
       // navigation.navigate('OTPVerificationScreen');
     }, 2000);
-    console.log({ formData });
+    //({ formData });
     setLoading(false);
   };
     useEffect(() => {
       const fetchUser = async () => {
         const userDetails = await getUser();
-        console.log(userDetails, 'userDetails');
+        //(userDetails, 'userDetails');
         setUserDetails(userDetails)
       };
       fetchUser();

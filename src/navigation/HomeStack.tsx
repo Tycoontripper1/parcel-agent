@@ -35,6 +35,8 @@ import TransactionHistory from "@/components/TransactionHistory";
 import DriversScreen from "@/screens/DriversScreen";
 import UnAssignParcelDetails from "@/screens/reports/store/unassigned-parcel/UnAssignParcelDetails";
 import ReceiptScreen from "@/components/ReceiptScreen";
+import TransactionDetails from "@/components/TransactionDetails";
+
 const Home = createStackNavigator<HomeStackList>();
 
 interface Props {
@@ -217,6 +219,11 @@ const HomeStack = ({ navigation }: Props) => {
       <Home.Screen
         name="ReceiptScreen"
         component={ReceiptScreen}
+        options={{ headerShown: false }}
+      />
+      <Home.Screen
+        name="TransactionDetails"
+        component={TransactionDetails}
         options={{ headerShown: false }}
       />
     </Home.Navigator>
