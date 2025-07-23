@@ -343,7 +343,7 @@
 //               {formData.parcelImages.map((photo, index) => (
 //                 <TouchableOpacity key={index} style={styles.photoBox}>
 //                   {photo ? (
-//                     <Image source={{uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}`}} style={styles.photoPreview} />
+//                     <Image source={{uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${photo}`}} style={styles.photoPreview} />
 //                   ) : (
 //                     <View></View>
 //                   )}
@@ -463,6 +463,7 @@ import { SendParcelData } from "../../../../../services/parcel";
 import { resetForm } from "@/redux/slices/parcelSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { setCurrentParcelIndex } from "@/redux/slices/parcelVariationSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const ParcelPreviewScreen = ({ navigation }: Props) => {
@@ -517,7 +518,11 @@ const ParcelPreviewScreen = ({ navigation }: Props) => {
       });
 
       dispatch(resetForm());
-      navigation.navigate('Dashboard');
+      // navigation.navigate('Dashboard');
+ await AsyncStorage.setItem(
+              "parcelDetails",
+              JSON.stringify(result?.data?.details)
+            );
     } catch (error: any) {
       console.error('Parcel submission error:', error);
       Toast.show({
@@ -710,7 +715,7 @@ const ParcelPreviewScreen = ({ navigation }: Props) => {
                 <TouchableOpacity key={index} style={styles.photoBox}>
                   {photo && (
                     <Image
-                      source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}` }}
+                      source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${photo}` }}
                       style={styles.photoPreview}
                     />
                   )}

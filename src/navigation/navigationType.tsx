@@ -103,6 +103,13 @@ export type WalletStackList = {
     bankCode: string;
     bankName: string;
   };
+  WithdrawToWalletScreen: undefined;
+  InputWithdrawAmountWalletScreen:{
+    accountNumber: string;
+    accountName: string;
+    bankCode: string;
+    bankName: string;
+  };
   ComingSoon: undefined;
    ReceiptScreen: {
     trxId: any;

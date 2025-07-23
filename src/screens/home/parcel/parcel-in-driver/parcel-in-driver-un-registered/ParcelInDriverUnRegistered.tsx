@@ -52,7 +52,6 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
   const [receiverPhoneError, setReceiverPhoneError] = useState("");
   const [departureStateError, setDepartureStateError] = useState("");
   const [deliveryMotorParkError, setDeliveryMotorParkError] = useState("");
-  const [parcelTypeError, setParcelTypeError] = useState("");
   const [parcelValueError, setParcelValueError] = useState("");
   const [handlingFeeError, setHandlingFeeError] = useState("");
   const [chargesPayableError, setChargesPayableError] = useState("");
@@ -189,14 +188,6 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
       isValid = false;
     } else {
       setDeliveryMotorParkError("");
-    }
-
-    // Parcel Type
-    if (!currentParcel.parcelType.trim()) {
-      setParcelTypeError("Parcel type is required.");
-      isValid = false;
-    } else {
-      setParcelTypeError("");
     }
 
     // Parcel Value
@@ -488,10 +479,10 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
                 key: "parcelType",
                 value,
               }));
-              if (value.trim()) setParcelTypeError("");
+           
             }}
             keyboardType="default"
-            errorMessage={parcelTypeError}
+          
           />
           
           <Input
@@ -635,7 +626,7 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
                   <TouchableOpacity key={index} style={styles.photoBox}>
                     {photo ? (
                       <Image
-                        source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}` }}
+                        source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${photo}` }}
                         style={styles.photoPreview}
                       />
                     ) : (
@@ -661,7 +652,7 @@ const ParcelInDriverUnRegistered = ({ navigation }: Props) => {
           <View style={$buttonsContainer}>
             <ButtonHome
               onPress={HandleContinue}
-              title="Next"
+              title="Continue"
               style={{ height: 55 }}
             />
           </View>
@@ -1471,7 +1462,7 @@ export default ParcelInDriverUnRegistered;
 //                   <TouchableOpacity key={index} style={styles.photoBox}>
 //                     {photo ? (
 //                       <Image
-//                         source={{ uri:  `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}`  }}
+//                         source={{ uri:  `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${photo}`  }}
 //                         style={styles.photoPreview}
 //                       />
 //                     ) : (

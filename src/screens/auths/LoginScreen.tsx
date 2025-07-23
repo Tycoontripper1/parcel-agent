@@ -90,6 +90,7 @@ const LoginScreen = ({navigation}: Props) => {
       const token = result?.data?.token;
       //(token)
       const userDetails = result?.data?.details;
+      
 
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('user', JSON.stringify(userDetails));
@@ -103,9 +104,9 @@ const LoginScreen = ({navigation}: Props) => {
       if (!userDetails.isAccountVerified) {
         navigation.navigate('OTPVerificationScreen', {phone: userDetails.phone});
       }
-      //  else if (!userDetails.isKycComplete) {
-      // navigation.navigate('BusinessInfoScreen');
-      //  }
+       else if (!userDetails.isKycComplete) {
+      navigation.navigate('BusinessInfoScreen');
+       }
       else if (notificationToken) {
         const pushResult = await pushNotification({ token: notificationToken, userType: "agent" });
         //(pushResult, 'Push Notification Result');

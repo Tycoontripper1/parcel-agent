@@ -46,15 +46,15 @@ const SearchParcelOutDriverId = ({ navigation }: Props) => {
   }, []);
 
   // Debounced effect
-useEffect(() => {
-  if (driverId.length === 8) {
-    const timeout = setTimeout(() => {
-      fetchDriverById(driverId);
-    }, 300); // wait 300ms after last input
+  useEffect(() => {
+    if (driverId.length === 8) {
+      const timeout = setTimeout(() => {
+        fetchDriverById(driverId);
+      }, 300); // wait 300ms after last input
 
-    return () => clearTimeout(timeout); // cleanup timeout if user keeps typing
-  }
-}, [driverId]);
+      return () => clearTimeout(timeout); // cleanup timeout if user keeps typing
+    }
+  }, [driverId]);
 
   // Function to handle parcel search
   const handleSubmit = async () => {
@@ -93,87 +93,84 @@ useEffect(() => {
     //     text2: error.message ||"Failed to release parcel",
     //   });
     // }
-      const payload = {
-        // parcelId,
-        firstName: isRegistered ? setRegisteredDriverName : driverName,
-        phone: isRegistered ? setRegisteredDriverPhone : driverPhone,
-        status: "in-transit",
-      };
+    const payload = {
+      // parcelId,
+      firstName: isRegistered ? setRegisteredDriverName : driverName,
+      phone: isRegistered ? setRegisteredDriverPhone : driverPhone,
+      status: "in-transit",
+    };
 
     try {
       const token = await getToken();
-      const response =  await fetch(`${apiKey}/shipment/${parcelDetail}`, {
-        method: 'PATCH',
+      const response = await fetch(`${apiKey}/shipment/${parcelDetail}`, {
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
-  
+
       const result = await response.json();
-  
+
       if (!response.ok) {
-        throw new Error(result.message || 'Unable to fetch driver information.');
+        throw new Error(
+          result.message || "Unable to fetch driver information."
+        );
       }
-  
+
       //(result, "Fetched Driver Details");
-            setTimeout(() => {
+      setTimeout(() => {
         setLoading(false);
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: result?.data?.message ||"Parcel released!",
+          text2: result?.data?.message || "Parcel released!",
         });
         navigation.navigate("ParcelCongratulation", {
           message: "Parcel released successfully",
           note: "",
         });
       }, 3000);
-  
-      
     } catch (error: any) {
       console.error("Failed to fetch driver:", error);
       Toast.show({
         type: "error",
         text1: "Fetch Error",
-        text2: error.message || "Failed to fetch driver details. Please try again.",
+        text2:
+          error.message || "Failed to fetch driver details. Please try again.",
       });
     } finally {
       setLoading(false);
     }
   };
 
-
-
-
-
-
-
-
-
-
   const [fetched, setFetched] = useState(false);
   const fetchDriverById = async (id: string) => {
     setLoading(true);
     try {
       const token = await getToken();
-      const response = await fetch(`${apiKey}/users?userType=driver&driverId=${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
+      const response = await fetch(
+        `${apiKey}/users?userType=driver&driverId=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       const result = await response.json();
-  
+
       if (!response.ok) {
-        throw new Error(result.message || 'Unable to fetch driver information.');
+        throw new Error(
+          result.message || "Unable to fetch driver information."
+        );
       }
-  
+
       //(result, "Fetched Driver Details");
-  
+
       const driver = result?.data?.details?.rows?.[0];
       if (driver) {
         setRegisteredDriverName(`${driver.firstName} ${driver.lastName}` || "");
@@ -186,19 +183,18 @@ useEffect(() => {
           text2: "The requested driver could not be located.",
         });
       }
-  
     } catch (error: any) {
       console.error("Failed to fetch driver:", error);
       Toast.show({
         type: "error",
         text1: "Fetch Error",
-        text2: error.message || "Failed to fetch driver details. Please try again.",
+        text2:
+          error.message || "Failed to fetch driver details. Please try again.",
       });
     } finally {
       setLoading(false);
     }
   };
-  
 
   // Styles
   const $bodyHeader: ViewStyle = {
@@ -288,25 +284,24 @@ useEffect(() => {
                 />
               </View>
               {fetched && (
-  <View style={[styles.outputContainer, styles.checkedContainer]}>
-    <TouchableOpacity>
-      <Ionicons
-        name="checkmark-circle"
-        size={24}
-        color="#4CAF50"
-      />
-    </TouchableOpacity>
-    <View style={styles.infoContainer}>
-      <Text style={styles.name}>Name</Text>
-      <Text style={styles.phone}>{registeredDriverName}</Text> 
-    </View>
-    <View style={styles.infoContainer}>
-      <Text style={styles.name}>Phone Number</Text>
-      <Text style={styles.phone}>{registeredDriverPhone}</Text>
-    </View>
-  </View>
-)}
-
+                <View style={[styles.outputContainer, styles.checkedContainer]}>
+                  <TouchableOpacity>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={24}
+                      color="#4CAF50"
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.infoContainer}>
+                    <Text style={styles.name}>Name</Text>
+                    <Text style={styles.phone}>{registeredDriverName}</Text>
+                  </View>
+                  <View style={styles.infoContainer}>
+                    <Text style={styles.name}>Phone Number</Text>
+                    <Text style={styles.phone}>{registeredDriverPhone}</Text>
+                  </View>
+                </View>
+              )}
             </>
           ) : (
             <>

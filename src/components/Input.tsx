@@ -177,8 +177,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: RFValue(14),
+    fontWeight:"500",
     marginBottom: 5,
-    color: '#7B8794',
+    color: '#000',
   },
   inputWrapper: {
     flexDirection: 'row',

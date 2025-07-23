@@ -7,7 +7,7 @@ import Text from '../Text';
 import { color } from '@/constants/Colors';
 import { Avatar } from '../../../assets/images';
 import NotificationIcon from '../svg/NotificationIcon';
-import { getAllNotification, getUser } from '../../../services/auth';
+import { getAllNotification, getUser, getUserProfile } from '../../../services/auth';
 import { UserDetails } from '@/utils/interface';
 import { getImage } from '../../../services/upload';
 import { format, set, subDays } from 'date-fns';
@@ -37,17 +37,32 @@ const [userImage, setUserImage] = useState({
     mimetype: ''
 })
 
-  const BASEURL = "http://45.9.191.184:8001/parcel/v1.0/api/files/"
-  useEffect(() => {
-  const fetchUser = async () => {
-    const userDetails = await getUser();
-    //(userDetails, 'userDetails');
-    setUserDetails(userDetails);
-  };
+  const BASEURL = "https://api.parcelpointng.com:4001/parcel/v1.0/files"
+//   useEffect(() => {
+//   const fetchUser = async () => {
+//     const userDetails = await getUser();
+//     //(userDetails, 'userDetails');
+//     setUserDetails(userDetails);
+//   };
 
-  fetchUser();
-}, []); 
+//   fetchUser();
+// }, []); 
+    const fetchUserProfile = async () => {
+      try {
+        const result = await getUserProfile();
+        const rows = result?.data?.details || [];
+        setUserDetails(rows);
 
+    console.log(rows)
+        //(rows, 'User Profile Data');
+      
+      } catch (error) {
+        // console.error('Failed to fetch user:', error);
+      }
+    };  
+    useEffect(() => {
+      fetchUserProfile();
+    }, []);
 
 // Run once on mount
 useEffect(() => {
@@ -151,7 +166,7 @@ const unreadCount = notifications?.filter((n:any) => !n.isRead).length;
               
               {userDetail?.userImage ? (
                 <Image
-                 source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}`}}
+                 source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${userDetail?.userImage}`}}
                   style={{
                     width: '100%',
                     height: '100%',

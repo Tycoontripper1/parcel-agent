@@ -131,6 +131,7 @@ const FacialVerification = ({navigation}: Props) => {
         // userImage: facialVerificationImage, // ✅ Use the first image URL from the array
         userImage: userImageUrl?.data?.details[0], // ✅ Use the first image URL from the array
       };
+     
       //(payload, 'payload');
   
       const result = await updateUserKyc(payload);

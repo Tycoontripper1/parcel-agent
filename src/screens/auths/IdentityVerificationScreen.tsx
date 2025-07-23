@@ -80,6 +80,7 @@ const IdentityVerificationScreen = ({ navigation }: Props) => {
       setVerificationError(
         "Verification failed. Please check your details"
       );
+      console.log(error)
       setMessage(error?.message)
       setIsVerified(false);
     } finally {

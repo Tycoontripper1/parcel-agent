@@ -111,7 +111,7 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
   //   const token = await getToken();
   //   try {
   //     const response = await axios.post(
-  //       `http://45.9.191.184:8001/parcel/v1.0/api/upload/bulk?folder=oladeji`,
+  //       `https://api.parcelpointng.com:4001/parcel/v1.0/upload/bulk?folder=oladeji`,
   //       formData,
   //       {
   //         headers: {
@@ -199,9 +199,9 @@ const PreviewScreenDriver = ({ navigation }: Props) => {
         {
           imagesUploaded ? (
             <View>
-              <Image source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${idFrontImage}`}} style={styles.image} />
+              <Image source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${idFrontImage}`}} style={styles.image} />
               <Text style={styles.title}>Back Image</Text>
-              <Image source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${idBackImage}`}}style={styles.image} />
+              <Image source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${idBackImage}`}}style={styles.image} />
             </View>
           ) : ( 
             <View>

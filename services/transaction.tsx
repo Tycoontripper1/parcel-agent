@@ -56,6 +56,36 @@ export const fundTransfer = async (data: {
       throw error;
     }
   };
+export const fundTransferToWallet = async (data: {
+    amount: string;
+    // bank_code?: string;
+    account_number: string;
+    account_name: string;
+    narration?: string;
+
+  }) => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/wallets/transfer?userType=agent&trxType=wallet-to-wallet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'Funding failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
   
 export const nameEnquiry = async (data: {
 bankCode: string;

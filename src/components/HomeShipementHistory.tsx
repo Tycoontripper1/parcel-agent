@@ -108,7 +108,7 @@ const HomeShipmentHistory = ({
      
         <Image
           source={{
-            uri:    `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${item?.parcel?.thumbnails[0] || fallbackImage}`,
+            uri:    `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${item?.parcel?.thumbnails[0] || fallbackImage}`,
           }}
           style={styles.shipmentImage}
         />

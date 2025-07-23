@@ -47,7 +47,7 @@ const ParcelPhotoModal: React.FC<ParcelPhotoModalProps> = ({
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: "images",
       allowsEditing: false, // No cropping
-      quality: 1,
+      quality: 0.3,
       base64:false,
     });
 

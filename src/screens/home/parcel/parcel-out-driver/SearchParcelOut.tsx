@@ -187,10 +187,10 @@ const SearchParcelOut = ({ navigation }: Props) => {
 
           {/* Parcel Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Input Parcel ID</Text>
+            {/* <Text style={styles.label}>Input Parcel ID</Text> */}
 
             <Input
-              label="Parcel ID"
+              label="Parcel ID / phone No"
               placeholder="Enter parcel ID/phone no"
               placeholderTextColor="#B8C2CC"
               keyboardType="number-pad"

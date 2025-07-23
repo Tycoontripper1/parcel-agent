@@ -23,7 +23,7 @@ import { set } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { updateField } from "@/redux/slices/formSlice";
-import { fundTransfer } from "../../../../../services/transaction";
+import { fundTransfer, fundTransferToWallet } from "../../../../../services/transaction";
 import Toast from "react-native-toast-message";
 import TransferErrorModal from "@/components/TransferErrorModal";
 import {
@@ -58,12 +58,10 @@ export const formatCurrency = (value: any) => {
   });
 };
 type Props = NativeStackScreenProps<WalletStackList>;
-const InputWithdrawAmountScreen = ({
+const InputWithdrawAmountWalletScreen = ({
   route,
   navigation,
 }: NativeStackScreenProps< HomeStackList>) => {
-  const [amount, setAmount] = useState("");
-  const [formattedAmount, setFormattedAmount] = useState("");
   const formData = useSelector((state: RootState) => state.form);
     const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -157,7 +155,6 @@ const handlePay = async () => {
 
   const data = {
     account_number: accountNumber,
-    bank_code: bankCode,
     account_name: accountName,
     amount: String(rawAmount),
     narration: formData.narration || "",
@@ -166,7 +163,7 @@ const handlePay = async () => {
 
   try {
     Keyboard.dismiss(); // Add this before showing modal
-    const result = await fundTransfer(data);
+    const result = await fundTransferToWallet(data);
     
     // Success handling
     Toast.show({
@@ -278,7 +275,7 @@ const handlePay = async () => {
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Text style={{ color: "#888" }}>Name</Text>
-            <Text style={{ fontWeight: "600", textTransform: "capitalize",fontSize:RFValue(8) }}>
+            <Text style={{ fontWeight: "600", textTransform: "capitalize" }}>
               {formData.account_name || "N/A"}
             </Text>
           </View>
@@ -367,9 +364,10 @@ const handlePay = async () => {
         </View>
 
         <View style={styles.remarkContainer}>
-          <Text style={styles.remarkLabel}>Remark</Text>
+          <Text style={styles.remarkLabel}>Remark (Optional)</Text>
           <TextInput
             placeholder="Enter your remark..."
+            
             value={formData.narration || ""}
             onChangeText={(text) =>
               dispatch(updateField({ key: "narration", value: text }))
@@ -384,7 +382,7 @@ const handlePay = async () => {
             onPress={handleContinue}
             title={"Continue"}
             style={{ height: 45 }}
-            disabled={!rawAmount || !formData?.narration}
+            disabled={!rawAmount}
           />
         </View>
       </KeyboardAvoidingView>
@@ -392,7 +390,7 @@ const handlePay = async () => {
   );
 };
 
-export default InputWithdrawAmountScreen;
+export default InputWithdrawAmountWalletScreen;
 
 const styles = StyleSheet.create({
   container: {

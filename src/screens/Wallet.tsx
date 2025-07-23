@@ -1,571 +1,24 @@
-// import React, { useCallback, useState } from "react";
-// import {
-//   View,
-//   Text,
-//   FlatList,
-//   TouchableOpacity,
-//   KeyboardAvoidingView,
-//   ScrollView,
-//   StyleSheet,
-//   Dimensions,
-//   Platform,
-//   ImageBackground,
-//   ViewStyle,
-//   Alert,
-//   RefreshControl,
-// } from "react-native";
-// import * as Clipboard from "expo-clipboard";
-// import { color } from "@/constants/Colors";
-
-// import { RFValue } from "react-native-responsive-fontsize";
-// import { useFocusEffect, useNavigation } from "@react-navigation/native";
-// import { CustomView } from "@/components";
-// import ScreenHeader from "@/components/share/ScreenHeader";
-// import { NativeStackScreenProps } from "@react-navigation/native-stack";
-// import { HomeStackList } from "@/navigation/navigationType";
-// import { WalletStackList } from "@/navigation/navigationType";
-// import { Feather, Ionicons } from "@expo/vector-icons";
-// import CreditIcon from "@/components/svg/CreditIcon";
-// import DebitIcon from "@/components/svg/DebitIcon";
-// import WalletIconBlue from "@/components/svg/WalletIconBlue";
-// import EarningIcon from "@/components/svg/EarningIcon";
-// import FundWallet from "@/components/FundWallet";
-// import WalletIcon from "@/components/svg/WalletIcon";
-// import TransferIcon from "@/components/svg/TransferIcon";
-// import USSDIcon from "@/components/svg/USSDIcon";
-// import EmptyWallet from "@/components/svg/EmptyEarning";
-// import BottomSheetModal from "@/components/BottomSheetModal";
-// import { getUserProfile } from "../../services/auth";
-
-// const transactions: any = [
-//   // {
-//   //   id: "1",
-//   //   type: "credit",
-//   //   amount: 1500,
-//   //   date: "2025-03-03",
-//   //   title: "Salary",
-//   // },
-//   // {
-//   //   id: "2",
-//   //   type: "debit",
-//   //   amount: 500,
-//   //   date: "2025-03-03",
-//   //   title: "Shopping",
-//   // },
-//   // {
-//   //   id: "3",
-//   //   type: "credit",
-//   //   amount: 2000,
-//   //   date: "2025-03-02",
-//   //   title: "Freelance",
-//   // },
-//   // {
-//   //   id: "4",
-//   //   type: "debit",
-//   //   amount: 300,
-//   //   date: "2025-03-02",
-//   //   title: "Groceries",
-//   // },
-// ];
-// const { width } = Dimensions.get("window");
-// type Props = NativeStackScreenProps<WalletStackList>;
-
-// export interface Wallet {
-//   title: string;
-//   icon: React.ReactNode;
-// }
-
-// const WalletScreen = ({ navigation }: Props) => {
-//   const [isWallet, setIsWallet] = useState(false);
-//   const [userProfile, setUserProfile] = useState<any>(null);
-//   const [filter, setFilter] = useState("all");
-//   const filteredTransactions = transactions?.filter((tx: any) =>
-//     filter === "all" ? true : tx.type === filter
-//   );
-//   const [showModal, setShowModal] = useState(false);
-//   const groupedTransactions = filteredTransactions.reduce(
-//     (acc: any, tx: any) => {
-//       if (!acc[tx.date]) acc[tx.date] = [];
-//       acc[tx.date].push(tx);
-//       return acc;
-//     },
-//     {} as Record<string, typeof transactions>
-//   );
-
-//   const $bodyHeader: ViewStyle = {
-//     paddingTop: RFValue(18),
-//     paddingBottom: RFValue(12),
-//   };
-
-//   const copyToClipboard = async (text: string) => {
-//     await Clipboard.setStringAsync(text);
-//     Alert.alert("Copied", "Account number copied to clipboard");
-//   };
-
-//     useFocusEffect(
-//       useCallback(() => {
-//         const fetchUser = async () => {
-//           const userDetails = await getUserProfile();
-//           //(userDetails?.data?.details.wallet, "User Profile Data");
-//           setUserProfile(userDetails?.data?.details.wallet || null);
-//         };
-//         fetchUser();
-//       }, [])
-//     );
-//     const [refreshing, setRefreshing] = useState(false);
-
-// const onRefresh = async () => {
-//   setRefreshing(true);
-//   await getUserProfile();
-//   setRefreshing(false);
-// };
-
-  
-//   return (
-//     <CustomView style={styles.container}>
-//       <ScreenHeader title="Wallet" onNotificationShow={false} type="Home" />
-//       {/* <KeyboardAvoidingView
-//         style={{ paddingTop: 10 }}
-//         behavior={Platform.OS === "ios" ? "padding" : "height"}
-//       > */}
-//       <ScrollView
-//         showsVerticalScrollIndicator={false}
-//         contentContainerStyle={{ paddingBottom: 20 }}
-//         keyboardShouldPersistTaps="handled"
-//         refreshControl={
-//           <RefreshControl
-//             refreshing={refreshing}
-//             onRefresh={onRefresh}
-//               colors={["#00A300"]} // Your brand color
-//             tintColor="#00A300" // For iOS
-//           />
-//         }
-//       >
-//         <View
-//           style={{
-//             flexDirection: "row",
-//             width: "100%",
-//             gap: RFValue(6),
-//           }}
-//         >
-//           {/* Balance Card */}
-//           <View style={styles.balanceCard}>
-//             <View>
-//               <View
-//                 style={{
-//                   flexDirection: "row",
-//                   justifyContent: "space-between",
-//                   alignItems: "flex-start",
-//                 }}
-//               >
-//                 <View>
-//                   <WalletIconBlue />
-//                   <Text style={styles.balanceLabel}>Wallet Balance</Text>
-//                   <Text style={styles.balance}>₦{userProfile?.balance}</Text>
-//                 </View>
-//               </View>
-//             </View>
-//             <TouchableOpacity
-//               onPress={() => setShowModal(true)}
-//               style={styles.fundButton}
-//             >
-//               <Text style={styles.fundButtonText}>Fund Wallet</Text>
-//             </TouchableOpacity>
-//           </View>
-//           {/* Balance Card */}
-//           <View style={styles.balanceCard}>
-//             <View>
-//               <View
-//                 style={{
-//                   flexDirection: "row",
-//                   justifyContent: "space-between",
-//                   alignItems: "flex-start",
-//                 }}
-//               >
-//                 <View>
-//                   <EarningIcon />
-//                   <Text style={styles.balanceLabel}>Earnings</Text>
-//                   <Text style={styles.balance}>₦0.00</Text>
-//                 </View>
-//               </View>
-//             </View>
-//             <TouchableOpacity
-//               onPress={() => navigation.navigate("WalletEarnings")}
-//               style={styles.fundButton}
-//             >
-//               <Text style={styles.fundButtonText}>View</Text>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-
-//         <View style={$bodyHeader}>
-//           <Text
-//             style={{
-//               color: "#414651",
-//               fontSize: RFValue(18),
-//               fontWeight: "500",
-//             }}
-//           >
-//             Transaction History
-//           </Text>
-//         </View>
-//         <View style={styles.filterContainer}>
-//           {["all", "credit", "debit"].map((type) => (
-//             <TouchableOpacity
-//               key={type}
-//               style={[
-//                 styles.filterButton,
-//                 filter === type && styles.activeFilter,
-//               ]}
-//               onPress={() => setFilter(type)}
-//             >
-//               <Text
-//                 style={[
-//                   styles.filterText,
-//                   filter === type && styles.activeText,
-//                 ]}
-//               >
-//                 {type.charAt(0).toUpperCase() + type.slice(1)}
-//               </Text>
-//             </TouchableOpacity>
-//           ))}
-//         </View>
-//         <View style={""}>
-//           {Object.keys(groupedTransactions).length === 0 ? (
-//             <View style={styles.emptyContainer}>
-//               <EmptyWallet />
-//               <Text style={styles.emptyText}>No transactions yet</Text>
-//             </View>
-//           ) : (
-//             <>
-//               {Object.keys(groupedTransactions).map((date) => (
-//                 <View key={date} style={styles.section}>
-//                   <Text style={styles.sectionTitle}>{date}</Text>
-//                   {groupedTransactions[date].map((tx: any) => (
-//                     <View key={tx.id} style={styles.transactionRow}>
-//                       <View
-//                         style={{ flexDirection: "row", alignItems: "center" }}
-//                       >
-//                         <View style={styles.transactionIconContainer}>
-//                           {tx.type === "credit" ? (
-//                             <CreditIcon />
-//                           ) : (
-//                             <DebitIcon />
-//                           )}
-//                         </View>
-//                         <View style={{ flexDirection: "column", gap: 12 }}>
-//                           <Text style={styles.transactionTitle}>
-//                             {tx.title}
-//                           </Text>
-//                           <Text style={styles.transactionDate}>{tx.date}</Text>
-//                         </View>
-//                       </View>
-//                       <View style={{ flexDirection: "column", gap: 8 }}>
-//                         <Text style={styles.transactionAmount}>
-//                           ₦{Math.abs(tx.amount)}
-//                         </Text>
-//                         <Text
-//                           style={[
-//                             styles.transactionType,
-//                             tx.type === "credit" ? styles.credit : styles.debit,
-//                           ]}
-//                         >
-//                           {tx.type === "credit" ? "Credit" : "Debit"}
-//                         </Text>
-//                       </View>
-//                     </View>
-//                   ))}
-//                 </View>
-//               ))}
-//             </>
-//           )}
-//         </View>
-
-//         {Object.keys(groupedTransactions).length > 0 && (
-//           <TouchableOpacity
-//             style={{
-//               display: "flex",
-//               justifyContent: "center",
-//               alignItems: "center",
-//             }}
-//             onPress={() => navigation.navigate("TransactionHistory")}
-//           >
-//             <Text style={styles.viewAllText}>View All</Text>
-//           </TouchableOpacity>
-//         )}
-//         <BottomSheetModal
-//           isVisible={showModal}
-//           onClose={() => setShowModal(false)}
-//           title="Fund Wallet"
-//         >
-//           <View style={{ gap: 12, paddingVertical: RFValue(20) }}>
-//             {/* Bank Name */}
-//             <View
-//               style={{ flexDirection: "row", justifyContent: "space-between" }}
-//             >
-//               <Text style={{ color: "#888", fontSize: RFValue(16) }}>Bank</Text>
-//               <Text>{userProfile?.bankName}</Text>
-//             </View>
-
-//                         <View
-//               style={{
-//                 flexDirection: "row",
-//                 justifyContent: "space-between",
-//                 alignItems: "center",
-//               }}
-//             >
-//               <Text style={{ color: "#888", fontSize: RFValue(16) }}>
-//                 Account Name
-//               </Text>
-//               <View style={{ flexDirection: "row", alignItems: "center" }}>
-//                 <Text style={{ marginRight: 8 }}>{userProfile?.accountName}</Text>
-//               </View>
-//             </View>
-
-//             {/* Account Number with Copy Icon */}
-//             <View
-//               style={{
-//                 flexDirection: "row",
-//                 justifyContent: "space-between",
-//                 alignItems: "center",
-//               }}
-//             >
-//               <Text style={{ color: "#888", fontSize: RFValue(16) }}>
-//                 Account Number
-//               </Text>
-//               <View style={{ flexDirection: "row", alignItems: "center" }}>
-//                 <Text style={{ marginRight: 8 }}>{userProfile?.accountNumber}</Text>
-//                 <TouchableOpacity
-//                   onPress={() => Clipboard.setString(userProfile?.accountNumber || "")}
-//                 >
-//                   <Feather name="copy" size={16} color="#47104C" />
-//                 </TouchableOpacity>
-//               </View>
-//             </View>
-//  {/* Account Balance with auto-refresh */}
-//   <View style={styles.accountDetailRow}>
-//     <Text style={styles.detailLabel}>Available Balance</Text>
-//     <Text style={styles.balanceText}>
-//       ₦{(userProfile?.balance || 0).toLocaleString("en-NG", {
-//         minimumFractionDigits: 2,
-//       })}
-//     </Text>
-//   </View>
-//           </View>
-//         </BottomSheetModal>
-//       </ScrollView>
-//       {/* </KeyboardAvoidingView> */}
-//     </CustomView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, padding: RFValue(16) },
-//   filterContainer: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     marginBottom: RFValue(10),
-//     borderWidth: 1,
-//     borderColor: "#F5F5F5",
-//     borderRadius: 8,
-//     padding: RFValue(10),
-//   },
-//   filterButton: {
-//     padding: RFValue(10),
-//     width: RFValue(101),
-//     borderRadius: RFValue(8),
-//     backgroundColor: "#ffff",
-//     display: "flex",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   activeFilter: { backgroundColor: "#E6FFDB" },
-//   filterText: { fontSize: RFValue(14), color: "#64748B" },
-//   activeText: { color: "#213264" },
-//   section: { marginBottom: RFValue(16) },
-//   sectionTitle: {
-//     fontSize: RFValue(14),
-//     fontWeight: "semibold",
-//     marginBottom: RFValue(8),
-//   },
-//   transactionRow: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//     backgroundColor: "#fff",
-//     paddingVertical: RFValue(12),
-//     marginBottom: RFValue(6),
-//     borderBottomWidth: 1,
-//     borderColor: "#EFEFF0",
-//   },
-
-//   transactionIconContainer: {
-//     alignItems: "center",
-//     marginRight: RFValue(10),
-//   },
-//   transactionType: {
-//     fontSize: RFValue(8),
-//     color: "#64748B",
-//     marginTop: RFValue(4),
-//   },
-//   transactionTitle: { fontSize: RFValue(14), fontWeight: "500" },
-//   transactionDate: { fontSize: RFValue(12), color: "#213264" },
-//   transactionAmount: { fontSize: RFValue(10), fontWeight: "bold" },
-//   credit: {
-//     color: "#12B76A",
-//     backgroundColor: "#DFFCE9",
-//     paddingHorizontal: RFValue(8),
-//     paddingVertical: RFValue(1),
-//     borderRadius: RFValue(24),
-//   },
-//   debit: {
-//     color: "#F04438",
-//     backgroundColor: "#FEDEDC",
-//     paddingHorizontal: RFValue(8),
-//     paddingVertical: RFValue(1),
-//     borderRadius: RFValue(24),
-//   },
-
-//   viewAllText: { color: "#213264", fontSize: RFValue(14), fontWeight: "bold" },
-//   balanceCard: {
-//     marginVertical: RFValue(16),
-//     width: "48%",
-//     padding: RFValue(8),
-//     backgroundColor: color.secondaryColor,
-//     borderRadius: RFValue(16),
-//   },
-//   balanceLabel: {
-//     marginTop: RFValue(6),
-//     color: "#fff",
-//     fontSize: RFValue(12),
-//   },
-//   balance: {
-//     color: "#fff",
-//     fontSize: RFValue(16),
-//     fontWeight: "bold",
-//     marginVertical: RFValue(8),
-//   },
-//   quickSearchContainer: {
-//     marginVertical: RFValue(16),
-//     paddingHorizontal: RFValue(16),
-//     paddingTop: RFValue(16),
-//     paddingBottom: RFValue(5),
-//     backgroundColor: "#FAFAFA",
-//     borderRadius: RFValue(10),
-//   },
-//   quickSearchLabel: {
-//     fontSize: RFValue(14),
-//     marginBottom: RFValue(8),
-//     alignSelf: "center",
-//   },
-//   searchInput: {
-//     backgroundColor: "#fff",
-//     borderRadius: RFValue(8),
-//     padding: RFValue(12),
-//     borderWidth: 1,
-//     borderColor: "#E9EAEB",
-//     flexDirection: "row",
-//     alignItems: "center",
-//   },
-//   transactionButton: {
-//     backgroundColor: "#e0e0e0",
-//     paddingVertical: RFValue(4),
-//     paddingHorizontal: RFValue(4),
-//     borderRadius: RFValue(16),
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     gap: 6,
-//   },
-//   transactionButtonText: {
-//     fontSize: RFValue(12),
-//   },
-//   fundButton: {
-//     marginTop: RFValue(8),
-//     backgroundColor: "#aaffaa",
-//     paddingVertical: RFValue(12),
-//     borderRadius: RFValue(16),
-//     justifyContent: "center",
-//     alignItems: "center",
-//     flexDirection: "row",
-//     gap: 6,
-//   },
-//   fundButtonText: {
-//     color: "#003399",
-//     fontWeight: "bold",
-//   },
-//   parcelButtonsContainer: {
-//     flexDirection: "row",
-//     flexWrap: "wrap",
-//     justifyContent: "space-between",
-//     marginHorizontal: RFValue(16),
-//   },
-//   parcelButton: {
-//     width: width / 2 - RFValue(24),
-//     backgroundColor: "#f0f0f0",
-//     padding: RFValue(16),
-//     borderRadius: RFValue(10),
-//     marginVertical: RFValue(8),
-//     alignItems: "center",
-//   },
-//   emptyContainer: {
-//     justifyContent: "center",
-//     alignItems: "center",
-//     padding: 20,
-//   },
-//   emptyText: {
-//     marginTop: 10,
-//     fontSize: 16,
-//     color: "gray",
-//   },
-//   viewAllButton: {
-//     display: "flex",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     marginTop: 20,
-//     paddingVertical: 10,
-//     paddingHorizontal: 20,
-//     backgroundColor: "#007BFF",
-//     borderRadius: 8,
-//   },
-//     accountDetailRow: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingVertical: 12,
-//     borderBottomWidth: 1,
-//     borderBottomColor: "#F0F0F0",
-//   },
-//     detailLabel: {
-//     color: "#888",
-//     fontSize: RFValue(14),
-//   },
-//   balanceText: {
-//     fontWeight: "bold",
-//     fontSize: RFValue(16),
-//     color: "#00A300",
-//   },
-
-// });
 
 // export default WalletScreen;
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Modal,
   Dimensions,
   RefreshControl,
   Alert,
+  SectionList,
+  ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { color } from "@/constants/Colors";
 import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { format, subDays } from "date-fns";
+import { format, parseISO, subDays } from "date-fns";
 import { getAllTransaction } from "../../services/transaction";
 import CreditIcon from "@/components/svg/CreditIcon";
 import DebitIcon from "@/components/svg/DebitIcon";
@@ -578,24 +31,39 @@ import EmptyWallet from "@/components/svg/EmptyEarning";
 import { WalletStackList } from "@/navigation/navigationType";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { getUserProfile } from "../../services/auth";
+import * as Clipboard from 'expo-clipboard';
 
 const { width } = Dimensions.get("window");
 
-type TransactionDirection = "credit" | "debit" | "all";
-type TransactionType = "inward" | "outward" | "wallet-to-wallet" | "freeBalanceCharges" | "all";
+type TransactionDirection = "credit" | "debit" | undefined;
+type TransactionType = "inward" | "outward" | "wallet-to-wallet" | "freeBalanceCharges" | undefined;
 
 interface Transaction {
   id: string;
-  type: TransactionDirection;
-  amount: number;
-  date: string;
-  title: string;
-  category: TransactionType;
+  accountName: string;
+  accountNumber: string;
+  sender: string;
+  narration: string;
+  amount: string;
+  status: string | null;
+  type: TransactionType;
+  direction: TransactionDirection;
+  reference: string;
+  receiver: string | null;
+  senderType: string;
+  trxId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface FilterOption {
-  id: string;
+  id: string | undefined;
   label: string;
+}
+
+interface SectionData {
+  title: string;
+  data: Transaction[];
 }
 
 const FilterButton = ({ 
@@ -639,8 +107,8 @@ const FilterSheet = ({
   visible: boolean;
   title: string;
   options: FilterOption[];
-  selected: string;
-  onSelect: (id: string) => void;
+  selected: undefined| string ;
+  onSelect: (id: string | undefined) => void;
   onClose: () => void;
 }) => (
   <Modal
@@ -660,7 +128,7 @@ const FilterSheet = ({
         <ScrollView>
           {options.map((option) => (
             <TouchableOpacity
-              key={option.id}
+              key={option.id || option.label} // Fixed key prop issue
               style={[
                 styles.sheetItem,
                 selected === option.id && styles.activeSheetItem,
@@ -705,11 +173,11 @@ const WalletScreen = ({ navigation }: Props) => {
   const [hasMore, setHasMore] = useState(true);
 
   // Filter states
-  const [activeDirection, setActiveDirection] = useState<TransactionDirection>("all");
-  const [activeCategory, setActiveCategory] = useState<TransactionType>("all");
+  const [activeDirection, setActiveDirection] = useState<TransactionDirection>(undefined);
+  const [activeCategory, setActiveCategory] = useState<TransactionType>(undefined);
   const [showDirectionSheet, setShowDirectionSheet] = useState(false);
   const [showCategorySheet, setShowCategorySheet] = useState(false);
-
+  
   // Date range state
   const [dateRange, setDateRange] = useState({
     startDate: format(subDays(new Date(), 7), "yyyy-MM-dd"),
@@ -717,39 +185,68 @@ const WalletScreen = ({ navigation }: Props) => {
   });
 
   // Filter options
-  const directionOptions: FilterOption[] = [
-    { id: "all", label: "All Directions" },
+  const directionOptions: FilterOption[] = useMemo(() => [
+    { id: undefined, label: "All Directions" },
     { id: "credit", label: "Credit" },
     { id: "debit", label: "Debit" },
-  ];
+  ], []);
 
-const categoryOptions: FilterOption[] = [
-  { id: "all", label: "All Categories" },
-  { id: "inward", label: "Inward Transfer" },
-  { id: "outward", label: "Outward Transfer" },
-  { id: "wallet-to-wallet", label: "Wallet Transfer" },
-  { id: "freeBalanceCharges", label: "Charges" },
-];
+  const categoryOptions: FilterOption[] = useMemo(() => [
+    { id: undefined, label: "All Categories" },
+    { id: "inward", label: "Inward Transfer" },
+    { id: "outward", label: "Outward Transfer" },
+    { id: "wallet-to-wallet", label: "Wallet Transfer" },
+    { id: "freeBalanceCharges", label: "Charges" },
+  ], []);
+
+  // Get transaction title
+  const getTransactionTitle = useCallback((tx: Transaction) => {
+    const accountName = tx.accountName || "Unknown";
+    const shortenedName = accountName.length > 10 
+      ? `${accountName.substring(0, 10)}...` 
+      : accountName;
+
+    if (tx.direction === "debit") {
+      return `To ${shortenedName}`;
+    } else {
+      return `From ${shortenedName}`;
+    }
+  }, []);
+
+  // Format date for display
+  const formatDate = useCallback((dateString: string) => {
+    try {
+      return format(new Date(dateString), "MMM d, yyyy");
+    } catch {
+      return "Unknown Date";
+    }
+  }, []);
+
+  // Copy to clipboard
+  const copyToClipboard = async (text: string) => {
+    await Clipboard.setStringAsync(text);
+    Alert.alert("Copied!", "Account number copied to clipboard");
+  };
 
   // Fetch transactions
   const fetchTransactions = useCallback(
     async (reset = false) => {
-      if (isLoading || (!reset && !hasMore)) return;
-
+      if ((isLoading && !reset) || (!reset && !hasMore)) return;
+      
       setIsLoading(true);
       const newOffset = reset ? 0 : offset;
-
+      
       try {
         const response = await getAllTransaction(
           dateRange.startDate,
           dateRange.endDate,
-          activeDirection === "all" ? undefined : activeDirection,
-          activeCategory === "all" ? undefined : activeCategory,
+          activeDirection,
+          activeCategory,
           newOffset,
           limit
         );
 
-        const newTransactions = response?.details || [];
+        const newTransactions = response?.data?.details || [];
         const receivedFullPage = newTransactions.length === limit;
 
         setTransactions(prev => 
@@ -771,49 +268,209 @@ const categoryOptions: FilterOption[] = [
   const fetchUserProfile = useCallback(async () => {
     try {
       const userDetails = await getUserProfile();
-      setUserProfile(userDetails?.data?.details.wallet || null);
+      setUserProfile(userDetails?.data?.details?.wallet || null);
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
     }
   }, []);
 
   // Refresh data
-  const onRefresh = async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await Promise.all([fetchUserProfile(), fetchTransactions(true)]);
     setRefreshing(false);
-  };
+  }, [fetchUserProfile, fetchTransactions]);
 
-  // Focus effect
-  useFocusEffect(
-    useCallback(() => {
-      fetchUserProfile();
-      fetchTransactions(true);
-    }, [fetchUserProfile, fetchTransactions])
-  );
+  // Filter effect - fetch when filters change
+  useEffect(() => {
+    fetchTransactions(true);
+  }, [activeDirection, activeCategory]);
+
+  // Initial data load
+  useEffect(() => {
+    fetchUserProfile();
+    fetchTransactions(true);
+  }, []);
 
   // Filter transactions
-  const filteredTransactions = transactions.filter((tx) => {
-    const matchesDirection = activeDirection === "all" || tx.type === activeDirection;
-    const matchesCategory = activeCategory === "all" || tx.category === activeCategory;
-    return matchesDirection && matchesCategory;
-  });
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => {
+      const matchesDirection = activeDirection === undefined || tx.direction === activeDirection;
+      const matchesCategory = activeCategory === undefined || tx.type === activeCategory;
+      return matchesDirection && matchesCategory;
+    });
+  }, [transactions, activeDirection, activeCategory]);
 
   // Group transactions by date
-  const groupedTransactions = filteredTransactions.reduce((acc, tx) => {
-    const dateKey = tx.date.split("T")[0];
-    if (!acc[dateKey]) acc[dateKey] = [];
-    acc[dateKey].push(tx);
-    return acc;
-  }, {} as Record<string, Transaction[]>);
+  const groupedTransactions = useMemo(() => {
+    const groups = filteredTransactions.reduce((acc, tx) => {
+      const dateKey = tx?.createdAt?.split("T")[0] ?? "unknown";
+      if (!acc[dateKey]) acc[dateKey] = [];
+      acc[dateKey].push(tx);
+      return acc;
+    }, {} as Record<string, Transaction[]>);
+
+    return Object.entries(groups).map(([date, data]) => ({
+      title: date,
+      data,
+    }));
+  }, [filteredTransactions]);
+
+  // Format transaction amount
+  const formatAmount = (amountStr: string) => {
+    const amount = parseFloat(amountStr);
+    return isNaN(amount) 
+      ? "0.00" 
+      : amount.toLocaleString("en-NG", { minimumFractionDigits: 2 });
+  };
+
+  // Render transaction item
+  const renderTransactionItem = useCallback(({ item }: { item: Transaction }) => (
+    <TouchableOpacity 
+      style={styles.transactionItem}
+      key={item.id}
+    >
+      <View style={styles.transactionIcon}>
+        {item.direction === "credit" ? <CreditIcon /> : <DebitIcon />}
+      </View>
+      <View style={styles.transactionInfo}>
+        <Text style={styles.transactionTitle}>{getTransactionTitle(item)}</Text>
+        <Text style={styles.transactionCategory}> {item?.createdAt
+                        ? format(parseISO(item.createdAt), "hh:mm a")
+                        : "N/A"}</Text>
+      </View>
+      <View style={styles.transactionAmountContainer}>
+        <Text style={[
+          styles.amount,
+          item.direction === "credit" ? styles.credit : styles.debit
+        ]}>
+          {item.direction === "credit" ? "+" : "-"}₦{formatAmount(item.amount)}
+        </Text>
+        <View
+                    style={[
+                      styles.statusBadge,
+                      item.status === "successful"
+                        ? styles.successBadge
+                        : item.status === "pending"
+                        ? styles.pendingBadge
+                        : styles.failedBadge,
+                    ]}
+                  >
+                    <Text style={styles.statusText}>
+                      {item.status
+                        ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
+                        : "Succesfull"}
+                    </Text>
+                  </View>
+      </View>
+    </TouchableOpacity>
+  ), [getTransactionTitle]);
+
+  // Render section header
+  const renderSectionHeader = useCallback(({ section }: { section: SectionData }) => (
+    <Text style={styles.dateHeader}>{formatDate(section.title)}</Text>
+  ), [formatDate]);
+
+  // Render empty state
+  const renderEmptyComponent = useCallback(() => (
+    <View style={styles.emptyContainer}>
+      <EmptyWallet />
+      <Text style={styles.emptyText}>No transactions yet</Text>
+    </View>
+  ), []);
+
+  // Render footer
+  const renderFooter = useCallback(() => {
+    if (isLoading && offset > 0) {
+      return <ActivityIndicator size="small" color={color.primaryColor} style={styles.loader} />;
+    }
+    
+    // if (transactions.length > 0) {
+    //   return (
+    //     <TouchableOpacity
+    //       style={styles.viewAllButton}
+    //       onPress={() => navigation.navigate("TransactionHistory")}
+    //     >
+    //       <Text style={styles.viewAllText}>View All Transactions</Text>
+    //     </TouchableOpacity>
+    //   );
+    // }
+    
+    return null;
+  }, [isLoading, offset, transactions.length]);
 
   return (
     <CustomView style={styles.container}>
       <ScreenHeader title="Wallet" onNotificationShow={false} type="Home" />
-      
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+      <>
+            {/* Balance Cards */}
+            <View style={styles.balanceCardsContainer}>
+              {/* Wallet Balance Card */}
+              <View style={styles.balanceCard}>
+                <View>
+                  <WalletIconBlue />
+                  <Text style={styles.balanceLabel}>Wallet Balance</Text>
+                  <Text style={styles.balance}>
+                    ₦{(userProfile?.balance || 0).toLocaleString("en-NG", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setShowModal(true)}
+                  style={styles.fundButton}
+                >
+                  <Text style={styles.fundButtonText}>Fund Wallet</Text>
+                </TouchableOpacity>
+              </View>
+              
+              {/* Earnings Card */}
+              <View style={styles.balanceCard}>
+                <View>
+                  <EarningIcon />
+                  <Text style={styles.balanceLabel}>Earnings</Text>
+                  <Text style={styles.balance}>₦0.00</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("WalletEarnings")}
+                  style={styles.fundButton}
+                >
+                  <Text style={styles.fundButtonText}>View</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Transaction History Header */}
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Transaction History</Text>
+            </View>
+
+            {/* Filter Buttons */}
+            <View style={styles.filterRow}>
+              <FilterButton
+                label={directionOptions.find(d => d.id === activeDirection)?.label || "Direction"}
+                active={activeDirection !== undefined}
+                onPress={() => setShowDirectionSheet(true)}
+              />
+              <FilterButton
+                label={categoryOptions.find(c => c.id === activeCategory)?.label || "Category"}
+                active={activeCategory !== undefined}
+                onPress={() => setShowCategorySheet(true)}
+              />
+            </View>
+          </>
+      <SectionList
+        sections={groupedTransactions}
+        keyExtractor={(item) => item.id}
+        renderItem={renderTransactionItem}
+        renderSectionHeader={renderSectionHeader}
+        ListHeaderComponent={
+          <>
+
+          </>
+        }
+        ListEmptyComponent={renderEmptyComponent}
+        ListFooterComponent={renderFooter}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -822,136 +479,15 @@ const categoryOptions: FilterOption[] = [
             tintColor="#00A300"
           />
         }
-      >
-        {/* Balance Cards */}
-          <View
-          style={{
-            flexDirection: "row",
-            width: "100%",
-            gap: RFValue(6),
-          }}
-        >
-          {/* Balance Card */}
-          <View style={styles.balanceCard}>
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                }}
-              >
-                <View>
-                  <WalletIconBlue />
-                  <Text style={styles.balanceLabel}>Wallet Balance</Text>
-                  <Text style={styles.balance}>₦{userProfile?.balance}</Text>
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity
-              onPress={() => setShowModal(true)}
-              style={styles.fundButton}
-            >
-              <Text style={styles.fundButtonText}>Fund Wallet</Text>
-            </TouchableOpacity>
-          </View>
-          {/* Balance Card */}
-          <View style={styles.balanceCard}>
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                }}
-              >
-                <View>
-                  <EarningIcon />
-                  <Text style={styles.balanceLabel}>Earnings</Text>
-                  <Text style={styles.balance}>₦0.00</Text>
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("WalletEarnings")}
-              style={styles.fundButton}
-            >
-              <Text style={styles.fundButtonText}>View</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Transaction History Header */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Transaction History</Text>
-        </View>
-
-        {/* Filter Buttons */}
-        <View style={styles.filterRow}>
-          <FilterButton
-            label={directionOptions.find(d => d.id === activeDirection)?.label || "Direction"}
-            active={activeDirection !== "all"}
-            onPress={() => setShowDirectionSheet(true)}
-          />
-          <FilterButton
-            label={categoryOptions.find(c => c.id === activeCategory)?.label || "Category"}
-            active={activeCategory !== "all"}
-            onPress={() => setShowCategorySheet(true)}
-          />
-        </View>
-
-        {/* Transactions List */}
-        {Object.keys(groupedTransactions).length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <EmptyWallet />
-            <Text style={styles.emptyText}>No transactions yet</Text>
-          </View>
-        ) : (
-          <>
-            {Object.keys(groupedTransactions).map((date) => (
-              <View key={date} style={styles.dateSection}>
-                <Text style={styles.dateHeader}>{date}</Text>
-                {groupedTransactions[date].map((tx) => (
-                  <TouchableOpacity 
-                    key={tx.id} 
-                    style={styles.transactionItem}
-                    // onPress={() => navigation.navigate("TransactionDetails", { transaction: tx })}
-                  >
-                    <View style={styles.transactionIcon}>
-                      {tx.type === "credit" ? <CreditIcon /> : <DebitIcon />}
-                    </View>
-                    <View style={styles.transactionInfo}>
-                      <Text style={styles.transactionTitle}>{tx.title}</Text>
-                      <Text style={styles.transactionCategory}>{tx.category}</Text>
-                    </View>
-                    <View style={styles.transactionAmountContainer}>
-                      <Text style={[
-                        styles.amount,
-                        tx.type === "credit" ? styles.credit : styles.debit
-                      ]}>
-                        {tx.type === "credit" ? "+" : "-"}₦{tx.amount.toLocaleString()}
-                      </Text>
-                      <Text style={styles.transactionTime}>
-                        {new Date(tx.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            ))}
-          </>
-        )}
-
-        {/* View All Button */}
-        {Object.keys(groupedTransactions).length > 0 && (
-          <TouchableOpacity
-            style={styles.viewAllButton}
-            onPress={() => navigation.navigate("TransactionHistory")}
-          >
-            <Text style={styles.viewAllText}>View All Transactions</Text>
-          </TouchableOpacity>
-        )}
-      </ScrollView>
+        onEndReached={() => {
+          if (hasMore && !isLoading && !refreshing) {
+            fetchTransactions(false);
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        stickySectionHeadersEnabled={false}
+        contentContainerStyle={styles.contentContainer}
+      />
 
       {/* Filter Sheets */}
       <FilterSheet
@@ -973,66 +509,48 @@ const categoryOptions: FilterOption[] = [
       />
 
       {/* Fund Wallet Modal */}
-        <BottomSheetModal
-          isVisible={showModal}
-          onClose={() => setShowModal(false)}
-          title="Fund Wallet"
-        >
-          <View style={{ gap: 12, paddingVertical: RFValue(20) }}>
-            {/* Bank Name */}
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={{ color: "#888", fontSize: RFValue(16) }}>Bank</Text>
-              <Text>{userProfile?.bankName}</Text>
-            </View>
-
-                        <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: "#888", fontSize: RFValue(16) }}>
-                Account Name
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ marginRight: 8 }}>{userProfile?.accountName}</Text>
-              </View>
-            </View>
-
-            {/* Account Number with Copy Icon */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: "#888", fontSize: RFValue(16) }}>
-                Account Number
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ marginRight: 8 }}>{userProfile?.accountNumber}</Text>
-                <TouchableOpacity
-                 
-                >
-                  <Feather name="copy" size={16} color="#47104C" />
-                </TouchableOpacity>
-              </View>
-            </View>
- {/* Account Balance with auto-refresh */}
-  <View style={styles.accountDetailRow}>
-    <Text style={styles.detailLabel}>Available Balance</Text>
-    <Text style={styles.balanceText}>
-      ₦{(userProfile?.balance || 0).toLocaleString("en-NG", {
-        minimumFractionDigits: 2,
-      })}
-    </Text>
-  </View>
+      <BottomSheetModal
+        isVisible={showModal}
+        onClose={() => setShowModal(false)}
+        title="Fund Wallet"
+      >
+        <View style={styles.modalContent}>
+          {/* Bank Name */}
+          <View style={styles.accountDetailRow}>
+            <Text style={styles.detailLabel}>Bank</Text>
+            <Text>{userProfile?.bankName || "Unknown Bank"}</Text>
           </View>
-        </BottomSheetModal>
+
+          {/* Account Name */}
+          <View style={styles.accountDetailRow}>
+            <Text style={styles.detailLabel}>Name</Text>
+            <Text>{userProfile?.accountName || "Unknown"}</Text>
+          </View>
+
+          {/* Account Number */}
+          <View style={styles.accountDetailRow}>
+            <Text style={styles.detailLabel}>Account Number</Text>
+            <View style={styles.copyContainer}>
+              <Text>{userProfile?.accountNumber || "N/A"}</Text>
+              <TouchableOpacity
+                onPress={() => copyToClipboard(userProfile?.accountNumber || "")}
+              >
+                <Feather name="copy" size={16} color="#47104C" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Available Balance */}
+          <View style={styles.accountDetailRow}>
+            <Text style={styles.detailLabel}>Available Balance</Text>
+            <Text style={styles.balanceText}>
+              ₦{(userProfile?.balance || 0).toLocaleString("en-NG", {
+                minimumFractionDigits: 2,
+              })}
+            </Text>
+          </View>
+        </View>
+      </BottomSheetModal>
     </CustomView>
   );
 };
@@ -1040,17 +558,47 @@ const categoryOptions: FilterOption[] = [
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: RFValue(16),
+    // padding: RFValue(16),
+    paddingHorizontal:RFValue(10),
+    paddingTop:RFValue(16)
+  },
+  contentContainer: {
+    paddingBottom: 20,
+  },
+  credit: {
+    color: "#12B76A",
+  },
+  debit: {
+    color: "#F04438",
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  successBadge: {
+    backgroundColor: "#D1FADF",
+  },
+  pendingBadge: {
+    backgroundColor: "#FEF0C7",
+  },
+  failedBadge: {
+    backgroundColor: "#D1FADF",
+  },
+  statusText: {
+    fontSize: RFValue(10),
+    fontWeight: "500",
+    color: "#414651",
   },
   balanceCardsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: RFValue(16),
+    gap: RFValue(6),
   },
   balanceCard: {
-    marginVertical: RFValue(16),
-    width: "48%",
-    padding: RFValue(8),
+    flex: 1,
+    padding: RFValue(16),
     backgroundColor: color.secondaryColor,
     borderRadius: RFValue(16),
   },
@@ -1065,30 +613,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: RFValue(8),
   },
-      accountDetailRow: {
+  accountDetailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
   },
-    detailLabel: {
+  detailLabel: {
     color: "#888",
     fontSize: RFValue(14),
+  },
+  copyContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   balanceText: {
     fontWeight: "bold",
     fontSize: RFValue(16),
     color: "#00A300",
-  },
-  quickSearchContainer: {
-    marginVertical: RFValue(16),
-    paddingHorizontal: RFValue(16),
-    paddingTop: RFValue(16),
-    paddingBottom: RFValue(5),
-    backgroundColor: "#FAFAFA",
-    borderRadius: RFValue(10),
   },
   fundButton: {
     marginTop: RFValue(8),
@@ -1097,8 +640,6 @@ const styles = StyleSheet.create({
     borderRadius: RFValue(16),
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "row",
-    gap: 6,
   },
   fundButtonText: {
     color: "#003399",
@@ -1116,6 +657,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: RFValue(16),
+    gap: RFValue(8),
   },
   filterButton: {
     flex: 1,
@@ -1125,7 +667,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F7FA",
     borderRadius: RFValue(8),
     padding: RFValue(12),
-    marginHorizontal: RFValue(4),
   },
   activeFilterButton: {
     backgroundColor: "#E6FFDB",
@@ -1180,27 +721,20 @@ const styles = StyleSheet.create({
     color: "#213264",
     fontWeight: "500",
   },
-  dateSection: {
-    marginBottom: RFValue(16),
-  },
   dateHeader: {
     fontSize: RFValue(14),
     fontWeight: "600",
     color: "#64748B",
     marginBottom: RFValue(8),
+    marginTop: RFValue(16),
   },
   transactionItem: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
     borderRadius: RFValue(8),
-    padding: RFValue(12),
-    marginBottom: RFValue(8),
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 1,
-    elevation: 1,
+    paddingVertical: RFValue(8),
+    // marginBottom: RFValue(8),
   },
   transactionIcon: {
     width: RFValue(40),
@@ -1231,12 +765,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
     fontWeight: "600",
   },
-  credit: {
-    color: "#12B76A",
-  },
-  debit: {
-    color: "#F04438",
-  },
+
   transactionTime: {
     fontSize: RFValue(12),
     color: "#64748B",
@@ -1254,12 +783,19 @@ const styles = StyleSheet.create({
   },
   viewAllButton: {
     alignItems: "center",
-    padding: RFValue(12),
+    padding: RFValue(16),
   },
   viewAllText: {
     color: "#213264",
     fontSize: RFValue(14),
     fontWeight: "bold",
+  },
+  loader: {
+    paddingVertical: RFValue(20),
+  },
+  modalContent: {
+    gap: 12,
+    paddingVertical: RFValue(20),
   },
 });
 

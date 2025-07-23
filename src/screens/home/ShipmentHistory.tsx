@@ -39,7 +39,7 @@ interface FilteredShipment {
   status: string;
 }
 
-const ShipmentHistory = () => {
+const ShipmentHistory = ({navigation}: any) => {
   const [shipments, setShipments] = useState<ParcelDetails[]>([]);
   const [filteredShipments, setFilteredShipments] = useState<FilteredShipment[]>([]);
   const [activeTab, setActiveTab] = useState<string>('All');
@@ -49,9 +49,6 @@ const ShipmentHistory = () => {
 
   const tabs = ['All', 'Arrived', 'In-Transit', 'Delivered'];
 
-  useEffect(() => {
-    fetchShipments();
-  }, []);
 
   const fetchShipments = async () => {
     try {
@@ -64,8 +61,11 @@ const ShipmentHistory = () => {
       console.error('Failed to fetch shipments:', error);
     }
   };  
-  //(shipments.length, 'rows');
+  //(shipments.length, 'rosws');
 
+  useEffect(() => {
+    fetchShipments();
+  }, []);
   const mapShipments = (data: ParcelDetails[]) => {
     return data.map((shipment) => ({
       image: shipment.parcel?.thumbnails[0] || '',
@@ -105,6 +105,8 @@ const ShipmentHistory = () => {
     setRefreshing(true);
     fetchShipments().finally(() => setRefreshing(false));
   }, []);
+   const handleViewDetails = useCallback((item: any) => 
+      navigation.navigate("UnAssignParcelDetails", { item }), [navigation]);
 
   return (
     <CustomView style={styles.container} padded>
@@ -180,8 +182,8 @@ const ShipmentHistory = () => {
               </View>
             ) : (
               filteredByTab.map((item, index) => (
-                <View key={index} style={styles.shipmentRow}>
-                  <Image source={{ uri: item.image }} style={styles.shipmentImage} />
+                <TouchableOpacity  key={index} style={styles.shipmentRow}>
+                  <Image source={{ uri:  `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${item?.image}`}} style={styles.shipmentImage} />
                   <View style={styles.shipmentDetails}>
                     <View style={styles.detailColumn}>
                       <Text size={11} color="#717680">Sender</Text>
@@ -224,7 +226,7 @@ const ShipmentHistory = () => {
                       </View>
                     </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))
             )}
           </View>

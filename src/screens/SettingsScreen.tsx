@@ -191,7 +191,7 @@ const toggleLogoutModal = () => {
           }}
         >
           <Image
-               source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}`}}
+               source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${userDetail?.userImage}`}}
             style={{
               width: 84,
               height: 84,

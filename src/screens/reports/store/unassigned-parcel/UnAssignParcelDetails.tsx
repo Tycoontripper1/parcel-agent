@@ -13,14 +13,10 @@ import {
   ViewStyle,
 } from "react-native";
 import { HomeStackList, ReportStackList, RootStackParamList } from "@/navigation/navigationType";
-import { RouteProp } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useSelector } from "react-redux";
 import HomeHeader from "@/components/share/HomeHeader";
-import { Avatar } from "../../../../../assets/images";
-import PaymentOption from "@/components/PaymentOption";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns';
 
 // Define the props correctly
 type Props = NativeStackScreenProps<
@@ -240,9 +236,14 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
             padding: RFValue(16),
           }}
         >
-          <Text size={12}>
-           Collected Date: <Text color="#717680">{""}</Text>
-          </Text>
+        {item?.collector?.dateCollected && (
+  <Text style={{ fontSize: 10 }}>
+    Collected Date:{" "}
+    <Text style={{ color: "#717680" }}>
+      {format(new Date(item.collector.dateCollected), "MMMM d, yyyy")}
+    </Text>
+  </Text>
+)}
           <View
             style={{
               flexDirection: "row",
@@ -251,11 +252,16 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
               gap: 6,
             }}
           >
-            <View style={{ padding: 4, borderRadius: 8 }}>
-              <Text size={12}>
-                Time: <Text color="#717680">{'' }</Text>
-              </Text>
-            </View>
+{item?.collector?.dateCollected && (
+  <View style={{ padding: 4, borderRadius: 8 }}>
+    <Text style={{ fontSize: 10 }}>
+      Time:
+      <Text style={{ color: "#717680" }}>
+        {format(new Date(item.collector.dateCollected), "hh:mm a")}
+      </Text>
+    </Text>
+  </View>
+)}
           </View>
         </View>
 
@@ -487,7 +493,7 @@ const UnAssignParcelDetails = ({ route, navigation }: Props) => {
                 <TouchableOpacity key={index} style={styles.photoBox}>
                   {photo ? (
                     <Image
-                      source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}` }}
+                      source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${photo}` }}
                       style={styles.photoPreview}
                     />
                   ) : null}

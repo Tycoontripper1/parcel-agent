@@ -36,13 +36,15 @@ const ParcelOtpVerificationReceiver = ({ navigation }: Props) => {
     "idle" | "verifying" | "success" | "failed"
   >("idle");
   const [otpMessage, setOtpMessage] = useState<string>("");
-const { readOnly } =
-    (navigation.getState().routes[
-      navigation.getState().index - 1
-    ] as { params: { readOnly: boolean } })?.params || {};
+  const { readOnly } =
+    (
+      navigation.getState().routes[navigation.getState().index - 1] as {
+        params: { readOnly: boolean };
+      }
+    )?.params || {};
   const [singleParcel, setSingleParcel] =
     useState<singleParcelInterface | null>(null);
-    const parcelId = singleParcel?.id
+  const parcelId = singleParcel?.id;
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -120,27 +122,27 @@ const { readOnly } =
     try {
       const payload = {
         status: "received",
-          collector:{
-                fullName:   singleParcel?.receiver?.fullName
-                ? singleParcel.receiver.fullName
-                : formData.receiverFullName,
-                phone:  singleParcel?.receiver?.phone
-                ? singleParcel.receiver.phone
-                : formData.receiverPhoneNumber,
-                dateCollected: new Date().toISOString(),
-              }
+        paymentStatus:"paid",
+        collector: {
+          fullName: singleParcel?.receiver?.fullName
+            ? singleParcel.receiver.fullName
+            : formData.receiverFullName,
+          phone: singleParcel?.receiver?.phone
+            ? singleParcel.receiver.phone
+            : formData.receiverPhoneNumber,
+          dateCollected: new Date().toISOString(),
+        },
       };
-       const token = await getToken()
-            const response = await fetch(`${apiKey}/shipment/${parcelId}`, {
-              method: 'PATCH',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify(payload),
-            
-            });
-            const result = await response.json();
+      const token = await getToken();
+      const response = await fetch(`${apiKey}/shipment/${parcelId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
       setLoading(false);
       Helper.vibrate();
       Toast.show({

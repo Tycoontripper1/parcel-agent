@@ -221,7 +221,7 @@
 //                   <TouchableOpacity key={index} style={styles.photoBox}>
 //                     {photo ? (
 //                       <Image
-//                         source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}` }}
+//                         source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${photo}` }}
 //                         style={styles.photoPreview}
 //                       />
 //                     ) : (
@@ -640,7 +640,7 @@ const ScreenTwo = ({ navigation }: Props) => {
                   <TouchableOpacity key={index} style={styles.photoBox}>
                     {photo && (
                       <Image
-                        source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}` }}
+                        source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${photo}` }}
                         style={styles.photoPreview}
                       />
                     )}

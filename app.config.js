@@ -3,6 +3,7 @@ export default ({ config }) => ({
   ...config,
   plugins: [
     ...(config.plugins || []),
+    
     [
       "expo-build-properties",
       {
@@ -14,6 +15,6 @@ export default ({ config }) => ({
   ],
   extra: {
     ...config.extra,
-    apiKey: "http://45.9.191.184:8001/parcel/v1.0/api",
+    apiKey: "https://api.parcelpointng.com:4001/parcel/v1.0",
   },
 });

@@ -97,7 +97,7 @@ const PreviewScreen = ({ navigation }: Props) => {
               uri: idFrontImage
                 ? idFrontImage.includes("file") || idFrontImage.includes("http")
                   ? idFrontImage
-                  : `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${idFrontImage}`
+                  : `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${idFrontImage}`
                 : undefined,
             }}
             style={styles.image}
@@ -109,7 +109,7 @@ const PreviewScreen = ({ navigation }: Props) => {
               uri: idBackImage
                 ? idBackImage.includes("file") || idBackImage.includes("http")
                   ? idBackImage
-                  : `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${idBackImage}`
+                  : `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${idBackImage}`
                 : undefined,
             }}
             style={styles.image}

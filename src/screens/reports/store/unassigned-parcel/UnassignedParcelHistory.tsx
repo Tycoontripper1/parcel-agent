@@ -307,7 +307,10 @@ const capitalizeFirst = (text:string) =>
                       key={index}
                       style={styles.shipmentRow}
                       onPress={() =>
-                        navigation.navigate("UnAssignParcelDetails", { item: item })
+                      {
+                        navigation.navigate("UnAssignParcelDetails", { item: item }),console.log(item, "itemsss")
+                      }
+                    
                       }
                     >
                       <View style={styles.transactionIconContainer}>

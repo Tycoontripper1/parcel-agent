@@ -310,7 +310,7 @@ export const updateUserKyc = async (
   try {
     const token = await getToken()
     // //(token, 'token')
-    const response = await fetch(`${apiKey}/users/update?type=profile&userType=agent`, {
+    const response = await fetch(`${apiKey}/users/update?type=kyc&userType=agent`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

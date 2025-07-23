@@ -12,6 +12,8 @@ import WalletEarnings from '@/screens/wallets/Earnings';
 import NotificationsScreen from '@/screens/home/NotificationScreen';
 import WithdrawToBankScreen from '@/screens/wallets/payment/wallet-bank/WithdrawToBankScreen';
 import InputWithdrawAmountScreen from '@/screens/wallets/payment/wallet-bank/WithdrawAmount';
+import WithdrawToWalletScreen from '@/screens/wallets/payment/wallet-wallet/WithdrawToWalletScreen';
+import InputWithdrawAmountWalletScreen from '@/screens/wallets/payment/wallet-wallet/withdrawAmount';
 import ReceiptScreen from '@/components/ReceiptScreen';
 import DashboardScreen from '@/screens/DashboardScreen';
 const Wallet = createStackNavigator<WalletStackList>();
@@ -96,6 +98,16 @@ const WalletStack = ({navigation}: Props) => {
       <Wallet.Screen
         name='Dashboard'
         component={DashboardScreen}
+        options={{headerShown: false}}
+      />
+      <Wallet.Screen
+        name='WithdrawToWalletScreen'
+        component={WithdrawToWalletScreen}
+        options={{headerShown: false}}
+      />
+      <Wallet.Screen
+        name='InputWithdrawAmountWalletScreen'
+        component={InputWithdrawAmountWalletScreen}
         options={{headerShown: false}}
       />
     </Wallet.Navigator>

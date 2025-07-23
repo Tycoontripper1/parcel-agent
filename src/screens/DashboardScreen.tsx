@@ -90,10 +90,8 @@ const [showModal, setShowModal] = useState(false);
         const result = await getUserProfile();
         const rows = result?.data?.details || [];
         setUserProfile(rows.wallet);
-
         AsyncStorage.setItem('userProfile', JSON.stringify(rows));
-        //(rows, 'User Profile Data');
-      
+        console.log(rows)
       } catch (error) {
         // console.error('Failed to fetch user:', error);
       }
@@ -103,6 +101,15 @@ const [showModal, setShowModal] = useState(false);
       fetchUserProfile();
     }, []);
   // Fetch user data with focus effect
+    const fetchUser = useCallback(async () => {
+      try {
+         const userDetails = await getUser();
+        setUserDetails(userDetails);
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+      }
+    }, []);
+    
   useFocusEffect(
     useCallback(() => {
       const fetchUser = async () => {
@@ -110,7 +117,8 @@ const [showModal, setShowModal] = useState(false);
         setUserDetails(userDetails);
       };
       fetchUser();
-    }, [])
+    }, []),
+
   );
 
   // Memoized handlers
@@ -156,7 +164,7 @@ const [showModal, setShowModal] = useState(false);
           <View style={styles.balanceHeader}>
             <View>
               <Text style={styles.balanceLabel}>Available Balance</Text>
-              <Text style={styles.balance}>₦{userProfile?.balance}</Text>
+              <Text style={styles.balance}>₦{userProfile?.balance || "0.00"}</Text>
             </View>
             <TouchableOpacity 
               style={styles.transactionButton} 
@@ -203,7 +211,7 @@ const [showModal, setShowModal] = useState(false);
           searchQuery={searchQuery}
           onViewAll={handleViewAll}
           handleViewAll={handleViewDetails}
-          limit={10}
+          limit={7}
         />
              <BottomSheetModal
                   isVisible={showModal}
@@ -227,7 +235,7 @@ const [showModal, setShowModal] = useState(false);
                       }}
                     >
                       <Text style={{ color: "#888", fontSize: RFValue(14) }}>
-                        Account Name
+                        Name
                       </Text>
                       <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <Text style={{ marginRight: 8 , fontSize:RFValue(12),fontWeight:"600"}}>{userProfile?.accountName}</Text>

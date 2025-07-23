@@ -1,247 +1,7 @@
-// import { View, Text, TouchableOpacity, StatusBar } from 'react-native'
-// import React from 'react'
-// import BackButton from './share/BackButton';
-// import { StyleSheet } from 'react-native';
-// import CustomView from './CustomView';
-// import { MaterialIcons } from '@expo/vector-icons';
-// import { RFValue } from 'react-native-responsive-fontsize';
-// import { useNavigation } from '@react-navigation/native';
-// import { format, formatDate } from 'date-fns';
-// import CreditIcon from './svg/CreditIcon';
-// import DebitIcon from './svg/DebitIcon';
-// import HomeHeader from './share/HomeHeader';
-//  const TransactionDetails = ({ route }: any) => {
-//   const { transaction } = route.params;
-//   const navigation = useNavigation();
-//     // Format date to "Mar 3, 2025" format
-//   const formatDate = (dateString: string) => {
-//     return format(new Date(dateString), "MMM d, yyyy");
-//   };
-  
-//   // Format time to "12:30 PM" format
-//   const formatTime = (dateString: string) => {
-//     return format(new Date(dateString), "h:mm a");
-//   };
-  
-//   return (
-//   <CustomView style={detailStyles.container}>
-//       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-//       <HomeHeader type='Stack' title='Transaction Details' />
-      
-//       <View style={detailStyles.amountContainer}>
-//         {/* Custom 'P' logo in circle */}
-//         <View style={[
-//           detailStyles.iconContainer,
-//           { backgroundColor: transaction.type === "credit" ? "#E6FFDB" : "#E6FFDB" }
-//         ]}>
-//           <Text style={detailStyles.logoText}>𝓹</Text>
-//         </View>
-        
-//         <Text style={[
-//           detailStyles.amountText,
-//           transaction.type === "credit" ? detailStyles.creditAmount : detailStyles.debitAmount
-//         ]}>
-//           {transaction.type === "credit" ? "+" : "-"}₦{transaction.amount.toLocaleString()}
-//         </Text>
-        
-//         <Text style={detailStyles.transactionTitle}>{transaction.title}</Text>
-//         <Text style={detailStyles.transactionStatus}>
-//           Status: <Text style={[
-//             transaction.status === "successful" 
-//               ? detailStyles.successText 
-//               : transaction.status === "pending"
-//                 ? detailStyles.pendingText
-//                 : detailStyles.failedText
-//           ]}>
-//             {transaction.status}
-//           </Text>
-//         </Text>
-//       </View>
-      
-//       <View style={detailStyles.detailsCard}>
-//         <DetailRow label="Description" value={transaction.description} />
-//         <DetailRow label="Date" value={formatDate(transaction.date)} />
-//         <DetailRow label="Time" value={formatTime(transaction.date)} />
-//         <DetailRow label="Reference ID" value={transaction.reference} copyable />
-//         <DetailRow label={transaction.type === "credit" ? "From" : "To"} 
-//                   value={transaction.type === "credit" ? transaction.from : transaction.to} />
-//         {transaction.type === "debit" && (
-//           <DetailRow label="From" value={transaction.from} />
-//         )}
-//         {transaction.failureReason && (
-//           <DetailRow label="Reason" value={transaction.failureReason} />
-//         )}
-//       </View>
-      
-//       {/* Conditional Buttons */}
-//       <View style={[
-//         detailStyles.buttonContainer, 
-//         { justifyContent: transaction.type === "credit" ? "center" : "space-between" }
-//       ]}>
-//         {transaction.type === "credit" ? (
-//           <TouchableOpacity style={[detailStyles.actionButton, detailStyles.shareButton]}>
-//             <Text style={detailStyles.shareButtonText}>Share Receipt</Text>
-//           </TouchableOpacity>
-//         ) : (
-//           <>
-//             <TouchableOpacity style={[detailStyles.actionButton, detailStyles.reportButton]}>
-//               <Text style={detailStyles.reportButtonText}>Report Transaction</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity style={[detailStyles.actionButton, detailStyles.shareButton]}>
-//               <Text style={detailStyles.shareButtonText}>Share</Text>
-//             </TouchableOpacity>
-//           </>
-//         )}
-//       </View>
 
-//     </CustomView>
-//   );
-// };
-
-// // Reusable Detail Row Component
-// const DetailRow = ({ label, value, copyable = false }: any) => (
-//   <View style={detailStyles.detailRow}>
-//     <Text style={detailStyles.detailLabel}>{label}</Text>
-//     <View style={detailStyles.detailValueContainer}>
-//       <Text style={detailStyles.detailValue}>{value}</Text>
-//       {copyable && (
-//         <TouchableOpacity style={detailStyles.copyButton}>
-//           <MaterialIcons name="content-copy" size={16} color="#12B76A" />
-//         </TouchableOpacity>
-//       )}
-//     </View>
-//   </View>
-// );
-// const detailStyles = StyleSheet.create({
-//   container: { flex: 1, padding: RFValue(16), backgroundColor: "#fff" },
-//   header: {
-//     alignItems: "center",
-//     marginTop: RFValue(8),
-//     marginBottom: RFValue(24),
-//   },
-//     failedText: { color: "#F04438" },
-//     logoText: {
-//     fontSize: RFValue(40),
-//     fontWeight: "700",
-//     fontFamily: "Arial", // Consider using a custom font here
-//     color: "#213264",
-//   },
-//   headerTitle: {
-//     fontSize: RFValue(18),
-//     fontWeight: "600",
-//     color: "#0F172A",
-//   },
-//   amountContainer: {
-//     alignItems: "center",
-//     marginBottom: RFValue(32),
-//   },
-//   iconContainer: {
-//     width: RFValue(54),
-//     height: RFValue(54),
-//     borderRadius: RFValue(32),
-//     justifyContent: "center",
-//     alignItems: "center",
-//     marginBottom: RFValue(16),
-//   },
-//   creditBg: { backgroundColor: "#E6FFDB" },
-//   debitBg: { backgroundColor: "#FEDEDC" },
-//   amountText: {
-//     fontSize: RFValue(24),
-//     fontWeight: "700",
-//     marginBottom: RFValue(8),
-//   },
-//   creditAmount: { color: "#12B76A" },
-//   debitAmount: { color: "#F04438" },
-//   transactionTitle: {
-//     fontSize: RFValue(18),
-//     fontWeight: "600",
-//     color: "#0F172A",
-//     marginBottom: RFValue(4),
-//   },
-//   transactionStatus: {
-//     fontSize: RFValue(14),
-//     color: "#64748B",
-//   },
-//   successText: { color: "#12B76A" },
-//   pendingText: { color: "#F79009" },
-//   detailsCard: {
-//     backgroundColor: "#F8F9FA",
-//     borderRadius: RFValue(16),
-//     padding: RFValue(16),
-//     marginBottom: RFValue(24),
-//   },
-//   detailRow: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     paddingVertical: RFValue(12),
-//     borderBottomWidth: 1,
-//     borderColor: "#F1F5F9",
-//   },
-//   detailLabel: {
-//     fontSize: RFValue(14),
-//     color: "#64748B",
-//     flex: 1,
-//   },
-//   detailValueContainer: {
-//     flex: 1,
-//     flexDirection: "row",
-//     justifyContent: "flex-end",
-//     alignItems: "center",
-//   },
-//   detailValue: {
-//     fontSize: RFValue(14),
-//     fontWeight: "500",
-//     color: "#0F172A",
-//     textAlign: "right",
-//   },
-//   copyButton: {
-//     marginLeft: RFValue(8),
-//   },
-//   reportButton: {
-//     borderWidth: 1,
-//     borderColor: "#F1F5F9",
-//     borderRadius: RFValue(8),
-//     padding: RFValue(16),
-//     alignItems: "center",
-//   },
-//   reportText: {
-//     color: "#F04438",
-//     fontSize: RFValue(14),
-//     fontWeight: "600",
-//   },
-//    buttonContainer: {
-//     flexDirection: "row",
-//     width:"100%",
-//     marginBottom: RFValue(16),
-//   },
-//   actionButton: {
-//     borderRadius: RFValue(8),
-//     padding: RFValue(16),
-//     alignItems: "center",
-//     backgroundColor:"#FEE4E2"
-    
-//   },
-//   shareButton: {
-//     backgroundColor: "#12B76A",
-//     width:"50%"
-//   },
-
-//   shareButtonText: {
-   
-//     color:"#E6FFDB",
-//     fontSize: RFValue(14),
-//     fontWeight: "600",
-//   },
-//   reportButtonText: {
-
-//     color: "#F04438",
-//     fontSize: RFValue(14),
-//     fontWeight: "600",
-//   },
-// });
 
 // export default TransactionDetails;
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, StyleSheet, Alert, ScrollView } from 'react-native';
 import React from 'react';
 import BackButton from './share/BackButton';
 import CustomView from './CustomView';
@@ -303,13 +63,11 @@ const { transaction } = (route.params || {}) as { transaction?: any };
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <HomeHeader type='Stack' title='Transaction Details' />
       
-      <View style={detailStyles.amountContainer}>
-        {/* <View style={[
-          detailStyles.iconContainer,
-          { backgroundColor: transaction.direction === "credit" ? "#E6FFDB" : "#FEE4E2" }
-        ]}>
-          {transaction.direction === "credit" ? <CreditIcon /> : <DebitIcon />}
-        </View> */}
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{paddingBottom: 16}}>
+        <View style={detailStyles.amountContainer}>
              <View style={[
           detailStyles.iconContainer,
           { backgroundColor: transaction.type === "credit" ? "#E6FFDB" : "#E6FFDB" }
@@ -333,7 +91,7 @@ const { transaction } = (route.params || {}) as { transaction?: any };
                 ? detailStyles.pendingText
                 : detailStyles.failedText
           ]}>
-            {transaction.status || "Unknown"}
+            {transaction.status || "Successful"}
           </Text>
         </Text>
       </View>
@@ -379,6 +137,7 @@ const { transaction } = (route.params || {}) as { transaction?: any };
           </TouchableOpacity>
         )}
       </View>
+      </ScrollView>
     </CustomView>
   );
 };
@@ -445,7 +204,7 @@ const detailStyles = StyleSheet.create({
   },
   successText: { color: "#12B76A" },
   pendingText: { color: "#F79009" },
-  failedText: { color: "#F04438" },
+  failedText: { color: "#12B76A" },
   detailsCard: {
     backgroundColor: "#F8F9FA",
     borderRadius: RFValue(16),
