@@ -479,39 +479,48 @@ const [transactions, setTransactions] = useState<Transaction[]>([]);
       )}
 
       <View style={styles.listContainer}>
-        <SectionList
-          sections={sectionData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TransactionItem item={item} onPress={() => handleItemPress(item)} />
-          )}
-          renderSectionHeader={({ section }) => (
-            <SectionHeader title={section.title} />
-          )}
-          contentContainerStyle={styles.listContent}
-          onEndReached={handleEndReached}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={<ListFooter isLoading={isLoading} hasMore={hasMore} />}
-          onRefresh={handleRefresh}
-          refreshing={refreshing}
-          stickySectionHeadersEnabled={false}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            fetchError ? (
-              <View style={styles.emptyContainer}>
-                <Text style={styles.errorText}>{fetchError}</Text>
-                <TouchableOpacity
-                  style={styles.retryButton}
-                  onPress={() => fetchTransactions(true)}
-                >
-                  <Text style={styles.retryText}>Retry</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <EmptyList />
-            )
-          }
-        />
+{isLoading ? (
+  <View style={styles.loaderContainer}>
+    <ActivityIndicator size="large" color="#AEFF8C" />
+  </View>
+) : (
+  <SectionList
+    sections={sectionData}
+    keyExtractor={(item) => item.id}
+    renderItem={({ item }) => (
+      <TransactionItem item={item} onPress={() => handleItemPress(item)} />
+    )}
+    renderSectionHeader={({ section }) => (
+      <SectionHeader title={section.title} />
+    )}
+    contentContainerStyle={styles.listContent}
+    onEndReached={handleEndReached}
+    onEndReachedThreshold={0.5}
+    ListFooterComponent={
+      <ListFooter isLoading={isLoading} hasMore={hasMore} />
+    }
+    onRefresh={handleRefresh}
+    refreshing={refreshing}
+    stickySectionHeadersEnabled={false}
+    showsVerticalScrollIndicator={false}
+    ListEmptyComponent={
+      fetchError ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.errorText}>{fetchError}</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={() => fetchTransactions(true)}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <EmptyList />
+      )
+    }
+  />
+)}
+
       </View>
 
       <DownloadFAB onPress={downloadReport} />
@@ -523,6 +532,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF",
+  },
+    loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
   },
    errorText: {
     color: "#F04438",
