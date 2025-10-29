@@ -2,7 +2,7 @@ import { CustomView, Spinner, Text } from "@/components";
 import ButtonHome from "@/components/ButtonHome";
 import KeyBoardView from "@/components/KeyBoardView";
 import { RootState } from "@/redux/store";
-import Barcode from "@kichiyaki/react-native-barcode-generator";
+// import Barcode from "@kichiyaki/react-native-barcode-generator";
 import {
   NativeStackNavigationProp,
 } from "@react-navigation/native-stack";
@@ -178,7 +178,9 @@ const PrintParcel = ({ navigation }: Props) => {
       return (
         <View key={index} style={styles.parcelContainer}>
           <View style={{ padding: RFValue(16) }}>
-            <Text style={{ textAlign: "center" }}>Parcel received successfully</Text>
+            <Text style={{ textAlign: "center" }}>
+              Parcel received successfully
+            </Text>
             <Text style={{ textAlign: "center" }}>Parcel ID</Text>
           </View>
           
@@ -261,7 +263,7 @@ const PrintParcel = ({ navigation }: Props) => {
           </View>
 
           {/* Barcode */}
-          <View style={styles.barcodeContainer}>
+          {/* <View style={styles.barcodeContainer}>
             <Barcode
               format="CODE128"
               value={item.parcelId || "2222"}
