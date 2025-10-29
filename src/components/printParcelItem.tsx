@@ -36,7 +36,7 @@ import HomeHeader from "@/components/share/HomeHeader";
 import * as Sharing from "expo-sharing";
 import { WebView } from "react-native-webview";
 import JsBarcode from "jsbarcode";
-import Barcode from "@kichiyaki/react-native-barcode-generator";
+// import Barcode from "@kichiyaki/react-native-barcode-generator";
 import { singleParcelInterface } from "@/utils/interface";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -179,8 +179,6 @@ const PrintParcelItem = ({ navigation }: Props) => {
     }
   };
 
-  
-
   const handleExportPDF = async () => {
     try {
       // Ensure viewShotRef is available
@@ -308,27 +306,25 @@ const PrintParcelItem = ({ navigation }: Props) => {
               </TouchableOpacity>
             </View>
           </View>
-         <View style={{paddingHorizontal: RFValue(16)}}>
-         <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingVertical: 6,
-              borderBottomWidth: RFValue(1),
-              paddingHorizontal: RFValue(16),
-              borderBottomColor: "#252B37",
-              paddingTop: RFValue(32),
-              paddingBottom: RFValue(32),
-              marginTop: RFValue(8),
-            }}
-          >
-            <Text size={16}>
-              Total Amount
-            </Text>
-            <Text size={14}>₦{parcelItem?.parcel.totalFee}</Text>
+          <View style={{ paddingHorizontal: RFValue(16) }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingVertical: 6,
+                borderBottomWidth: RFValue(1),
+                paddingHorizontal: RFValue(16),
+                borderBottomColor: "#252B37",
+                paddingTop: RFValue(32),
+                paddingBottom: RFValue(32),
+                marginTop: RFValue(8),
+              }}
+            >
+              <Text size={16}>Total Amount</Text>
+              <Text size={14}>₦{parcelItem?.parcel.totalFee}</Text>
+            </View>
           </View>
-         </View>
           <View
             style={{
               flexDirection: "row",
@@ -494,7 +490,7 @@ const PrintParcelItem = ({ navigation }: Props) => {
 
           {/* Barcode */}
           <View style={styles.barcodeContainer}>
-            <Barcode
+            {/* <Barcode
               format="CODE128"
               value={parcelItem?.parcelId || "223-123456"}
               // text={
@@ -506,7 +502,7 @@ const PrintParcelItem = ({ navigation }: Props) => {
               background="#fffff"
               lineColor="#000"
               width={2}
-            />
+            /> */}
           </View>
           {/* <Image
             source={{ uri: `data:image/png;base64,${parcelItem?.qrImage}` }}

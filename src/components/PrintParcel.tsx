@@ -4,7 +4,7 @@ import { CustomView, Spinner, Text } from "@/components";
 import ButtonHome from "@/components/ButtonHome";
 import KeyBoardView from "@/components/KeyBoardView";
 import { RootState } from "@/redux/store";
-import Barcode from "@kichiyaki/react-native-barcode-generator";
+// import Barcode from "@kichiyaki/react-native-barcode-generator";
 import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
@@ -158,25 +158,25 @@ const PrintParcel = ({ navigation }: Props) => {
 
   const handlePrint = async () => {
     const viewShot = viewShotRef.current;
-  
+
     if (!viewShot) {
       Alert.alert("Error", "ViewShot reference is not available.");
       return;
     }
-  
+
     try {
       const uri = await viewShot?.capture?.();
       console.log("Captured URI:", uri);
-  
+
       if (uri) {
         const isAvailable = await Sharing.isAvailableAsync();
         if (!isAvailable) {
           Alert.alert("Error", "Sharing is not available on this device.");
           return;
         }
-  
+
         await Sharing.shareAsync(uri);
-        
+
         // Navigate after sharing
         navigation.navigate("ComfirmationDriver");
       } else {
@@ -187,7 +187,6 @@ const PrintParcel = ({ navigation }: Props) => {
       console.error("Sharing Error:", error);
     }
   };
-  
 
   const handleExportPDF = async () => {
     try {
@@ -196,15 +195,15 @@ const PrintParcel = ({ navigation }: Props) => {
         Alert.alert("Error", "ViewShot reference is not available.");
         return;
       }
-  
+
       const uri = await viewShot.capture();
       if (!uri) {
         Alert.alert("Error", "Failed to capture the screenshot.");
         return;
       }
-  
+
       console.log("Captured URI:", uri);
-  
+
       let response;
       try {
         response = await fetch(uri);
@@ -213,10 +212,10 @@ const PrintParcel = ({ navigation }: Props) => {
         Alert.alert("Error", "Failed to fetch the captured image.");
         return;
       }
-  
+
       const blob = await response.blob();
       const reader = new FileReader();
-  
+
       reader.readAsDataURL(blob);
       reader.onloadend = async () => {
         const result = reader.result;
@@ -224,33 +223,32 @@ const PrintParcel = ({ navigation }: Props) => {
           Alert.alert("Error", "Failed to convert image to Base64.");
           return;
         }
-  
+
         const base64Index = result.indexOf("base64,");
         if (base64Index === -1) {
           Alert.alert("Error", "Invalid Base64 format.");
           return;
         }
-  
+
         const base64data = result.substring(base64Index + 7);
-  
+
         try {
           const { uri: pdfUri } = await Print.printToFileAsync({
             html: `<img src="data:image/png;base64,${base64data}" style="width:100%" />`,
             base64: true,
           });
-  
+
           console.log("PDF Saved at:", pdfUri);
-  
+
           const canShare = await Sharing.isAvailableAsync();
           if (canShare) {
             await Sharing.shareAsync(pdfUri);
           } else {
             Alert.alert("PDF saved", `Saved at: ${pdfUri}`);
           }
-  
+
           // Navigate after PDF is handled
           navigation.navigate("ComfirmationDriver");
-  
         } catch (printError) {
           console.error("Print Error:", printError);
           Alert.alert("Error", "Failed to generate PDF.");
@@ -261,7 +259,6 @@ const PrintParcel = ({ navigation }: Props) => {
       Alert.alert("Error", "Something went wrong while exporting to PDF.");
     }
   };
-  
 
   return (
     <CustomView style={{ paddingVertical: RFValue(10) }}>
@@ -273,7 +270,9 @@ const PrintParcel = ({ navigation }: Props) => {
       <KeyBoardView padded={false}>
         <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1 }}>
           <View style={{ padding: RFValue(16) }}>
-            <Text style={{ textAlign: "center" }}>Parcel received successfully</Text>
+            <Text style={{ textAlign: "center" }}>
+              Parcel received successfully
+            </Text>
             <Text style={{ textAlign: "center" }}>Parcel ID</Text>
           </View>
           <View
@@ -496,7 +495,7 @@ const PrintParcel = ({ navigation }: Props) => {
           </View>
 
           {/* Barcode */}
-          <View style={styles.barcodeContainer}>
+          {/* <View style={styles.barcodeContainer}>
             <Barcode
               format="CODE128"
               value={parcelDetails?.parcelId || "2222"}
@@ -508,7 +507,7 @@ const PrintParcel = ({ navigation }: Props) => {
               lineColor="#000"
               width={2}
             />
-          </View>
+          </View> */}
           {/* <Image
             source={{ uri: `data:image/png;base64,${parcelDetails?.qrImage}` }}
             style={{ width: Dimensions.get("window").width / 1.5, height: 100 }}

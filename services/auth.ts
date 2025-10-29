@@ -1,52 +1,49 @@
 // api/auth.ts
-import Constants from 'expo-constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // export const apiKey = Constants.expoConfig?.extra?.apiKey;
-export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
+export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api";
 
 export const getToken = async (): Promise<string | null> => {
   try {
-    const token = await AsyncStorage.getItem('token');
+    const token = await AsyncStorage.getItem("token");
 
     if (!token) {
-      console.warn('No token found in AsyncStorage.');
+      console.warn("No token found in AsyncStorage.");
       return null;
     }
 
     return token;
   } catch (error) {
-    console.error('Error getting token:', error);
+    console.error("Error getting token:", error);
     return null;
   }
 };
 
-
-
 export const getUser = async (): Promise<any | null> => {
   try {
-    const user = await AsyncStorage.getItem('user');
+    const user = await AsyncStorage.getItem("user");
     return user ? JSON.parse(user) : null;
   } catch (error) {
-    console.error('Error getting user:', error);
+    console.error("Error getting user:", error);
     return null;
   }
 };
 export const getDriver = async (): Promise<any | null> => {
   try {
-    const driver = await AsyncStorage.getItem('driver');
+    const driver = await AsyncStorage.getItem("driver");
     return driver ? JSON.parse(driver) : null;
   } catch (error) {
-    console.error('Error getting driver:', error);
+    console.error("Error getting driver:", error);
     return null;
   }
 };
 
-
 export const clearAuth = async () => {
   try {
-    await AsyncStorage.multiRemove(['token', 'user']);
+    await AsyncStorage.multiRemove(["token", "user"]);
   } catch (error) {
-    console.error('Error clearing auth:', error);
+    console.error("Error clearing auth:", error);
   }
 };
 
@@ -60,9 +57,9 @@ export const registerUser = async (data: {
 }) => {
   try {
     const response = await fetch(`${apiKey}/auth/signup`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
@@ -70,7 +67,7 @@ export const registerUser = async (data: {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Registration failed');
+      throw new Error(result.message || "Registration failed");
     }
 
     return result;
@@ -83,12 +80,12 @@ export const pushNotification = async (data: {
   token: string;
 }) => {
   try {
-      const token = await getToken()
-      console.log(token,"userToken")
+    const token = await getToken();
+    console.log(token, "userToken");
     const response = await fetch(`${apiKey}/notifications/token`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
@@ -97,7 +94,7 @@ export const pushNotification = async (data: {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'notification failed');
+      throw new Error(result.message || "notification failed");
     }
 
     return result;
@@ -110,11 +107,10 @@ export const loginUser = async (data: {
   password: string;
 }) => {
   try {
-
     const response = await fetch(`${apiKey}/auth/signin?userType=agent`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
@@ -122,7 +118,7 @@ export const loginUser = async (data: {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Login failed');
+      throw new Error(result.message || "Login failed");
     }
 
     return result;
@@ -136,11 +132,11 @@ export const changePassword = async (data: {
   confirm: string;
 }) => {
   try {
-   const token = await getToken()
+    const token = await getToken();
     const response = await fetch(`${apiKey}/auth/password?userType=agent`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
@@ -149,7 +145,7 @@ export const changePassword = async (data: {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'password reset failed');
+      throw new Error(result.message || "password reset failed");
     }
 
     return result;
@@ -162,19 +158,21 @@ export const verifyOtpAccount = async (data: {
   otp: string;
 }) => {
   try {
-    const response = await fetch(`${apiKey}/auth/otp/verify?type=account_confirmation&userType=agent`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${apiKey}/auth/otp/verify?type=account_confirmation&userType=agent`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Otp Verification failed');
+      throw new Error(result.message || "Otp Verification failed");
     }
 
     return result;
@@ -187,19 +185,21 @@ export const verifyOtpAccountReset = async (data: {
   otp: string;
 }) => {
   try {
-    const response = await fetch(`${apiKey}/auth/otp/verify?type=password_reset&userType=agent`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${apiKey}/auth/otp/verify?type=password_reset&userType=agent`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Otp Verification failed');
+      throw new Error(result.message || "Otp Verification failed");
     }
 
     return result;
@@ -207,15 +207,12 @@ export const verifyOtpAccountReset = async (data: {
     throw error;
   }
 };
-export const resendOtp = async (data: {
-  emailPhone: string;
-}) => {
+export const resendOtp = async (data: { emailPhone: string }) => {
   try {
     const response = await fetch(`${apiKey}/auth/otp/send?userType=agent`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
@@ -223,7 +220,7 @@ export const resendOtp = async (data: {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Otp sent failed');
+      throw new Error(result.message || "Otp sent failed");
     }
 
     return result;
@@ -231,36 +228,36 @@ export const resendOtp = async (data: {
     throw error;
   }
 };
-export const updateUserKyc = async (
-  payload: {
-    businessName: string;
-    state: string;
-    address: string;
-    parkLocation: string;
-    store: boolean;
-    identificationType: string;
-    identificationNumber: string;
-    identificationImages: string[];
-    userImage: string;
-  },
-) => {
-  
+export const updateUserKyc = async (payload: {
+  businessName: string;
+  state: string;
+  address: string;
+  parkLocation: string;
+  store: boolean;
+  identificationType: string;
+  identificationNumber: string;
+  identificationImages: string[];
+  userImage: string;
+}) => {
   try {
-    const token = await getToken()
+    const token = await getToken();
     // console.log(token, 'token')
-    const response = await fetch(`${apiKey}/users/update?type=profile&userType=agent`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      `${apiKey}/users/update?type=profile&userType=agent`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'user kyc update failed');
+      throw new Error(result.message || "user kyc update failed");
     }
 
     return result;
@@ -268,32 +265,32 @@ export const updateUserKyc = async (
     throw error;
   }
 };
-export const updateUserProfile = async (
-  payload: {
-    userImage: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-  },
-) => {
-  
+export const updateUserProfile = async (payload: {
+  userImage: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}) => {
   try {
-    const token = await getToken()
+    const token = await getToken();
     // console.log(token, 'token')
-    const response = await fetch(`${apiKey}/users/update?type=profile&userType=agent`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      `${apiKey}/users/update?type=profile&userType=agent`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'user kyc update failed');
+      throw new Error(result.message || "user kyc update failed");
     }
 
     return result;
@@ -306,16 +303,16 @@ export const updateDriverKyc = async (
   payload: {
     identificationImages: string[];
     userImage: string;
-  },driverId:string
+  },
+  driverId: string
 ) => {
-  
   try {
-    const token = await getToken()
+    const token = await getToken();
     // console.log(token, 'token')
     const response = await fetch(`${apiKey}/users/driver/${driverId}`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
@@ -324,7 +321,7 @@ export const updateDriverKyc = async (
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'user kyc update failed');
+      throw new Error(result.message || "user kyc update failed");
     }
 
     return result;
@@ -333,41 +330,35 @@ export const updateDriverKyc = async (
   }
 };
 
-export const onboardingDriver = async (
-  DriverOnboardingPayload: {
-    firstName: string;
-    lastName: string;
-    dateOfBirth: string;
-    email?: string;
-    phone: string;
-    address: string;
-    // identificationType: string;
-    // identificationNumber: string;
-    vehicleType: string;
-    vehicleRegistrationNumber: string;
-    parkLocation: string;
-  }
-
-) => {
-  const token = await getToken()
+export const onboardingDriver = async (DriverOnboardingPayload: {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  email?: string;
+  phone: string;
+  address: string;
+  // identificationType: string;
+  // identificationNumber: string;
+  vehicleType: string;
+  vehicleRegistrationNumber: string;
+  parkLocation: string;
+}) => {
+  const token = await getToken();
 
   try {
-    const response = await fetch(
-      `${apiKey}/auth/onboarding`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(DriverOnboardingPayload),
-      }
-    );
+    const response = await fetch(`${apiKey}/auth/onboarding`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(DriverOnboardingPayload),
+    });
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || 'Driver Onboarding failed');
+      throw new Error(result.message || "Driver Onboarding failed");
     }
 
     return result;
@@ -378,50 +369,54 @@ export const onboardingDriver = async (
 
 // drivers
 export const getAllDrivers = async () => {
-    try {
-        const token = await getToken()
-      const response = await fetch(`${apiKey}/users?userType=driver
-`, {
-        method: 'GET',
+  try {
+    const token = await getToken();
+    const response = await fetch(
+      `${apiKey}/users?userType=driver
+`,
+      {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || 'get drivers failed');
       }
-  
-      return result;
-    } catch (error) {
-      throw error;
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "get drivers failed");
     }
-  };
-export const getDriverById = async (driverId:string) => {
-    try {
-        const token = await getToken()
-      const response = await fetch(`${apiKey}/users?userType=driver&driverId=${driverId}
-`, {
-        method: 'GET',
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getDriverById = async (driverId: string) => {
+  try {
+    const token = await getToken();
+    const response = await fetch(
+      `${apiKey}/users?userType=driver&driverId=${driverId}
+`,
+      {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || 'get driver failed');
       }
-  
-      return result;
-    } catch (error) {
-      throw error;
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "get driver failed");
     }
-  };
 
-
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};

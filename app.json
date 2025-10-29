@@ -18,8 +18,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#213264",
-              "googleServicesFile": "./android/app/google-services.json"
+        "backgroundColor": "#213264"
+        // "googleServicesFile": "./android/app/google-services.json"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -47,12 +47,6 @@
         }
       ],
       "expo-font"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "15fea479-ff7a-4763-83ae-4ee5632940d4"
-      }
-    },
-    "owner": "bombay_17"
+    ]
   }
 }
