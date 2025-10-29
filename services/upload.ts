@@ -1,10 +1,12 @@
 // api/auth.ts
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
- export const BASE_URL = 'https://1746-41-173-243-171.ngrok-free.app/parcel/v1.0/api'; // change this
+
+import axios from 'axios';
+import * as FileSystem from 'expo-file-system';
+//  export const BASE_URL = 'https://1746-41-173-243-171.ngrok-free.app/parcel/v1.0/api'; // change this
 //  const apiKey = Constants.expoConfig?.extra?.apiKey;
-export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
+export const apiKey = "https://api.parcelpointng.com:4001/parcel/v1.0"
 
  export const getToken = async (): Promise<string | null> => {
   try {
@@ -23,7 +25,7 @@ export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
 };
 
 
-import * as FileSystem from 'expo-file-system';
+
 
 
 
@@ -42,7 +44,7 @@ export const uploadBulkImages = async (images: string[], username: string) => {
   });
 
   const response = await fetch(
-    `http://45.9.191.184:8001/parcel/v1.0/api/upload/bulk?folder=${username}`,
+    `https://api.parcelpointng.com:4001/parcel/v1.0/upload/bulk?folder=${username}`,
     {
       method: 'POST',
       headers: {
@@ -90,7 +92,7 @@ export const uploadBulkImages = async (images: string[], username: string) => {
     });
   
     const result = await response.json();
-     console.log(result,"result upload");
+     //(result,"result upload");
     if (!response.ok) {
       throw new Error(result.message || 'Failed to upload user image');
     }
@@ -100,40 +102,62 @@ export const uploadBulkImages = async (images: string[], username: string) => {
 
 
   
-export const upload = async (uris: string[]) => {
-  console.log('Received uris:', JSON.stringify(uris, null, 2));
-  const token = await getToken();
-  console.log(token,"token")
-  const formData = new FormData();
 
-  uris.forEach((imageUri, index) => {
+
+
+export const upload = async (uris: string[]) => {
+  const token = await getToken();
+  const formData = new FormData();
+  const MAX_FILE_SIZE_MB = 10;
+
+  for (let index = 0; index < uris.length; index++) {
+    const uri = uris[index];
+
+    const fileInfo = await FileSystem.getInfoAsync(uri);
+    if (!fileInfo.exists) {
+      throw new Error(`File at URI "${uri}" does not exist.`);
+    }
+
+    const fileSizeMB = fileInfo.size ? fileInfo.size / (1024 * 1024) : 0;
+    console.log(`File ${index + 1}: ${fileSizeMB.toFixed(2)} MB`);
+
+    if (fileSizeMB > MAX_FILE_SIZE_MB) {
+      throw new Error(`File at "${uri}" is too large. Max allowed size is ${MAX_FILE_SIZE_MB}MB.`);
+    }
+
     formData.append('files', {
-      uri: imageUri,
+      uri,
       name: `image_${index}.jpg`,
       type: 'image/jpeg',
-      
-    } as any, `image_${index}.jpg`);
-  });
-
-  console.log(formData, 'formData upload');
-
-  const response = await fetch(`${apiKey}/files`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data',
-    },
-    body: formData,
-    // body: JSON.stringify({ files: formData }), // Use JSON.stringify if your API expects a JSON body
-  });
-
-  const result = await response.json();
-  if (!response.ok) {
-    throw new Error(result.message || 'Failed to upload file(s)');
+    } as any);
   }
 
-  return result;
+  try {
+    const response = await axios.post(
+      `https://api.parcelpointng.com:4001/parcel/v1.0/files`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      }
+    );
+
+    console.log(response.data);
+    return response.data;
+  } catch (error: any) {
+    const serverMessage =
+      error?.response?.data?.message || error.message || 'Upload failed';
+
+    console.error('Upload error:', serverMessage);
+    throw new Error(`Upload failed: ${serverMessage}`);
+  }
 };
+
+
   
 export const getImage = async (imageSlug: string[]) => {
   const token = await getToken();
@@ -191,7 +215,7 @@ export const getImage = async (imageSlug: string[]) => {
   //   });
   
   //   const result = await response.json();
-  //   console.log(result, 'result upload');
+  //   //(result, 'result upload');
   
   //   if (!response.ok) {
   //     throw new Error(result.message || 'Failed to upload user image');

@@ -79,7 +79,7 @@ const DriversDetails = ({ navigation,route }: Props) => {
             throw new Error(result.message || 'Failed to fetch drivers');
           }
     
-          console.log(result, 'result');
+          //(result, 'result');
           setAllDrivers(result?.data?.details?.rows);
         } catch (error) {
           console.error('Failed to fetch drivers:', error);
@@ -112,7 +112,7 @@ const DriversDetails = ({ navigation,route }: Props) => {
     addedBy: "Nill",
     createdAt: "Nill",
   };
-  console.log(driver.identificationImages, "driverDtaisls")
+  //(driver.identificationImages, "driverDtaisls")
   const saveDriverDetails = async () => {
     await AsyncStorage.setItem('driver', JSON.stringify(driver));
     await AsyncStorage.setItem('driverId', driver?.id);
@@ -165,7 +165,7 @@ const DriversDetails = ({ navigation,route }: Props) => {
         >
      {driver.userImage ? (
   <Image
-    source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${driver.userImage}` }}
+    source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${driver.userImage}` }}
     style={{
       width: 84,
       height: 84,
@@ -326,12 +326,12 @@ const DriversDetails = ({ navigation,route }: Props) => {
   <View style={styles.sectionContainer}>
     <Text style={styles.title}>Front Image</Text>
     <Image
-      source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${driver.identificationImages[0]}` }}
+      source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${driver.identificationImages[0]}` }}
       style={styles.image}
     />
     <Text style={styles.title}>Back Image</Text>
     <Image
-      source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${driver.identificationImages[1]}` }}
+      source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${driver.identificationImages[1]}` }}
       style={styles.image}
     />
   </View>

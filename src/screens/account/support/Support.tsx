@@ -50,7 +50,7 @@ const Support = ({ navigation }: Props) => {
     if (!formDataState.category) {
       return;
     }
-        console.log({ formDataState });
+        //({ formDataState });
     setLoading(true);
     setTimeout(() => {
       setLoading(false);

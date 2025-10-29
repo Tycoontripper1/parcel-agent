@@ -8,19 +8,19 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "TEST_API_KEY": "http://45.9.191.184:8001/parcel/v1.0/api"
+        "TEST_API_KEY": "https://api.parcelpointng.com:4001/parcel/v1.0"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
-        "TEST_API_KEY": "http://45.9.191.184:8001/parcel/v1.0/api"
+        "TEST_API_KEY": "https://api.parcelpointng.com:4001/parcel/v1.0"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "TEST_API_KEY": "http://45.9.191.184:8001/parcel/v1.0/api"
+        "TEST_API_KEY": "https://api.parcelpointng.com:4001/parcel/v1.0"
       }
     },
     "internal": {
@@ -29,7 +29,7 @@
         "distribution": "internal"
       },
       "env": {
-        "TEST_API_KEY": "http://45.9.191.184:8001/parcel/v1.0/api"
+        "TEST_API_KEY": "https://api.parcelpointng.com:4001/parcel/v1.0"
       }
     }
   },

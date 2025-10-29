@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
     View,
     Text,
@@ -15,7 +15,7 @@ import {
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { CustomView } from "@/components";
 import CreditIcon from "@/components/svg/CreditIcon";
 import DebitIcon from "@/components/svg/DebitIcon";
@@ -28,11 +28,13 @@ import { color } from "@/constants/Colors";
 import HomeHeader from "@/components/share/HomeHeader";
 import { MaterialIcons } from "@expo/vector-icons";
 import FundWallet from "@/components/FundWallet";
-import { Wallet } from "../Wallet";
+
 import WalletIcon from "@/components/svg/WalletIcon";
 import TransferIcon from "@/components/svg/TransferIcon";
 import USSDIcon from "@/components/svg/USSDIcon";
 import WithdrawFunds from "@/components/WithdrawFunds";
+import { getUserProfile } from "../../../services/auth";
+import EmptyWallet from "@/components/svg/EmptyEarning";
 
 type Props = NativeStackScreenProps<HomeStackList>;
 const { width } = Dimensions.get("window");
@@ -85,7 +87,7 @@ const getProperDate = (isoString: string) => {
       year: "2-digit",
     });
   };
-  
+  const [userProfile, setUserProfile] = useState<any>(null);
 
 const getRandomType = (): TransactionType => {
   const types: TransactionType[] = ["Handling fee", "Overdue fee", "Upfront fee"];
@@ -93,70 +95,70 @@ const getRandomType = (): TransactionType => {
 };
 
 const transactions: Transaction[] = [
-    {
-      id: "1",
-      type: getRandomType(),
-      amount: 1500,
-      properDate: formatTime("2025-03-03T13:30:00"),
-      date: getProperDate("2025-03-03T13:30:00"),
-      title: "Salary",
-    },
-    {
-      id: "2",
-      type: getRandomType(),
-      amount: 500,
-      properDate: formatTime("2025-03-03T16:20:00"),
-      date: getProperDate("2025-03-03T16:20:00"),
-      title: "Shopping",
-    },
-    {
-      id: "3",
-      type: getRandomType(),
-      amount: 2000,
-      properDate: formatTime("2025-03-02T10:15:00"),
-      date: getProperDate("2025-03-02T10:15:00"),
-      title: "Freelance Payment",
-    },
-    {
-      id: "4",
-      type: getRandomType(),
-      amount: 300,
-      properDate: formatTime("2025-03-02T09:45:00"),
-      date: getProperDate("2025-03-02T09:45:00"),
-      title: "Groceries",
-    },
-    {
-      id: "5",
-      type: getRandomType(),
-      amount: 1000,
-      properDate: formatTime("2025-03-01T14:00:00"),
-      date: getProperDate("2025-03-01T14:00:00"),
-      title: "Electricity Bill",
-    },
-    {
-      id: "6",
-      type: getRandomType(),
-      amount: 5000,
-      properDate: formatTime("2025-02-28T11:10:00"),
-      date: getProperDate("2025-02-28T11:10:00"),
-      title: "Bonus",
-    },
-    {
-      id: "7",
-      type: getRandomType(),
-      amount: 800,
-      properDate: formatTime("2025-02-28T18:30:00"),
-      date: getProperDate("2025-02-28T18:30:00"),
-      title: "Internet Subscription",
-    },
-    {
-      id: "8",
-      type: getRandomType(),
-      amount: 200,
-      properDate: formatTime("2025-02-27T08:15:00"),
-      date: getProperDate("2025-02-27T08:15:00"),
-      title: "Coffee",
-    },
+    // {
+    //   id: "1",
+    //   type: getRandomType(),
+    //   amount: 1500,
+    //   properDate: formatTime("2025-03-03T13:30:00"),
+    //   date: getProperDate("2025-03-03T13:30:00"),
+    //   title: "Salary",
+    // },
+    // {
+    //   id: "2",
+    //   type: getRandomType(),
+    //   amount: 500,
+    //   properDate: formatTime("2025-03-03T16:20:00"),
+    //   date: getProperDate("2025-03-03T16:20:00"),
+    //   title: "Shopping",
+    // },
+    // {
+    //   id: "3",
+    //   type: getRandomType(),
+    //   amount: 2000,
+    //   properDate: formatTime("2025-03-02T10:15:00"),
+    //   date: getProperDate("2025-03-02T10:15:00"),
+    //   title: "Freelance Payment",
+    // },
+    // {
+    //   id: "4",
+    //   type: getRandomType(),
+    //   amount: 300,
+    //   properDate: formatTime("2025-03-02T09:45:00"),
+    //   date: getProperDate("2025-03-02T09:45:00"),
+    //   title: "Groceries",
+    // },
+    // {
+    //   id: "5",
+    //   type: getRandomType(),
+    //   amount: 1000,
+    //   properDate: formatTime("2025-03-01T14:00:00"),
+    //   date: getProperDate("2025-03-01T14:00:00"),
+    //   title: "Electricity Bill",
+    // },
+    // {
+    //   id: "6",
+    //   type: getRandomType(),
+    //   amount: 5000,
+    //   properDate: formatTime("2025-02-28T11:10:00"),
+    //   date: getProperDate("2025-02-28T11:10:00"),
+    //   title: "Bonus",
+    // },
+    // {
+    //   id: "7",
+    //   type: getRandomType(),
+    //   amount: 800,
+    //   properDate: formatTime("2025-02-28T18:30:00"),
+    //   date: getProperDate("2025-02-28T18:30:00"),
+    //   title: "Internet Subscription",
+    // },
+    // {
+    //   id: "8",
+    //   type: getRandomType(),
+    //   amount: 200,
+    //   properDate: formatTime("2025-02-27T08:15:00"),
+    //   date: getProperDate("2025-02-27T08:15:00"),
+    //   title: "Coffee",
+    // },
   ];
   interface Wallet {
   title: string;
@@ -164,8 +166,9 @@ const transactions: Transaction[] = [
   route: string;
 }
 
+
   const WalletData = useMemo<Wallet[]>(() => [
-    { title: 'Wallet To Wallet', icon: <WalletIcon />, route:"WithdrawToBankScreen" },
+    { title: 'Wallet To Wallet', icon: <WalletIcon />, route:"WithdrawToWalletScreen" },
     { title: 'Wallet to Bank', icon: <TransferIcon />, route:"WithdrawToBankScreen" },
   ], []);
     // Filter transactions based on type and search query
@@ -227,7 +230,7 @@ const transactions: Transaction[] = [
                 <View style={{ alignItems: "center", flexDirection: "column", justifyContent: "center", width: "100%" }}>
                   <Text style={{ color: "#E9EAEB", fontSize: RFValue(12) }}>Earnings</Text>
                   <Text style={styles.balanceLabel}>Wallet Balance</Text>
-                  <Text style={styles.balance}>₦ 25,000.00</Text>
+                  <Text style={styles.balance}>₦0.00</Text>
                 </View>
               </View>
             </View>
@@ -323,6 +326,12 @@ const transactions: Transaction[] = [
                 ))}
               </View>
             )}
+            ListEmptyComponent={() => (
+               <View style={styles.emptyContainer}>
+            <EmptyWallet />
+            <Text style={styles.emptyText}>No transactions yet</Text>
+          </View>
+      )}
             scrollEnabled={false} // Prevents conflict with ScrollView
             nestedScrollEnabled={true} // Allows proper scrolling inside ScrollView
           />
@@ -345,6 +354,16 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginVertical: RFValue(16),
     },
+      emptyContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: RFValue(40),
+  },
+  emptyText: {
+    fontSize: RFValue(16),
+    color: "#64748B",
+    marginTop: RFValue(16),
+  },
 
     filterContainer: {
         flexDirection: "row",

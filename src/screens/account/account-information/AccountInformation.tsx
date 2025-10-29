@@ -105,13 +105,13 @@ const AccountInformation = ({ navigation }: Props) => {
       });
       // navigation.navigate('OTPVerificationScreen');
     }, 2000);
-    console.log({ formData });
+    //({ formData });
     setLoading(false);
   };
     useEffect(() => {
       const fetchUser = async () => {
         const userDetails = await getUser();
-        console.log(userDetails, 'userDetails');
+        //(userDetails, 'userDetails');
         setUserDetails(userDetails)
       };
       fetchUser();
@@ -167,8 +167,8 @@ const AccountInformation = ({ navigation }: Props) => {
             source={
               selectedImage
                 ? { uri: selectedImage }
-                : `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}`
-                ? { uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}` }
+                : `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${userDetail?.userImage}`
+                ? { uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${userDetail?.userImage}` }
                 : undefined
             }
             style={{

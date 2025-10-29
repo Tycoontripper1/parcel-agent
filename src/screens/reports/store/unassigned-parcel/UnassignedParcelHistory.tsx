@@ -83,11 +83,11 @@ const UnAssignParcelHistory = ({
   navigation,
 }: Props) => {
   const [isWallet, setIsWallet] = useState(false);
-  console.log(navigation, "navigation");
+  //(navigation, "navigation");
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const { data, label }: { data: ParcelDetails[]; label: string } = route.params;
-  console.log(data);
+  //(data);
 
   type TransactionType = "Handling fee" | "Overdue fee" | "Upfront fee";
 
@@ -307,7 +307,10 @@ const capitalizeFirst = (text:string) =>
                       key={index}
                       style={styles.shipmentRow}
                       onPress={() =>
-                        navigation.navigate("UnAssignParcelDetails", { item: item })
+                      {
+                        navigation.navigate("UnAssignParcelDetails", { item: item }),console.log(item, "itemsss")
+                      }
+                    
                       }
                     >
                       <View style={styles.transactionIconContainer}>

@@ -2,7 +2,7 @@
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // export const apiKey = Constants.expoConfig?.extra?.apiKey;
-export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api";
+export const apiKey = "https://api.parcelpointng.com:4001/parcel/v1.0";                                              
 
 export const getToken = async (): Promise<string | null> => {
   try {
@@ -22,13 +22,23 @@ export const getToken = async (): Promise<string | null> => {
 
 export const getUser = async (): Promise<any | null> => {
   try {
-    const user = await AsyncStorage.getItem("user");
+    const user = await AsyncStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   } catch (error) {
-    console.error("Error getting user:", error);
+    console.error('Error getting user:', error);
     return null;
   }
 };
+export const getProfile = async (): Promise<any | null> => {
+  try {
+    const user = await AsyncStorage.getItem('userProfile');
+    return user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    return null;
+  }
+};
+
 export const getDriver = async (): Promise<any | null> => {
   try {
     const driver = await AsyncStorage.getItem("driver");
@@ -43,9 +53,31 @@ export const clearAuth = async () => {
   try {
     await AsyncStorage.multiRemove(["token", "user"]);
   } catch (error) {
-    console.error("Error clearing auth:", error);
+    console.error('Error clearing auth:', error);
   }
 };
+export const getUserProfile = async () => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/users/profile?userType=agent`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get users failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
 
 export const registerUser = async (data: {
   firstName: string;
@@ -80,8 +112,8 @@ export const pushNotification = async (data: {
   token: string;
 }) => {
   try {
-    const token = await getToken();
-    console.log(token, "userToken");
+      const token = await getToken()
+      //(token,"userToken")
     const response = await fetch(`${apiKey}/notifications/token`, {
       method: "POST",
       headers: {
@@ -107,10 +139,11 @@ export const loginUser = async (data: {
   password: string;
 }) => {
   try {
-    const response = await fetch(`${apiKey}/auth/signin?userType=agent`, {
-      method: "POST",
+
+    const response = await fetch(`https://api.parcelpointng.com:4001/parcel/v1.0/auth/signin?userType=agent`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
@@ -118,7 +151,37 @@ export const loginUser = async (data: {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || "Login failed");
+      throw new Error(result.message || 'Login failed');
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+export const identityVerification = async (data: {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  phone: string;
+  identificationType: string;
+  identificationNumber: string;
+}) => {
+  try {
+  const token = await getToken()
+    const response = await fetch(`${apiKey}/auth/identity/verification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'verification failed');
     }
 
     return result;
@@ -240,19 +303,16 @@ export const updateUserKyc = async (payload: {
   userImage: string;
 }) => {
   try {
-    const token = await getToken();
-    // console.log(token, 'token')
-    const response = await fetch(
-      `${apiKey}/users/update?type=profile&userType=agent`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    const token = await getToken()
+    // //(token, 'token')
+    const response = await fetch(`${apiKey}/users/update?type=kyc&userType=agent`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
     const result = await response.json();
 
@@ -273,19 +333,16 @@ export const updateUserProfile = async (payload: {
   phone: string;
 }) => {
   try {
-    const token = await getToken();
-    // console.log(token, 'token')
-    const response = await fetch(
-      `${apiKey}/users/update?type=profile&userType=agent`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    const token = await getToken()
+    // //(token, 'token')
+    const response = await fetch(`${apiKey}/users/update?type=profile&userType=agent`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
     const result = await response.json();
 
@@ -307,8 +364,8 @@ export const updateDriverKyc = async (
   driverId: string
 ) => {
   try {
-    const token = await getToken();
-    // console.log(token, 'token')
+    const token = await getToken()
+    // //(token, 'token')
     const response = await fetch(`${apiKey}/users/driver/${driverId}`, {
       method: "PATCH",
       headers: {
@@ -380,43 +437,90 @@ export const getAllDrivers = async () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get drivers failed');
       }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || "get drivers failed");
+  
+      return result;
+    } catch (error) {
+      throw error;
     }
-
-    return result;
-  } catch (error) {
-    throw error;
-  }
-};
-export const getDriverById = async (driverId: string) => {
-  try {
-    const token = await getToken();
-    const response = await fetch(
-      `${apiKey}/users?userType=driver&driverId=${driverId}
-`,
-      {
-        method: "GET",
+  };
+export const getAllNotification = async (
+  startDate: string | null = null, // Default to null if not provided, allowing for optional start date
+  endDate: string,
+  
+) => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/notifications?startDate=${startDate}&endDate=${endDate}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get notification failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+export const getDriverById = async (driverId:string) => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/users?userType=driver&driverId=${driverId}
+`, {
+        method: 'GET',
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'get driver failed');
       }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || "get driver failed");
+  
+      return result;
+    } catch (error) {
+      throw error;
     }
+  };
+  
+export const markNotificationAsRead = async (notificationId:string) => {
+    try {
+        const token = await getToken()
+      const response = await fetch(`${apiKey}/notifications/${notificationId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'update failed');
+      }
+  
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
 
-    return result;
-  } catch (error) {
-    throw error;
-  }
-};
+

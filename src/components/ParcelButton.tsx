@@ -3,6 +3,8 @@ import {View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Text from './Text';
 import {useNavigation} from '@react-navigation/native';
+import { resetForm } from '@/redux/slices/parcelVariationSlice';
+import { useDispatch } from 'react-redux';
 
 const {width} = Dimensions.get('window');
 
@@ -21,13 +23,15 @@ const buttonColors = ['#F7F9FC', '#F7FFF4', '#F4F3FF', '#FFF6ED']; // Example co
 
 const ParcelButton = ({buttons}: ParcelButtonsProps) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   return (
     <View style={styles.parcelButtonsContainer}>
       {buttons.map((button, index) => (
         <TouchableOpacity
           onPress={() => {
+            dispatch(resetForm()); // ✅ Reset form first
             if (button.url) {
-              navigation.navigate('HomeStack', {screen: button.url as never}); // Ensure correct typing
+              navigation.navigate('HomeStack', { screen: button.url as never });
             }
           }}
           key={index}

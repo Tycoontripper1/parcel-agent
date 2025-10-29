@@ -56,7 +56,7 @@ const AccountEditProfile = ({ navigation }: Props) => {
   useEffect(() => {
     const fetchUser = async () => {
       const userDetails = await getUser();
-      console.log(userDetails, "userDetails");
+      //(userDetails, "userDetails");
       setUserDetails(userDetails);
     };
     fetchUser();

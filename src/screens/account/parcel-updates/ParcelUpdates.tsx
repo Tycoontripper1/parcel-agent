@@ -71,7 +71,7 @@ import { apiKey, getToken } from "../../../../services/auth";
                     });
                 
                     const result = await response.json();
-    console.log(result, "result");
+    //(result, "result");
     if (result) {
       setLoading(false);
       setModalVisible(true);
@@ -85,7 +85,7 @@ import { apiKey, getToken } from "../../../../services/auth";
   
     }
   } catch (error:any) {
-      console.log(error);
+      //(error);
       Toast.show({
         type: "error",
         text1: "Error",

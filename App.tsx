@@ -11,6 +11,7 @@ import * as Notifications from 'expo-notifications';
 import { registerForPushNotificationsAsync } from '@/helper/notification';
 import { pushNotification } from './services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export default function App() {
   const [loaded, error] = useFonts({
     Outfit: require('./assets/fonts/PublicSans-Regular.ttf'),
@@ -49,7 +50,7 @@ global.Buffer = Buffer;
     });
 
     const subscription = Notifications.addNotificationReceivedListener(notification => {
-      console.log('Notification received:', notification);
+      //('Notification received:', notification);
     });
 
     return () => {
@@ -59,9 +60,11 @@ global.Buffer = Buffer;
 
 
   return ( 
-    <ThemeProvider>
+  <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider>
       <NavigationStack />
       <Toast config={toastConfig} />
     </ThemeProvider>
+  </GestureHandlerRootView>
   );
 }

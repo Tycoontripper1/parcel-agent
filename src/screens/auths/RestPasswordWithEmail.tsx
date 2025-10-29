@@ -53,7 +53,7 @@ const ResetPasswordWithEmail = ({navigation}: Props) => {
           };
       
           const result = await resendOtp(payload);
-          console.log('OTP sent result:', result);
+          //('OTP sent result:', result);
       
           Toast.show({
             type: 'success',

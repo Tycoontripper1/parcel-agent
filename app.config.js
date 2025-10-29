@@ -3,6 +3,7 @@ export default ({ config }) => ({
   plugins: [
     // keep existing plugins
     ...(config.plugins || []),
+    
 
     // ✅ add expo-web-browser plugin
     "expo-web-browser",
@@ -19,6 +20,6 @@ export default ({ config }) => ({
   ],
   extra: {
     ...config.extra,
-    apiKey: "http://45.9.191.184:8001/parcel/v1.0/api",
+    apiKey: "https://api.parcelpointng.com:4001/parcel/v1.0",
   },
 });

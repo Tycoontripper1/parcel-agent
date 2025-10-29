@@ -19,7 +19,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#213264"
-        // "googleServicesFile": "./android/app/google-services.json"
+      
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -47,6 +47,13 @@
         }
       ],
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "apiKey": "https://api.parcelpointng.com:4001/parcel/v1.0",
+      "eas": {
+        "projectId": "796a8ddf-c16f-4e8d-8afe-3f57587aaefe"
+      }
+    },
+    "owner": "b_laj"
   }
 }

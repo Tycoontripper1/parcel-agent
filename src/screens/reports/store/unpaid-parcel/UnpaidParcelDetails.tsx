@@ -52,7 +52,7 @@ const UnPaidParcelDetails = ({ route, navigation }: Props) => {
          const [modalVisible, setModalVisible] = useState(false);
     
       const HandleContinue = () => {
-        console.log({formData});
+        //({formData});
         // navigation.navigate('');
       };
     const { idFrontImage, idBackImage } = useSelector(

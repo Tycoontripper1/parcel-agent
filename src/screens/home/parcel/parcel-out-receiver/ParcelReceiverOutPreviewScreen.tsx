@@ -42,7 +42,7 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
        , []);
 
   const HandleContinue = () => {
-    console.log({formData});
+    //({formData});
     navigation.navigate('ReceiverType');
   };
 
@@ -355,7 +355,7 @@ const ParcelReceiverOutPreviewScreen = ({navigation}: Props) => {
               {singleParcel?.parcel.thumbnails.map((photo, index) => (
                 <TouchableOpacity key={index} style={styles.photoBox}>
                   {photo ? (
-                    <Image source={{uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${photo}`}} style={styles.photoPreview} />
+                    <Image source={{uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${photo}`}} style={styles.photoPreview} />
                   ) : (
                     <View></View>
                   )}

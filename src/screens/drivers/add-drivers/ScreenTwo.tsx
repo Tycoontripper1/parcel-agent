@@ -123,14 +123,14 @@ const FacialVerification = ({ navigation }: Props) => {
   const handleSubmit = async () => {
     setLoading(true);
     const userDetails = await getUser();
-    // console.log(userDetails, "userDetails");
+    // //(userDetails, "userDetails");
     const username = userDetails?.firstName;
 
     try {
       const userImageUrl = await upload(
         [facialVerificationImage],
       );
-      console.log(userImageUrl, "userImageUrl");
+      //(userImageUrl, "userImageUrl");
       if (userImageUrl?.data.details) {
         // Update Redux with the URLs
         dispatch(
@@ -140,7 +140,7 @@ const FacialVerification = ({ navigation }: Props) => {
           })
         );
       }
-      console.log(facialVerificationImage, "facialVerificationImage");
+      //(facialVerificationImage, "facialVerificationImage");
 
       Helper.vibrate();
       Toast.show({
@@ -151,7 +151,7 @@ const FacialVerification = ({ navigation }: Props) => {
 
       navigation.navigate("FrontImageScreenDriver");
     } catch (error: any) {
-      console.log(error, "❌upload submission error");
+      //(error, "❌upload submission error");
       Toast.show({
         type: "error",
         text1: "uoad Failed",
@@ -166,8 +166,8 @@ const FacialVerification = ({ navigation }: Props) => {
 //   try {
 //     // Optionally, you can log or use the image here if needed
 
-//     console.log(facialVerificationImage, 'Already uploaded image');
-//     console.log(Buffer.from(facialVerificationImage), 'Buffer of the image');
+//     //(facialVerificationImage, 'Already uploaded image');
+//     //(Buffer.from(facialVerificationImage), 'Buffer of the image');
 
 //     Helper.vibrate();
 //     navigation.navigate("FrontImageScreenDriver");

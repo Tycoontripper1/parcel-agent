@@ -46,7 +46,7 @@ const DriverStack = ({ navigation }: Props) => {
 
   // useEffect(() => {
   //   const currentRoute = state?.routes.find((r) => r.name === "DriverStack")?.state?.routes?.at(-2)?.name; 
-  //   console.log(currentRoute, "route"); // Now this should log the actual active screen inside DriverStack
+  //   //(currentRoute, "route"); // Now this should log the actual active screen inside DriverStack
   
   //   if (currentRoute === "DriversScreen") {
   //     navigation?.setOptions({

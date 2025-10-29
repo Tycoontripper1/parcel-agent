@@ -1,16 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import React, { use, useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { use, useCallback, useEffect, useState } from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import Constants from 'expo-constants';
 import Text from '../Text';
 import { color } from '@/constants/Colors';
 import { Avatar } from '../../../assets/images';
 import NotificationIcon from '../svg/NotificationIcon';
-import { getUser } from '../../../services/auth';
+import { getAllNotification, getUser, getUserProfile } from '../../../services/auth';
 import { UserDetails } from '@/utils/interface';
 import { getImage } from '../../../services/upload';
-import { set } from 'date-fns';
+import { format, set, subDays } from 'date-fns';
 export const apiKey = Constants.expoConfig?.extra?.apiKey;
 
 
@@ -20,24 +20,49 @@ interface IHeader {
   children?: React.ReactNode;
   OnNotificationClick?: () => void;
 }
+export interface NotificationItem {
+  id: string;
+  title: string;
+  content?: string;
+  isRead?: boolean;
+  createdAt?: string;
+  startDate?: string;
+  endDate?: string;
+}
 const HomeHeader = ({ title, type, children, OnNotificationClick }: IHeader) => {
   const [userDetail, setUserDetails] = useState<UserDetails | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 const [userImage, setUserImage] = useState({
     uri: '',
     mimetype: ''
 })
 
-  const BASEURL = "http://45.9.191.184:8001/parcel/v1.0/api/files/"
-  useEffect(() => {
-  const fetchUser = async () => {
-    const userDetails = await getUser();
-    console.log(userDetails, 'userDetails');
-    setUserDetails(userDetails);
-  };
+  const BASEURL = "https://api.parcelpointng.com:4001/parcel/v1.0/files"
+//   useEffect(() => {
+//   const fetchUser = async () => {
+//     const userDetails = await getUser();
+//     //(userDetails, 'userDetails');
+//     setUserDetails(userDetails);
+//   };
 
-  fetchUser();
-}, []); 
+//   fetchUser();
+// }, []);                                                                                                                                                                                                                                                                                                                                                                                                                      
+    const fetchUserProfile = async () => {
+      try {
+        const result = await getUserProfile();
+        const rows = result?.data?.details || [];
+        setUserDetails(rows);
 
+    console.log(rows)
+        //(rows, 'User Profile Data');
+      
+      } catch (error) {
+        // console.error('Failed to fetch user:', error);
+      }
+    };  
+    useEffect(() => {
+      fetchUserProfile();
+    }, []);
 
 // Run once on mount
 useEffect(() => {
@@ -54,6 +79,29 @@ mimetype: response.data.details[0].mimetype
   fetchImage();
 }, []); // Run once on mount
 
+ useFocusEffect(
+    useCallback(() => {
+      const fetchNotification = async () => {
+        // Get current date
+        const currentDate = new Date();
+
+        // Calculate date 7 days ago
+        const sevenDaysAgo = subDays(currentDate, 7);
+
+        // Format dates as YYYY-MM-DD strings
+        const endDate = format(currentDate, "yyyy-MM-dd");
+        const startDate = format(sevenDaysAgo, "yyyy-MM-dd");
+
+        const notification = await getAllNotification(startDate, endDate);
+        setNotifications(notification?.data.details || []);
+      };
+
+      fetchNotification();
+    }, [])
+  );
+
+
+const unreadCount = notifications?.filter((n:any) => !n.isRead).length;
 
 
 
@@ -118,7 +166,7 @@ mimetype: response.data.details[0].mimetype
               
               {userDetail?.userImage ? (
                 <Image
-                 source={{ uri: `http://45.9.191.184:8001/parcel/v1.0/api/files?slugs=${userDetail?.userImage}`}}
+                 source={{ uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${userDetail?.userImage}`}}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -136,9 +184,47 @@ mimetype: response.data.details[0].mimetype
 
             {children}
           </View>
-          <TouchableOpacity onPress={OnNotificationClick}>
-            <NotificationIcon />
-          </TouchableOpacity>
+        <TouchableOpacity onPress={OnNotificationClick}>
+ <View style={{ position: 'relative', width: 40, height: 40 }}>
+        {/* Black circle with icon */}
+        <View
+          style={{
+            backgroundColor: 'white',
+            borderWidth: 1,
+
+            borderColor: '#ccc',
+            borderRadius: 20,
+            width: 40,
+            height: 40,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Ionicons name="notifications-outline" size={22} color="black" />
+        </View>
+
+        {/* Red badge */}
+        {unreadCount > 0 && (
+          <View
+            style={{
+              position: 'absolute',
+              top: -2,
+              right: 2,
+              backgroundColor: 'red',
+              borderRadius: 8,
+              width: 16,
+              height: 16,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>
+              {unreadCount}
+            </Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
         </View>
       )}
     </>

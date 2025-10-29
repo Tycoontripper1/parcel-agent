@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // const apiKey = Constants.expoConfig?.extra?.apiKey;
 // const apiKey = "https://bc65-196-1-179-86.ngrok-free.app/parcel/v1.0/api"
-export const apiKey = "http://45.9.191.184:8001/parcel/v1.0/api"
+export const apiKey = "https://api.parcelpointng.com:4001/parcel/v1.0"
 
 
 export const getToken = async (): Promise<string | null> => {
@@ -35,10 +35,11 @@ export const getParcelDetails = async (): Promise<any | null> => {
   }
 };
 export const SendParcelData = async (data: {
+  parcels: Array<{
     sender: {
       phone: string;
       fullName?: string;
-      email: string;
+      email?: string;
       address: string;
     };
     receiver: {
@@ -61,88 +62,144 @@ export const SendParcelData = async (data: {
       description: string;
       thumbnails: string[];
     };
-    // driver: {
-    //   phone: string;
-    //   name: string;
-    //   driverId: string;
-    //   upfrontPayment: boolean;
-    // };
     paymentOption: string;
-  }) => {
-    try {
-        const token = await getToken()
-      const response = await fetch(`${apiKey}/shipment/collection`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || 'Parcel creation failed');
-      }
-  
-      return result;
-    } catch (error) {
-      throw error;
+  }>;
+}) => {
+  try {
+    const token = await getToken();
+
+    // Validate at least one parcel exists
+    if (!data.parcels || data.parcels.length === 0) {
+      throw new Error('At least one parcel is required');
     }
-  };
+
+    // Process each parcel to ensure proper formatting
+    const processedParcels = data.parcels.map(parcel => ({
+      ...parcel,
+      sender: {
+        ...parcel.sender,
+        phone: parcel.sender.phone.replace(/-/g, ''),
+      },
+      receiver: {
+        ...parcel.receiver,
+        phone: parcel.receiver.phone.replace(/-/g, ''),
+      },
+      parcel: {
+        ...parcel.parcel,
+        value: parcel.parcel.value ? String(Number(parcel.parcel.value)) : "0",
+        chargesPayable: parcel.parcel.chargesPayable ? String(Number(parcel.parcel.chargesPayable)) : "0",
+        handlingFee: parcel.parcel.handlingFee ? String(Number(parcel.parcel.handlingFee)) : "0",
+        totalFee: parcel.parcel.totalFee || (
+          parcel.parcel.handlingFee && parcel.parcel.chargesPayable
+            ? String(Number(parcel.parcel.handlingFee) + Number(parcel.parcel.chargesPayable))
+            : "0")
+      },
+      paymentOption: parcel.paymentOption || "bank"
+    }));
+
+    const response = await fetch(`${apiKey}/shipment/collection`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        parcels: processedParcels
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Parcel creation failed');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Parcel submission error:', error);
+    throw error;
+  }
+};
   
 export const ParcelInDriver = async (data: {
-  sender: {
-    phone: string;
-  };
-  receiver: {
-    phone: string;
-  };
-  park: {
-    source: string;
-    destination: string;
-  };
-  parcel: {
-    type: string;
-    value: string;
-    chargesPayable: string;
-    chargesPaidBy: string;
-    handlingFee: string;
-    totalFee: string;
-    description: string;
-    thumbnails: string[];
-  };
-  // driver: {
-  //   phone: string;
-  //   // name: string;
-  //   // driverId: string;
-  //   // upfrontPayment: boolean;
-  // };
-  paymentOption: string;
-  }) => {
-    try {
-        const token = await getToken()
-      const response = await fetch(`${apiKey}/shipment/collection`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || 'Parcel creation failed');
-      }
-  
-      return result;
-    } catch (error) {
-      throw error;
+  parcels: Array<{
+    sender: {
+      phone: string;
+    };
+    receiver: {
+      phone: string;
+    };
+    park: {
+      source: string;
+      destination: string;
+    };
+    parcel: {
+      type: string;
+      value: string;
+      chargesPayable: string;
+      chargesPaidBy: string;
+      handlingFee: string;
+      totalFee: string;
+      description: string;
+      thumbnails: string[];
+    };
+    paymentOption: string;
+    status: string;
+  }>;
+}) => {
+  try {
+    const token = await getToken();
+    
+    // Validate at least one parcel exists
+    if (!data.parcels || data.parcels.length === 0) {
+      throw new Error('At least one parcel is required');
     }
-  };
+
+    // Process each parcel to ensure proper formatting
+    const processedParcels = data.parcels.map(parcel => ({
+      ...parcel,
+      sender: {
+        phone: parcel.sender.phone.replace(/-/g, ""),
+      },
+      receiver: {
+        phone: parcel.receiver.phone.replace(/-/g, ""),
+      },
+      parcel: {
+        ...parcel.parcel,
+        value: parcel.parcel.value ? String(Number(parcel.parcel.value)) : "",
+        chargesPayable: parcel.parcel.chargesPayable ? String(Number(parcel.parcel.chargesPayable)) : "",
+        handlingFee: parcel.parcel.handlingFee ? String(Number(parcel.parcel.handlingFee)) : "",
+        totalFee: parcel.parcel.handlingFee && parcel.parcel.chargesPayable
+          ? String(Number(parcel.parcel.handlingFee) + Number(parcel.parcel.chargesPayable))
+          : "",
+        thumbnails: parcel.parcel.thumbnails || [],
+      },
+      paymentOption: parcel.paymentOption || "bank",
+      status: parcel.status || "arrived"
+    }));
+
+    const response = await fetch(`${apiKey}/shipment/collection`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        parcels: processedParcels
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Parcel creation failed');
+    }
+
+    return result;
+  } catch (error) {  
+    throw error;
+  }
+};
 export const getSingleParcelData = async (parcelId:any) => {
     try {
         const token = await getToken()

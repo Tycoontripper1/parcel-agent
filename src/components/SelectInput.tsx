@@ -46,8 +46,8 @@ const SelectInput = ({
     setIsModalVisible(false);
   };
 
-  const filteredData = data.filter((item) =>
-    item.toLowerCase().includes(searchText.toLowerCase())
+  const filteredData = data?.filter((item) =>
+    item?.toLowerCase().includes(searchText.toLowerCase())
   );
   const { theme } = useTheme();
 

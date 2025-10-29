@@ -10,7 +10,8 @@ import {Helper} from '@/helper/helper';
 import Success from '@/components/svg/Success';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '@/redux/store';
-import Animated, {FadeInUp} from 'react-native-reanimated';
+// import Animated, {FadeInUp} from 'react-native-reanimated';
+import Animated,{FadeInUp} from 'react-native-reanimated';
 import {resetForm} from '@/redux/slices/formSlice';
 import {HomeStackList, RootStackParamList} from '@/navigation/navigationType';
 import {RouteProp} from '@react-navigation/native';
@@ -35,7 +36,7 @@ const ParcelCongratulation = ({navigation, route}: Props) => {
   };
 
   const handleSubmit = () => {
-    console.log(formData);
+    //(formData);
     setLoading(true);
     setTimeout(() => {
       setLoading(false);

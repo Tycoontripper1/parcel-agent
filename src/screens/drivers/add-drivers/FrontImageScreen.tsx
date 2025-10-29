@@ -126,7 +126,7 @@ const FrontImageScreenDriver = ({ navigation }: Props) => {
       return;
     }
     dispatch(updateField({ key: 'idFrontImage', value: frontImage }));
-    console.log(frontImage, "frontImage")
+    //(frontImage, "frontImage")
     navigation.navigate('BackImageScreenDriver');
   };
   

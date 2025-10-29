@@ -72,7 +72,7 @@ const ConfirmPaymentModal = ({
             disabled={!selectedOption}
             onPress={() => {
               setModalVisible(false);
-              console.log('Selected option:', selectedOption);
+              //('Selected option:', selectedOption);
             }}>
             <Text style={styles.confirmButtonText}>Confirm</Text>
           </TouchableOpacity>

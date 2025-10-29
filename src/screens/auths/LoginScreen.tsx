@@ -33,7 +33,7 @@ const LoginScreen = ({navigation}: Props) => {
   const [passwordError, setPasswordError] = useState('');
   const {theme} = useTheme();
   //  const apiKey = Constants.expoConfig?.extra?.apiKey;
-  //  console.log(apiKey, 'API KEY');
+  //  //(apiKey, 'API KEY');
   const handleValidation = () => {
     let isValid = true;
     const emailRegex = /\S+@\S+\.\S+/;
@@ -88,8 +88,9 @@ const LoginScreen = ({navigation}: Props) => {
       Helper.vibrate();
 
       const token = result?.data?.token;
-      console.log(token)
+      //(token)
       const userDetails = result?.data?.details;
+      
 
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('user', JSON.stringify(userDetails));
@@ -97,18 +98,18 @@ const LoginScreen = ({navigation}: Props) => {
  
     //      if (notificationToken) {
     //   const pushResult = await pushNotification({ token: notificationToken });
-    //   console.log(pushResult, 'Push Notification Result');
+    //   //(pushResult, 'Push Notification Result');
     // }
 
       if (!userDetails.isAccountVerified) {
         navigation.navigate('OTPVerificationScreen', {phone: userDetails.phone});
       }
-      //  else if (!userDetails.isKycComplete) {
-      // navigation.navigate('BusinessInfoScreen');
-      //  }
+       else if (!userDetails.isKycComplete) {
+      navigation.navigate('BusinessInfoScreen');
+       }
       else if (notificationToken) {
         const pushResult = await pushNotification({ token: notificationToken, userType: "agent" });
-        console.log(pushResult, 'Push Notification Result');
+        //(pushResult, 'Push Notification Result');
 
       navigation.navigate('RootTabStack');
     }
@@ -123,7 +124,7 @@ const LoginScreen = ({navigation}: Props) => {
         text1: 'Error',
         text2: error.message || 'Something went wrong',
       });
-      console.log(error, 'Login Error');
+      //(error, 'Login Error');
     }
   };
 

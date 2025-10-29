@@ -29,13 +29,13 @@ type Props = NativeStackScreenProps<WalletStackList>;
   
 
 const WithdrawToBankScreen = ({ navigation }: Props) => {
-  const [bankList, setBankList] = useState<{ name: string; code: string }[]>([]);
+  const [bankList, setBankList] = useState<{ bank_name: string; cbn_code: string }[]>([]);
     const formData = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch();
   const [accountNumber, setAccountNumber] = useState("");
   const [selectedBank, setSelectedBank] = useState<{
-    name: string;
-    code: string;
+    bank_name: string;
+    cbn_code: string;
   } | null>(null);
   const [accountName, setAccountName] = useState("");
   const [isFetching, setIsFetching] = useState(false);
@@ -63,10 +63,10 @@ const WithdrawToBankScreen = ({ navigation }: Props) => {
         setIsFetching(true);
         try {
           const result = await nameEnquiry({
-            bankCode: selectedBank.code,
+            bankCode: selectedBank.cbn_code,
             accountNumber,
           });
-          console.log(result.data.details)
+          //(result.data.details)
           setAccountName(result?.data?.details || "");
               dispatch(updateField({ key: "account_name", value: result?.data?.details }));
           // setAccountName(result?.data?.message || "");
@@ -86,8 +86,9 @@ const WithdrawToBankScreen = ({ navigation }: Props) => {
   const handleNext = () => {
     navigation.navigate('InputWithdrawAmountScreen', {
       accountNumber,
-      bankCode: selectedBank?.code ?? "",
+      bankCode: selectedBank?.cbn_code ?? "",
       accountName,
+      bankName: selectedBank?.bank_name ?? "",
     });
   };
 
@@ -124,14 +125,14 @@ const WithdrawToBankScreen = ({ navigation }: Props) => {
           />
           <SelectInput
             label="Select Bank"
-            data={bankList.map((item) => item.name)} // sends only names to SelectInput
+            data={bankList.map((item) => item.bank_name)} // sends only names to SelectInput
             showSearch={true}
             placeholder="Select a bank"
             onSelect={(bankName) => {
-              const selected = bankList.find((item) => item.name === bankName);
+              const selected = bankList.find((item) => item.bank_name === bankName);
               if (selected) {
-                setSelectedBank({ name: selected.name, code: selected.code });
-                dispatch(updateField({ key: "bank", value: { code: selected.code, name: selected.name } }));
+                setSelectedBank({ bank_name: selected.bank_name, cbn_code: selected.cbn_code });
+                dispatch(updateField({ key: "bank", value: { code: selected.cbn_code, name: selected.bank_name } }));
 
               } else {
                 setSelectedBank(null);

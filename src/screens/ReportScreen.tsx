@@ -8,8 +8,9 @@ import {
   TouchableOpacity,
   View,
   ImageBackground,
+  RefreshControl,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {CustomView, Text} from '@/components';
 import HomeHeader from '@/components/share/HomeHeader';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -43,26 +44,55 @@ interface ParcelDetails {
   id: string;
 status: string;
   paymentStatus: string;
+  chargesPaidBy:string
+  totalFee:string
 
 }
-const Reportscreen = ({navigation}: Props) => {
 
+const Reportscreen = ({navigation}: Props) => {
+const [searchQuery, setSearchQuery] = useState('');
   const [allShipments, setAllShipments] = useState<ParcelDetails[]>([]);
 const [paidShipments, setPaidShipments] = useState<ParcelDetails[]>([]);
-
-useEffect(() => {
-  const fetchDriver = async () => {
+const [refreshing, setRefreshing] = useState(false);
+  const handleSearchChange = useCallback((text: string) => setSearchQuery(text), []);
+// useEffect(() => {
+//   const fetchDriver = async () => {
+//     try {
+//       const result = await getShipmentsHistory();
+//       const rows = result?.data?.details?.rows || [];
+//       setAllShipments(rows);
+//       setPaidShipments(rows.filter((item: ParcelDetails) => item.paymentStatus === 'paid'));
+//     } catch (error) {
+//       console.error("Failed to fetch drivers:", error);
+//     }
+//   };
+//   fetchDriver();
+// }, []);
+  const fetchDriver = useCallback(async () => {
     try {
       const result = await getShipmentsHistory();
       const rows = result?.data?.details?.rows || [];
+
       setAllShipments(rows);
-      setPaidShipments(rows.filter((item: ParcelDetails) => item.paymentStatus === 'paid'));
+      setPaidShipments(
+        rows.filter((item:ParcelDetails) => item.paymentStatus === 'paid')
+      );
     } catch (error) {
-      console.error("Failed to fetch drivers:", error);
+      console.error('Failed to fetch drivers:', error);
     }
-  };
-  fetchDriver();
-}, []);
+  }, []);
+    useEffect(() => {
+    fetchDriver();
+  }, [fetchDriver]);
+
+const getTotalPaidBy = (payer: 'receiver' | 'sender') => {
+  return allShipments
+    .filter((item: ParcelDetails) => item.paymentStatus === 'paid' && item.chargesPaidBy === payer)
+    .reduce((acc, item) => acc + (Number(item.totalFee) || 0), 0);
+};
+const formatCurrency = (amount: number): string =>
+  `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
+
 
 const filterShipments = (type: 'payment' | 'status', value: string) => {
   if (type === 'payment') {
@@ -150,30 +180,47 @@ const storeButtonData: IStoreButton[] = [
   },
 ];
 
-
+const totalPaidByReceiver = getTotalPaidBy('receiver');
+const totalPaidBySender = getTotalPaidBy('sender');
   const financeButtonData: IFinanceButton[] = [
     {
       label: 'Paid to Driver',
       amount: "₦0.00",
     },
-    {
-      label: 'Collected from Receiver',
-      amount:"₦0.00"
-    },
-    {
-      label: 'Collected from Sender',
-        amount:"₦0.00"
-    },
+  {
+    label: 'Collected from Receiver',
+    amount: formatCurrency(totalPaidByReceiver),
+  },
+  {
+    label: 'Collected from Sender',
+    amount: formatCurrency(totalPaidBySender),
+  },
     {
       label: 'Expected Overdue Income',
         amount:"₦0.00"
     },
   ];
-
+  const handleViewDetails = useCallback((item: any) => 
+    navigation.navigate("UnAssignParcelDetails", { item }), [navigation]);
 
   const handleViewAll = () => {
     navigation.navigate('Shipments');
   };
+
+    const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await Promise.all([
+        fetchDriver()
+      ]);
+    } catch (err) {
+      console.error('Refresh error:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchDriver]);
+
   return (
     <CustomView style={styles.container} padded>
       {/* Header */}
@@ -185,6 +232,9 @@ const storeButtonData: IStoreButton[] = [
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: 20}}
+          refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
           keyboardShouldPersistTaps='handled'>
           {/* Balance Card */}
           <ImageBackground
@@ -221,6 +271,7 @@ const storeButtonData: IStoreButton[] = [
                 style={{flexBasis: '88%', height: '100%'}}
                 placeholder='Parcel ID or Phone Number'
                 placeholderTextColor='#aaa'
+                onChangeText={handleSearchChange}
               />
             </View>
           </View>
@@ -233,7 +284,7 @@ const storeButtonData: IStoreButton[] = [
                 <FinanceButton buttons={financeButtonData} />
 
           {/* Shipment History */}
-          <HomeShipmentHistory onViewAll={handleViewAll} searchQuery='' />
+          <HomeShipmentHistory handleViewAll={handleViewDetails} limit={10} onViewAll={handleViewAll} searchQuery={searchQuery} />
         </ScrollView>
       </KeyboardAvoidingView>
     </CustomView>

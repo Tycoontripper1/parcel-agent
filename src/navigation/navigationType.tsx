@@ -76,7 +76,18 @@ export type HomeStackList = {
   ParcelOtpVerificationReceiver: {readonly:boolean};
   ParcelCongratulation: {message: string, note: string};
   BarcodeScannerScreen: undefined;
+  TransactionDetails:{transaction:any};
   UnAssignParcelDetails: {item: any};
+  ReceiptScreen: {
+    trxId: any;
+    amount: any;
+    sessionId: any;
+    bankName: any;
+    narration: any;
+    accountNumber: any;
+    accountName: any;
+  };
+  
 };
 export type WalletStackList = {
   Wallet: undefined;
@@ -90,8 +101,26 @@ export type WalletStackList = {
     accountNumber: string;
     accountName: string;
     bankCode: string;
+    bankName: string;
+  };
+  WithdrawToWalletScreen: undefined;
+  InputWithdrawAmountWalletScreen:{
+    accountNumber: string;
+    accountName: string;
+    bankCode: string;
+    bankName: string;
   };
   ComingSoon: undefined;
+   ReceiptScreen: {
+    trxId: any;
+    amount: any;
+    sessionId: any;
+    bankName: any;
+    narration: any;
+    accountNumber: any;
+    accountName: any;
+  };
+  Dashboard: undefined;
 };
 export type AccountStackList = {
   Account: undefined;

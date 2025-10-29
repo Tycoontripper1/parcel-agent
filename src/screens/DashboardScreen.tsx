@@ -27,7 +27,7 @@ import FundWallet, { Wallet } from '@/components/FundWallet';
 import WalletIcon from '@/components/svg/WalletIcon';
 import TransferIcon from '@/components/svg/TransferIcon';
 import USSDIcon from '@/components/svg/USSDIcon';
-import { getUser } from '../../services/auth';
+import { getUser, getUserProfile } from '../../services/auth';
 import HomeShipmentHistory from '@/components/HomeShipementHistory';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -36,6 +36,10 @@ import DownloadIcon from '@/components/svg/DownloadIcon';
 import DownloadIconUp from '@/components/svg/DownloadIconUp';
 import DownloadIconRed from '@/components/svg/DownloadIconRed';
 import DownloadIconSender from '@/components/svg/DownloadIconSender';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Feather } from '@expo/vector-icons';
+import BottomSheetModal from '@/components/BottomSheetModal';
+import * as Clipboard from 'expo-clipboard';
 
 const { width } = Dimensions.get('window');
 
@@ -43,7 +47,8 @@ const DashboardScreen = ({ navigation }: any) => {
   const [userDetail, setUserDetails] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isWallet, setIsWallet] = useState(false);
-
+  const [userProfile, setUserProfile] = useState<any>(null);
+const [showModal, setShowModal] = useState(false);
   // Memoized data with icons
   const parcelButtonData = useMemo<IParcelButton[]>(() => [
     {
@@ -78,7 +83,33 @@ const DashboardScreen = ({ navigation }: any) => {
     { title: 'Fund with USSD', icon: <USSDIcon /> },
   ], []);
 
+
+  
+    const fetchUserProfile = async () => {
+      try {
+        const result = await getUserProfile();
+        const rows = result?.data?.details || [];
+        setUserProfile(rows.wallet);
+        AsyncStorage.setItem('userProfile', JSON.stringify(rows));
+        console.log(rows)
+      } catch (error) {
+        // console.error('Failed to fetch user:', error);
+      }
+    };  
+    
+    useEffect(() => {
+      fetchUserProfile();
+    }, []);
   // Fetch user data with focus effect
+    const fetchUser = useCallback(async () => {
+      try {
+         const userDetails = await getUser();
+        setUserDetails(userDetails);
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+      }
+    }, []);
+    
   useFocusEffect(
     useCallback(() => {
       const fetchUser = async () => {
@@ -86,7 +117,8 @@ const DashboardScreen = ({ navigation }: any) => {
         setUserDetails(userDetails);
       };
       fetchUser();
-    }, [])
+    }, []),
+
   );
 
   // Memoized handlers
@@ -132,7 +164,7 @@ const DashboardScreen = ({ navigation }: any) => {
           <View style={styles.balanceHeader}>
             <View>
               <Text style={styles.balanceLabel}>Available Balance</Text>
-              <Text style={styles.balance}>₦0.00</Text>
+              <Text style={styles.balance}>₦{userProfile?.balance || "0.00"}</Text>
             </View>
             <TouchableOpacity 
               style={styles.transactionButton} 
@@ -146,21 +178,13 @@ const DashboardScreen = ({ navigation }: any) => {
           </View>
           
           <TouchableOpacity
-            onPress={() => setIsWallet(true)}
+            onPress={() => setShowModal(true)}
             style={styles.fundButton}
           >
             <EmptyWalletAdd size={18} color='#000' />
             <Text style={styles.fundButtonText}>Fund Wallet</Text>
           </TouchableOpacity>
         </ImageBackground>
-
-        <FundWallet
-          isModalVisible={isWallet}
-          setIsModalVisible={setIsWallet}
-          data={WalletData}
-          placeholder='Fund Wallet'
-          onSelect={()=> ""}
-        />
         
         {/* Parcel Buttons */}
         <ParcelButton buttons={parcelButtonData} />
@@ -187,8 +211,60 @@ const DashboardScreen = ({ navigation }: any) => {
           searchQuery={searchQuery}
           onViewAll={handleViewAll}
           handleViewAll={handleViewDetails}
-          limit={10}
+          limit={7}
         />
+             <BottomSheetModal
+                  isVisible={showModal}
+                  onClose={() => setShowModal(false)}
+                  title="Fund Wallet"
+                >
+                  <View style={{ gap: 12, paddingVertical: RFValue(20) }}>
+                    {/* Bank Name */}
+                    <View
+                      style={{ flexDirection: "row", justifyContent: "space-between" }}
+                    >
+                      <Text style={{ color: "#888", fontSize: RFValue(14) }}>Bank</Text>
+                      <Text style={{ marginRight: 8 , fontSize:RFValue(12),fontWeight:"600"}} >{userProfile?.bankName}</Text>
+                    </View>
+        
+                                <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: "#888", fontSize: RFValue(14) }}>
+                        Name
+                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <Text style={{ marginRight: 8 , fontSize:RFValue(12),fontWeight:"600"}}>{userProfile?.accountName}</Text>
+                      </View>
+                    </View>
+        
+                    {/* Account Number with Copy Icon */}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: "#888", fontSize: RFValue(14) }}>
+                        Account Number
+                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <Text style={{ marginRight: 8 , fontSize:RFValue(12),fontWeight:"600"}}>{userProfile?.accountNumber}</Text>
+                        <TouchableOpacity
+                          onPress={() => Clipboard.setStringAsync(userProfile?.accountNumber || "")}
+                        >
+                          <Feather name="copy" size={16} color="#47104C" />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+        
+                  </View>
+                </BottomSheetModal>
       </ScrollView>
     </CustomView>
   );
@@ -237,7 +313,8 @@ const styles = StyleSheet.create({
   searchInput: {
     backgroundColor: '#fff',
     borderRadius: RFValue(8),
-    padding: RFValue(12),
+    paddingHorizontal: RFValue(12),
+    paddingVertical:RFValue(8),
     borderWidth: 1,
     borderColor: '#E9EAEB',
     flexDirection: 'row',
@@ -334,7 +411,7 @@ export default DashboardScreen;
 //   useEffect(() => {
 //     const fetchUser = async () => {
 //       const userDetails = await getUser();
-//       console.log(userDetails, 'userDetails');
+//       //(userDetails, 'userDetails');
 //       setUserDetails(userDetails)
 //     };
 //     fetchUser();

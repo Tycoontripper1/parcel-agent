@@ -37,13 +37,13 @@ export const openImagePicker = async (
           mediaTypes: ['images'],
           allowsEditing: true,
           aspect: [4, 3],
-          quality: 1,
+          quality: 0.5,
         })
       : await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ['images'],
           allowsEditing: true,
           aspect: [4, 3],
-          quality: 1,
+          quality: 0.5,
         });
 
     // Check if the user canceled the action
