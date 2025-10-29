@@ -46,7 +46,7 @@ const [userImage, setUserImage] = useState({
 //   };
 
 //   fetchUser();
-// }, []); 
+// }, []);                                                                                                                                                                                                                                                                                                                                                                                                                      
     const fetchUserProfile = async () => {
       try {
         const result = await getUserProfile();

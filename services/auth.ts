@@ -2,7 +2,7 @@
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // export const apiKey = Constants.expoConfig?.extra?.apiKey;
-export const apiKey = "https://api.parcelpointng.com:4001/parcel/v1.0"
+export const apiKey = "https://api.parcelpointng.com:4001/parcel/v1.0";                                              
 
 export const getToken = async (): Promise<string | null> => {
   try {
@@ -143,7 +143,7 @@ export const loginUser = async (data: {
 }) => {
   try {
 
-    const response = await fetch(`${apiKey}/auth/signin?userType=agent`, {
+    const response = await fetch(`https://api.parcelpointng.com:4001/parcel/v1.0/auth/signin?userType=agent`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

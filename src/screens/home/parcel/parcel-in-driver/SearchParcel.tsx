@@ -33,69 +33,46 @@ const SearchParcel = ({ navigation }: Props) => {
     []
   ); // ⬅ Store multiple parcels
   const [isPhoneSearch, setIsPhoneSearch] = useState(false);
+   const formatInput = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length === 11 && digits.startsWith("0")) {
+      return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`; // 0818-628-9160
+    }
+    return value;
+  };
   // Function to simulate barcode scanning
   const handleScanBarcode = () => {
     navigation.navigate("BarcodeScannerScreen");
   };
 
-  // Function to handle parcel search
 
-  // const handleSearchParcel = async () => {
-  //   if (!parcelId) {
-  //     Alert.alert('Please enter a parcel ID!');
-  //     return;
-  //   }
+const handleSearchParcel = async () => {
+    // Clean input: remove hyphens if it's a phone number
+    const isPotentialPhone = /^0\d+$/.test(parcelId);
+    const cleanedInput = isPotentialPhone
+      ? parcelId.replace(/\D/g, "")
+      : parcelId;
 
-  //   setLoading(true);
-
-  //   try {
-  //     const result = await getSingleParcelData(parcelId);
-
-  //     // ✅ Save to local storage
-  //     await AsyncStorage.setItem('singleParcelData', JSON.stringify(result?.data?.details?.rows[0]));
-
-  //     Toast.show({
-  //       type: "success",
-  //       text1: "Success",
-  //       text2: result?.data?.message || "Parcel loaded!",
-  //     });
-
-  //     navigation.navigate('ScreenOneParcelInDriverPreview');
-  //   } catch (error: any) {
-  //     console.error("Parcel submission error:", error);
-
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Submission Failed",
-  //       text2: error.message || "Something went wrong",
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  const handleSearchParcel = async () => {
-    if (!parcelId) {
+    if (!cleanedInput) {
       Alert.alert("Please enter a parcel ID or phone number!");
       return;
     }
 
     setLoading(true);
-    setSearchResults([]); // Clear previous results
+    setSearchResults([]);
 
     try {
-      if (parcelId.length === 11) {
-        // Likely a phone number
+      if (cleanedInput.length === 11 && cleanedInput.startsWith("0")) {
         setIsPhoneSearch(true);
-        const result = await getAllParcel(parcelId); // ✅ Replace with real service
+        const result = await getAllParcel(cleanedInput);
         const arrivedParcels = (result?.data?.details?.rows || []).filter(
-          (parcel: any) => parcel.status?.toLowerCase() === "arrived"
+          (parcel: any) => parcel.status?.toLowerCase() === "in-transit"
         );
-
         setSearchResults(arrivedParcels);
       } else {
+        // Handle parcel ID (can contain letters/numbers)
         setIsPhoneSearch(false);
-        const result = await getSingleParcelData(parcelId);
+        const result = await getSingleParcelData(cleanedInput);
         await AsyncStorage.setItem(
           "singleParcelData",
           JSON.stringify(result?.data?.details?.rows[0])
@@ -105,10 +82,9 @@ const SearchParcel = ({ navigation }: Props) => {
           text1: "Success",
           text2: result?.data?.message || "Parcel loaded!",
         });
-        navigation.navigate("ScreenOneParcelInDriverPreview");
+        navigation.navigate("ParcelReceiverOutPreviewScreen");
       }
     } catch (error: any) {
-      console.error("Parcel submission error:", error);
       Toast.show({
         type: "error",
         text1: "Failed",
@@ -174,16 +150,21 @@ const SearchParcel = ({ navigation }: Props) => {
 
           {/* Parcel Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Input Parcel ID</Text>
+            {/* <Text style={styles.label}>Input Parcel ID</Text> */}
 
-            <Input
-              label="Parcel ID"
-              placeholder="Enter parcel ID/phone No"
-              placeholderTextColor="#B8C2CC"
-              keyboardType="number-pad"
-              value={parcelId}
-              onChangeText={(text) => setParcelId(text)}
-            />
+         <Input
+                          label="Parcel ID / Phone no"
+                          placeholder="Enter parcel ID or phone (e.g., 0816-456-7890)"
+                          placeholderTextColor="#B8C2CC"
+                          keyboardType="default"
+                          value={formatInput(parcelId)}
+                          onChangeText={(text) => {
+                            const cleaned = /^\d+$/.test(text)
+                              ? text.replace(/\D/g, "")
+                              : text;
+                            setParcelId(cleaned);
+                          }}
+                        />
           </View>
 
           {/* Search Button */}

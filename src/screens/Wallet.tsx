@@ -359,7 +359,7 @@ const WalletScreen = ({ navigation }: Props) => {
                     <Text style={styles.statusText}>
                       {item.status
                         ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
-                        : "Succesfull"}
+                        : "Succesful"}
                     </Text>
                   </View>
       </View>

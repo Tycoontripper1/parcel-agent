@@ -32,6 +32,13 @@ const SearchParcelOutReceiver = ({ navigation }: Props) => {
     []
   ); // ⬅ Store multiple parcels
   const [isPhoneSearch, setIsPhoneSearch] = useState(false);
+  const formatInput = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length === 11 && digits.startsWith("0")) {
+      return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`; // 0818-628-9160
+    }
+    return value;
+  };
   // Function to simulate barcode scanning
   const handleScanBarcode = () => {
     navigation.navigate("BarcodeScannerScreen");
@@ -40,27 +47,32 @@ const SearchParcelOutReceiver = ({ navigation }: Props) => {
   // Function to handle parcel search
 
   const handleSearchParcel = async () => {
-    if (!parcelId) {
+    // Clean input: remove hyphens if it's a phone number
+    const isPotentialPhone = /^0\d+$/.test(parcelId);
+    const cleanedInput = isPotentialPhone
+      ? parcelId.replace(/\D/g, "")
+      : parcelId;
+
+    if (!cleanedInput) {
       Alert.alert("Please enter a parcel ID or phone number!");
       return;
     }
 
     setLoading(true);
-    setSearchResults([]); // Clear previous results
+    setSearchResults([]);
 
     try {
-      if (parcelId.length === 11) {
-        // Likely a phone number
+      if (cleanedInput.length === 11 && cleanedInput.startsWith("0")) {
         setIsPhoneSearch(true);
-        const result = await getAllParcel(parcelId); // ✅ Replace with real service
+        const result = await getAllParcel(cleanedInput);
         const arrivedParcels = (result?.data?.details?.rows || []).filter(
           (parcel: any) => parcel.status?.toLowerCase() === "arrived"
         );
-
         setSearchResults(arrivedParcels);
       } else {
+        // Handle parcel ID (can contain letters/numbers)
         setIsPhoneSearch(false);
-        const result = await getSingleParcelData(parcelId);
+        const result = await getSingleParcelData(cleanedInput);
         await AsyncStorage.setItem(
           "singleParcelData",
           JSON.stringify(result?.data?.details?.rows[0])
@@ -73,7 +85,6 @@ const SearchParcelOutReceiver = ({ navigation }: Props) => {
         navigation.navigate("ParcelReceiverOutPreviewScreen");
       }
     } catch (error: any) {
-      console.error("Parcel submission error:", error);
       Toast.show({
         type: "error",
         text1: "Failed",
@@ -82,15 +93,6 @@ const SearchParcelOutReceiver = ({ navigation }: Props) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Helper to generate random 10-digit number
-  const generateRandomNumbers = (length: number) => {
-    let result = "";
-    for (let i = 0; i < length; i++) {
-      result += Math.floor(Math.random() * 10);
-    }
-    return result;
   };
 
   // Styles
@@ -143,11 +145,16 @@ const SearchParcelOutReceiver = ({ navigation }: Props) => {
 
             <Input
               label="Parcel ID / Phone no"
-              placeholder="Enter parcel ID/phone no"
+              placeholder="Enter parcel ID or phone (e.g., 0816-456-7890)"
               placeholderTextColor="#B8C2CC"
               keyboardType="default"
-              value={parcelId}
-              onChangeText={(text) => setParcelId(text)}
+              value={formatInput(parcelId)}
+              onChangeText={(text) => {
+                const cleaned = /^\d+$/.test(text)
+                  ? text.replace(/\D/g, "")
+                  : text;
+                setParcelId(cleaned);
+              }}
             />
           </View>
           {/* Search Button */}
@@ -178,7 +185,9 @@ const SearchParcelOutReceiver = ({ navigation }: Props) => {
                   style={styles.shipmentRow}
                 >
                   <Image
-                    source={{ uri: parcel?.parcel?.thumbnails[0] }}
+                    source={{
+                      uri: `https://api.parcelpointng.com:4001/parcel/v1.0/files?slugs=${parcel?.parcel?.thumbnails[0]}`,
+                    }}
                     style={styles.shipmentImage}
                   />
 
@@ -298,7 +307,7 @@ const styles = StyleSheet.create({
   shipmentRow: {
     flexDirection: "row",
     alignItems: "center",
-    padding: RFValue(10),
+    paddingTop: RFValue(10),
     borderRadius: RFValue(10),
     marginBottom: RFValue(8),
     borderBottomWidth: 1,

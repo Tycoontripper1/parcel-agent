@@ -44,8 +44,11 @@ interface ParcelDetails {
   id: string;
 status: string;
   paymentStatus: string;
+  chargesPaidBy:string
+  totalFee:string
 
 }
+
 const Reportscreen = ({navigation}: Props) => {
 const [searchQuery, setSearchQuery] = useState('');
   const [allShipments, setAllShipments] = useState<ParcelDetails[]>([]);
@@ -81,6 +84,14 @@ const [refreshing, setRefreshing] = useState(false);
     useEffect(() => {
     fetchDriver();
   }, [fetchDriver]);
+
+const getTotalPaidBy = (payer: 'receiver' | 'sender') => {
+  return allShipments
+    .filter((item: ParcelDetails) => item.paymentStatus === 'paid' && item.chargesPaidBy === payer)
+    .reduce((acc, item) => acc + (Number(item.totalFee) || 0), 0);
+};
+const formatCurrency = (amount: number): string =>
+  `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
 
 
 const filterShipments = (type: 'payment' | 'status', value: string) => {
@@ -169,20 +180,21 @@ const storeButtonData: IStoreButton[] = [
   },
 ];
 
-
+const totalPaidByReceiver = getTotalPaidBy('receiver');
+const totalPaidBySender = getTotalPaidBy('sender');
   const financeButtonData: IFinanceButton[] = [
     {
       label: 'Paid to Driver',
       amount: "₦0.00",
     },
-    {
-      label: 'Collected from Receiver',
-      amount:"₦0.00"
-    },
-    {
-      label: 'Collected from Sender',
-        amount:"₦0.00"
-    },
+  {
+    label: 'Collected from Receiver',
+    amount: formatCurrency(totalPaidByReceiver),
+  },
+  {
+    label: 'Collected from Sender',
+    amount: formatCurrency(totalPaidBySender),
+  },
     {
       label: 'Expected Overdue Income',
         amount:"₦0.00"

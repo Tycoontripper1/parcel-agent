@@ -107,6 +107,7 @@ const parcelSlice = createSlice({
         }
       }
     },
+
     setCurrentParcelIndex: (state, action: PayloadAction<number>) => {
       if (action.payload >= 0 && action.payload < state.parcels.length) {
         state.currentParcelIndex = action.payload;

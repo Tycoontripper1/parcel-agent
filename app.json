@@ -18,8 +18,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#213264",
-        "googleServicesFile": "./android/app/google-services.json"
+        "backgroundColor": "#213264"
+      
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",

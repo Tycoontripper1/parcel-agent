@@ -25,6 +25,14 @@ import {
 import { singleParcelInterface } from "@/utils/interface";
 import { formatDate } from "@/utils/formartDates";
 
+  const formatInput = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length === 11 && digits.startsWith("0")) {
+      return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`; // 0818-628-9160
+    }
+    return value;
+  };
+
 type Props = NativeStackScreenProps<HomeStackList>;
 const SearchParcelOut = ({ navigation }: Props) => {
   const [parcelId, setParcelId] = useState("");
@@ -54,61 +62,34 @@ const SearchParcelOut = ({ navigation }: Props) => {
     }
   };
 
-  // Function to handle parcel search
-  // const handleSearchParcel = async() => {
-  //   if (!parcelId) {
-  //     Alert.alert('Please enter a parcel ID!');
-  //     return;
-  //   }
-  //   setLoading(true);
 
-  //   try {
-  //     const result = await getSingleParcelData(parcelId);
+const handleSearchParcel = async () => {
+    // Clean input: remove hyphens if it's a phone number
+    const isPotentialPhone = /^0\d+$/.test(parcelId);
+    const cleanedInput = isPotentialPhone
+      ? parcelId.replace(/\D/g, "")
+      : parcelId;
 
-  //     // ✅ Save to local storage
-  //     await AsyncStorage.setItem('singleParcelData', JSON.stringify(result?.data?.details?.rows[0]));
-
-  //     Toast.show({
-  //       type: "success",
-  //       text1: "Success",
-  //       text2: result?.data?.message || "Parcel loaded!",
-  //     });
-
-  //     navigation.navigate('ParcelDriverOutPreviewScreen');
-  //   } catch (error: any) {
-  //     console.error("Parcel submission error:", error);
-
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Submission Failed",
-  //       text2: error.message || "Something went wrong",
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  const handleSearchParcel = async () => {
-    if (!parcelId) {
+    if (!cleanedInput) {
       Alert.alert("Please enter a parcel ID or phone number!");
       return;
     }
 
     setLoading(true);
-    setSearchResults([]); // Clear previous results
+    setSearchResults([]);
 
     try {
-      if (parcelId.length === 11) {
-        // Likely a phone number
+      if (cleanedInput.length === 11 && cleanedInput.startsWith("0")) {
         setIsPhoneSearch(true);
-        const result = await getAllParcel(parcelId); // ✅ Replace with real service
+        const result = await getAllParcel(cleanedInput);
         const arrivedParcels = (result?.data?.details?.rows || []).filter(
-          (parcel: any) => parcel.status?.toLowerCase() === "arrived"
+          (parcel: any) => parcel.status?.toLowerCase() === "unassigned"
         );
-
         setSearchResults(arrivedParcels);
       } else {
+        // Handle parcel ID (can contain letters/numbers)
         setIsPhoneSearch(false);
-        const result = await getSingleParcelData(parcelId);
+        const result = await getSingleParcelData(cleanedInput);
         await AsyncStorage.setItem(
           "singleParcelData",
           JSON.stringify(result?.data?.details?.rows[0])
@@ -118,10 +99,9 @@ const SearchParcelOut = ({ navigation }: Props) => {
           text1: "Success",
           text2: result?.data?.message || "Parcel loaded!",
         });
-        navigation.navigate("ParcelDriverOutPreviewScreen");
+        navigation.navigate("ParcelReceiverOutPreviewScreen");
       }
     } catch (error: any) {
-      console.error("Parcel submission error:", error);
       Toast.show({
         type: "error",
         text1: "Failed",
@@ -130,15 +110,6 @@ const SearchParcelOut = ({ navigation }: Props) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Helper to generate random 10-digit number
-  const generateRandomNumbers = (length: number) => {
-    let result = "";
-    for (let i = 0; i < length; i++) {
-      result += Math.floor(Math.random() * 10);
-    }
-    return result;
   };
 
   // Styles
@@ -187,16 +158,20 @@ const SearchParcelOut = ({ navigation }: Props) => {
 
           {/* Parcel Input */}
           <View style={styles.inputContainer}>
-            {/* <Text style={styles.label}>Input Parcel ID</Text> */}
 
-            <Input
-              label="Parcel ID / phone No"
-              placeholder="Enter parcel ID/phone no"
-              placeholderTextColor="#B8C2CC"
-              keyboardType="number-pad"
-              value={parcelId}
-              onChangeText={(text) => setParcelId(text)}
-            />
+             <Input
+                    label="Parcel ID / Phone no"
+                    placeholder="Enter parcel ID or phone (e.g., 0816-456-7890)"
+                    placeholderTextColor="#B8C2CC"
+                    keyboardType="default"
+                    value={formatInput(parcelId)}
+                    onChangeText={(text) => {
+                      const cleaned = /^\d+$/.test(text)
+                        ? text.replace(/\D/g, "")
+                        : text;
+                      setParcelId(cleaned);
+                    }}
+                  />
           </View>
 
           {/* Search Button */}
